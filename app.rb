@@ -29,12 +29,14 @@ class ThumbsWeb < Sinatra::Base
   end
   get '/status' do
     @octo_client = Octokit::Client.new(:netrc=>true)
-    version=File.expand_path(File.dirname(__FILE__))
-    created_at=File.mtime(__FILE__)
+    release_dir=File.expand_path(File.dirname(__FILE__))
+    version=release_dir.split(/\//).pop
+    deployed_at=File.mtime(__FILE__)
     status= {
-        status: "ok",
-        thumbs_version: version,
-        created_at: created_at,
+        status: "OK",
+        version: version,
+        release_dir: release_dir,
+        deployed_at: deployed_at,
         github_user: @octo_client.login,
         authenticated: @octo_client.basic_authenticated?,
         rate_limit: @octo_client.ratelimit.to_h

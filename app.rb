@@ -9,13 +9,13 @@ class ThumbsWeb < Sinatra::Base
   helpers Sinatra::WebhookHelpers
   configure :production do
     set :clean_trace, true
-    FileUtils.mkdir_p 'logs'
-    $logger = Logger.new('logs/thumbs.log','weekly')
+    FileUtils.mkdir_p 'log'
+    $logger = Logger.new('log/thumbs.log','weekly')
     $logger.level = Logger::DEBUG
 
     # Spit stdout and stderr to a file during production
     # in case something goes wrong
-    $stdout.reopen("logs/thumbs_output.log", "w")
+    $stdout.reopen("log/thumbs_output.log", "w")
     $stdout.sync = true
     $stderr.reopen($stdout)
   end
@@ -132,4 +132,3 @@ class ThumbsWeb < Sinatra::Base
     "OK"
   end
 end
-

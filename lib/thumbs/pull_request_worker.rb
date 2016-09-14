@@ -445,6 +445,7 @@ Code reviews from: <%= reviewers.uniq.join(", ") %>.
         @build_steps=@thumb_config['build_steps']
         @minimum_reviewers=@thumb_config['minimum_reviewers']
         @auto_merge=@thumb_config['merge']
+        @timeout=@thumb_config['timeout']
         debug_message "\".thumbs.yml\" config file Loaded: #{@thumb_config.to_yaml}"
       rescue => e
         error_message "thumbs config file loading failed"

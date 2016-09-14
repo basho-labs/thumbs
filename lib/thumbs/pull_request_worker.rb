@@ -380,7 +380,7 @@ module Thumbs
 <% gist=client.create_gist( { :files => { step_name.to_s + ".txt" => { :content => status[:output] }} }) %>
 <% end %>
 <details>
- <summary><%= result_image(status[:result]) %> <%= step_name.upcase %>   <%= status[:result].upcase %> </summary>
+ <summary><%= result_image(status[:result]) %> <%= step_name.upcase %> </summary>
 
  <p>
 
@@ -405,7 +405,7 @@ module Thumbs
 </details>
 
 <% end %>
-<% status_code= (reviews.length >= minimum_reviewers ? :ok : :warning) %>
+<% status_code= (reviews.length >= minimum_reviewers ? :ok : :unchecked) %>
 <% org_msg=  thumb_config['org_mode'] ? " from organization #{repo.split(/\//).shift}"  : "." %>
 
 <%= result_image(status_code) %> <%= reviews.length %> of <%= minimum_reviewers %> Code reviews<%= org_msg %>
@@ -460,6 +460,8 @@ Code reviews from: <%= reviewers.uniq.join(", ") %>.
           ":white_check_mark:"
         when :warning
           ":warning:"
+        when :unchecked
+          ":white_large_square:"
         when :error
           ":no_entry:"
         else

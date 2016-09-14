@@ -140,11 +140,11 @@ module Thumbs
     end
 
     def contains_plus_one?(comment_body)
-      comment_body =~ /\+1/
+      /\+1/.match(comment_body) ||  /:\+1:/.match(comment_body)
     end
 
     def non_author_comments
-      comments.collect { |comment| comment unless @pr[:user][:login] == comment[:user][:login] || ["thumbot"].include?(comment[:user][:login]) }.compact
+      comments.collect { |comment| comment if @pr[:user][:login] != comment[:user][:login] && !["thumbot"].include?(comment[:user][:login]) }.compact
     end
 
     def org_member_comments
@@ -161,10 +161,16 @@ module Thumbs
 
     def reviews
       debug_message "calculating reviews"
+      debug_message "comments: #{comments.collect{|mc| mc[:user][:login]}}"
+      debug_message "bot_comments: #{bot_comments.collect{|mc| mc[:user][:login]}}"
       debug_message "org_member_comments: #{org_member_comments.collect{|mc| mc[:user][:login]}}"
       debug_message "org_member_code_reviews: #{org_member_code_reviews.collect{|mc| mc[:user][:login] }}"
+      debug_message "non_org_member_code_reviews: #{code_reviews.collect{|mc| mc[:user][:login] }}"
 
-      return org_member_code_reviews if @thumb_config['org_mode']
+       if @thumb_config['org_mode']
+         debug_message "returning org_member_code_reviews"
+         return org_member_code_reviews
+       end
 
       code_reviews
     end
@@ -219,8 +225,8 @@ module Thumbs
 
       unless reviews.length >= @thumb_config['minimum_reviewers']
         debug_message " #{reviews.length} !>= #{@thumb_config['minimum_reviewers']}"
-        plurality=(minimum_reviewers > 1 ? 's' : '')
-        add_comment("Waiting for at least #{minimum_reviewers} code review#{plurality} ")
+        message="#{reviews.length} Code reviews, waiting for #{minimum_reviewers}" + (thumb_config['org_mode'] ? " from organization #{repo.split(/\//).shift}." : ".")
+        add_comment(message)
         return false
       end
 
@@ -412,7 +418,9 @@ module Thumbs
 
 <p>
 <% reviews.each do |review| %>
+
   @<%= review[:user][:login] %>: <%= review[:body] %> 
+
 <% end %>
 </p>
       EOS

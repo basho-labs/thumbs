@@ -24,6 +24,7 @@ module Thumbs
       @build_steps = []
       try_read_config
       @minimum_reviewers = thumb_config && thumb_config.key?('minimum_reviewers') ? thumb_config['minimum_reviewers'] : 2
+      @timeout=thumb_config && thumb_config.key?('timeout') ? thumb_config['timeout'] : 1800
     end
 
     def cleanup_build_dir
@@ -96,25 +97,38 @@ module Thumbs
 
       command = "cd #{@build_dir} && #{command} 2>&1"
       status[:started_at]=DateTime.now
-      output = `#{command}`
-      status[:ended_at]=DateTime.now
-
-      unless $? == 0
-        result = :error
-        message = "Step #{name} Failed!"
-      else
-        result = :ok
-        message = "OK"
-      end
-      status[:result] = result
-      status[:message] = message
       status[:command] = command
-      status[:output] = output
-      status[:exit_code] = $?.exitstatus
+      begin
+        Timeout::timeout(@timeout) do
+          output = `#{command}`
+          status[:ended_at]=DateTime.now
+          unless $? == 0
+            result = :error
+            message = "Step #{name} Failed!"
+          else
+            result = :ok
+            message = "OK"
+          end
+          status[:result] = result
+          status[:message] = message
 
-      @build_status[:steps][name.to_sym]=status
-      debug_message "[ #{name.upcase} ] [#{result.upcase}] \"#{command}\""
-      status
+          status[:output] = output
+          status[:exit_code] = $?.exitstatus
+
+          @build_status[:steps][name.to_sym]=status
+          debug_message "[ #{name.upcase} ] [#{result.upcase}] \"#{command}\""
+          return status
+        end
+      rescue Timeout::Error => e
+        status[:ended_at]=DateTime.now
+        status[:result] = :error
+        status[:message] = "Timeout reached (#{@timeout} seconds)"
+        status[:output] = e
+
+        @build_status[:steps][name.to_sym]=status
+        debug_message "[ #{name.upcase} ] [ERROR] \"#{command}\" #{e}"
+        return status
+      end
     end
 
     def comments
@@ -224,8 +238,13 @@ module Thumbs
       clone
       try_merge
 
+      # before_steps.each do |before_step|
+      #   run_before_step(before_step)
+      # end
+      #
       build_steps.each do |build_step|
-        try_run_build_step(build_step.gsub(/\s+/, '_').gsub(/-/, ''), build_step)
+        build_step_name=build_step.gsub(/\s+/, '_').gsub(/-/, '')
+        try_run_build_step(build_step_name, build_step)
       end
     end
 
@@ -426,6 +445,7 @@ Code reviews from: <%= reviewers.uniq.join(", ") %>.
         @build_steps=@thumb_config['build_steps']
         @minimum_reviewers=@thumb_config['minimum_reviewers']
         @auto_merge=@thumb_config['merge']
+        @timeout=@thumb_config['timeout']
         debug_message "\".thumbs.yml\" config file Loaded: #{@thumb_config.to_yaml}"
       rescue => e
         error_message "thumbs config file loading failed"

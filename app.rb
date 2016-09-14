@@ -64,8 +64,7 @@ class ThumbsWeb < Sinatra::Base
 
         pr_worker.create_build_status_comment
         unless pr_worker.reviews.length >= pr_worker.minimum_reviewers
-          plurality=(pr_worker.minimum_reviewers > 1 ? 's' : '')
-          pr_worker.add_comment("#{reviews.length} Code reviews, waiting for #{minimum_reviewers}" + (thumb_config['org_mode'] ? " from organization #{repo.split(/\//).shift}." : "."))
+          pr_worker.add_comment("#{pr_worker.reviews.length} Code reviews, waiting for #{minimum_reviewers}" + (thumb_config['org_mode'] ? " from organization #{repo.split(/\//).shift}." : "."))
           return "OK"
         end
 
@@ -89,8 +88,8 @@ class ThumbsWeb < Sinatra::Base
 
         unless pr_worker.reviews.length >= pr_worker.thumb_config['minimum_reviewers']
           debug_message " #{pr_worker.reviews.length} !>= #{pr_worker.thumb_config['minimum_reviewers']}"
-          plurality=(pr_worker.minimum_reviewers > 1 ? 's' : '')
-          message="Waiting for at least #{pr_worker.minimum_reviewers} code review#{plurality}"
+          message= "#{pr_worker.reviews.length} Code reviews, waiting for #{pr_worker.minimum_reviewers}" + (pr_worker.thumb_config['org_mode'] ? " from organization #{pr_worker.repo.split(/\//).shift}." : ".")
+
           if pr_worker.thumb_config['org_mode'] == true
             message << " from organization #{repo.split(/\//).shift}"
           end

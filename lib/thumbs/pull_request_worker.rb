@@ -136,7 +136,7 @@ module Thumbs
     end
 
     def bot_comments
-      comments.collect { |c| c if c[:user][:login] == ENV['GITHUB_USER'] }.compact
+      comments.collect { |c| c if ["thumbot"].include?(c[:user][:login]) }.compact
     end
 
     def contains_plus_one?(comment_body)
@@ -144,7 +144,7 @@ module Thumbs
     end
 
     def non_author_comments
-      comments.collect { |comment| comment unless @pr[:user][:login] == comment[:user][:login] }.compact
+      comments.collect { |comment| comment unless @pr[:user][:login] == comment[:user][:login] || ["thumbot"].include?(comment[:user][:login]) }.compact
     end
 
     def org_member_comments
@@ -407,8 +407,14 @@ module Thumbs
 <% end %>
 <% status_code= (reviews.length >= minimum_reviewers ? :ok : :unchecked) %>
 <% org_msg=  thumb_config['org_mode'] ? " from organization #{repo.split(/\//).shift}"  : "." %>
+<details>
+ <summary><%= result_image(status_code) %> <%= reviews.length %> of <%= minimum_reviewers %> Code reviews<%= org_msg %></summary>
 
-<%= result_image(status_code) %> <%= reviews.length %> of <%= minimum_reviewers %> Code reviews<%= org_msg %>
+<p>
+<% reviews.each do |review| %>
+  @<%= review[:user][:login] %>: <%= review[:body] %> 
+<% end %>
+</p>
       EOS
       add_comment(comment)
     end

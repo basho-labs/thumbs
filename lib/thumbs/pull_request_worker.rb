@@ -140,7 +140,8 @@ module Thumbs
     end
 
     def contains_plus_one?(comment_body)
-      /\+1/.match(comment_body) ||  /:\+1:/.match(comment_body)
+      debug_message "match comment_body #{comment_body}"
+     (/:\+1:/.match(comment_body) || /\+1/.match(comment_body)) ? true : false
     end
 
     def non_author_comments
@@ -149,7 +150,7 @@ module Thumbs
 
     def org_member_comments
       org = @repo.split(/\//).shift
-      non_author_comments.collect { |comment| comment if @client.organization_member?(org, comment[:user][:login]) && !["thumbot"].include?(comment[:user][:login]) }.compact
+      non_author_comments.collect { |comment| comment if @client.organization_member?(org, comment[:user][:login])}.compact
     end
 
     def org_member_code_reviews
@@ -159,12 +160,16 @@ module Thumbs
       non_author_comments.collect { |comment| comment if contains_plus_one?(comment[:body]) }.compact
     end
 
+    def review_count
+      reviews.collect{|r| r[:user][:login] }.uniq.length
+    end
     def reviews
       debug_message "calculating reviews"
       debug_message "comments: #{comments.collect{|mc| mc[:user][:login]}}"
       debug_message "bot_comments: #{bot_comments.collect{|mc| mc[:user][:login]}}"
       debug_message "org_member_comments: #{org_member_comments.collect{|mc| mc[:user][:login]}}"
       debug_message "org_member_code_reviews: #{org_member_code_reviews.collect{|mc| mc[:user][:login] }}"
+      debug_message "non_org_member_code_reviews: #{code_reviews.collect{|mc| mc[:user][:login] }}"
       debug_message "non_org_member_code_reviews: #{code_reviews.collect{|mc| mc[:user][:login] }}"
 
        if @thumb_config['org_mode']
@@ -221,11 +226,11 @@ module Thumbs
         return false
       end
       debug_message "minimum reviewers: #{thumb_config['minimum_reviewers']}"
-      debug_message "review_count: #{reviews.length} >= #{thumb_config['minimum_reviewers']}"
+      debug_message "review_count: #{review_count} >= #{thumb_config['minimum_reviewers']}"
 
-      unless reviews.length >= @thumb_config['minimum_reviewers']
-        debug_message " #{reviews.length} !>= #{@thumb_config['minimum_reviewers']}"
-        message="#{reviews.length} Code reviews, waiting for #{minimum_reviewers}" + (thumb_config['org_mode'] ? " from organization #{repo.split(/\//).shift}." : ".")
+      unless review_count >= @thumb_config['minimum_reviewers']
+        debug_message " #{review_count} !>= #{@thumb_config['minimum_reviewers']}"
+        message="#{review_count} Code reviews, waiting for #{minimum_reviewers}" + (thumb_config['org_mode'] ? " from organization #{repo.split(/\//).shift}." : ".")
         add_comment(message)
         return false
       end
@@ -411,10 +416,10 @@ module Thumbs
 </details>
 
 <% end %>
-<% status_code= (reviews.length >= minimum_reviewers ? :ok : :unchecked) %>
+<% status_code= (review_count >= minimum_reviewers ? :ok : :unchecked) %>
 <% org_msg=  thumb_config['org_mode'] ? " from organization #{repo.split(/\//).shift}"  : "." %>
 <details>
- <summary><%= result_image(status_code) %> <%= reviews.length %> of <%= minimum_reviewers %> Code reviews<%= org_msg %></summary>
+ <summary><%= result_image(status_code) %> <%= review_count %> of <%= minimum_reviewers %> Code reviews<%= org_msg %></summary>
 
 <p>
 <% reviews.each do |review| %>

@@ -21,7 +21,7 @@ unit_tests do
 
     create_test_code_reviews(test_pr_worker.repo, test_pr_worker.pr.number)
 
-    assert test_pr_worker.reviews.length >= 2
+    assert test_pr_worker.review_count >= 2
     assert_false test_pr_worker.valid_for_merge?
 
     assert_true test_pr_worker.open?
@@ -48,7 +48,7 @@ unit_tests do
   #
   #   create_test_code_reviews(test_pr_worker.repo, test_pr_worker.pr.number)
   #
-  #   assert test_pr_worker.reviews.length >= 2
+  #   assert test_pr_worker.review_count >= 2
   #   assert_false test_pr_worker.valid_for_merge?
   #
   #   assert_true test_pr_worker.open?

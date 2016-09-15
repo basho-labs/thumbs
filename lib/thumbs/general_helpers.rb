@@ -3,7 +3,8 @@ require 'sinatra/base'
 module Sinatra
   module GeneralHelpers
     def debug_message(message)
-      $logger.debug message
+      log = Log4r::Logger['Thumbs']
+      log.debug message
     end
 
     def authenticate_slack

@@ -10,11 +10,8 @@ class ThumbsWeb < Sinatra::Base
   configure :production do
     set :clean_trace, true
     FileUtils.mkdir_p 'log'
-    $logger = Logger.new('log/thumbs.log','weekly')
+    $logger = Logger.new('log/thumbs.log', 'weekly')
     $logger.level = Logger::DEBUG
-
-    # Spit stdout and stderr to a file during production
-    # in case something goes wrong
     $stdout.reopen("log/thumbs_output.log", "w")
     $stdout.sync = true
     $stderr.reopen($stdout)
@@ -28,7 +25,7 @@ class ThumbsWeb < Sinatra::Base
     "OK"
   end
   get '/status' do
-    @octo_client = Octokit::Client.new(:netrc=>true)
+    @octo_client = Octokit::Client.new(:netrc => true)
     release_dir=File.expand_path(File.dirname(__FILE__))
     version=release_dir.split(/\//).pop
     deployed_at=File.mtime(__FILE__)
@@ -41,21 +38,20 @@ class ThumbsWeb < Sinatra::Base
         authenticated: @octo_client.basic_authenticated?,
         rate_limit: @octo_client.ratelimit.to_h
     }
-
     "<pre>#{status.to_yaml}</pre>"
   end
   get '/webhook' do
     "OK"
   end
   post '/webhook' do
-    @octo_client = Octokit::Client.new(:netrc=>true)
+    @octo_client = Octokit::Client.new(:netrc => true)
     payload = JSON.parse(request.body.read)
     #debug_message("received webhook #{payload.to_yaml}")
     case payload_type(payload)
       when :new_pr
         repo, pr = process_payload(payload)
         debug_message "got repo #{repo} and pr #{pr}"
-        pr_worker = Thumbs::PullRequestWorker.new(:repo=>repo,:pr=>pr)
+        pr_worker = Thumbs::PullRequestWorker.new(:repo => repo, :pr => pr)
         return "OK" unless pr_worker.open?
         debug_message("new pull request #{pr_worker.repo}/pulls/#{pr_worker.pr.number} ")
         pr_worker.add_comment("Thanks @#{pr_worker.pr.user.login}!")
@@ -80,7 +76,7 @@ class ThumbsWeb < Sinatra::Base
       when :new_comment
         repo, pr = process_payload(payload)
         debug_message "got repo #{repo} and pr #{pr}"
-        pr_worker = Thumbs::PullRequestWorker.new(:repo=>repo,:pr=>pr)
+        pr_worker = Thumbs::PullRequestWorker.new(:repo => repo, :pr => pr)
         return "OK" unless pr_worker.open?
         debug_message("new comment #{pr_worker.repo}/pulls/#{pr_worker.pr.number} #{payload['comment']['body']}")
         pr_worker.refresh_repo
@@ -113,7 +109,7 @@ class ThumbsWeb < Sinatra::Base
         debug_message "This is a new push"
         repo, pr = process_payload(payload)
         debug_message "got repo #{repo} and pr #{pr}"
-        pr_worker = Thumbs::PullRequestWorker.new(:repo=>repo,:pr=>pr)
+        pr_worker = Thumbs::PullRequestWorker.new(:repo => repo, :pr => pr)
         return "OK" unless pr_worker.open?
         debug_message("new push on pull request #{pr_worker.repo}/pulls/#{pr_worker.pr.number} ")
         pr_worker.validate
@@ -125,7 +121,6 @@ class ThumbsWeb < Sinatra::Base
         else
           debug_message("new push #{pr_worker.repo}/pulls/#{pr_worker.pr.number} valid_for_merge? returned False")
         end
-
       when :unregistered
         debug_message "This is not an event I recognize,: ignoring"
         debug_message payload_type(payload)

@@ -26,9 +26,9 @@ unit_tests do
 
     assert_true test_pr_worker.open?
 
-   # test_pr_worker.merge
+    # test_pr_worker.merge
 
-   # test_pr_worker.close
+    # test_pr_worker.close
 
   end
   # test "should display failed build status comment" do

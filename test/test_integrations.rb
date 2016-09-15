@@ -113,7 +113,7 @@ unit_tests do
   end
   test "webhook_unmergeable_pr_test" do
     test_pr_worker = create_test_pr("thumbot/prtester")
-    test_pr_worker.build_steps = ["make","make test","make UNKNOWN_OPTION"]
+    test_pr_worker.build_steps = ["make", "make test", "make UNKNOWN_OPTION"]
     new_pr_webhook_payload = {
         'repository' => {'full_name' => test_pr_worker.repo},
         'number' => test_pr_worker.pr.number,
@@ -160,18 +160,18 @@ unit_tests do
     test_pr_worker = create_test_pr("thumbot/prtester")
 
     test_pr_worker.respond_to?(:build_steps)
-    assert test_pr_worker.build_steps == ["make","make build","make test"], test_pr_worker.build_steps.to_s
+    assert test_pr_worker.build_steps == ["make", "make build", "make test"], test_pr_worker.build_steps.to_s
     test_pr_worker.validate
 
-    test_pr_worker.build_status.keys.sort == ["merge","make_build","make_test"]
+    test_pr_worker.build_status.keys.sort == ["merge", "make_build", "make_test"]
 
-    test_pr_worker.build_steps = ["make build","make custom"]
+    test_pr_worker.build_steps = ["make build", "make custom"]
     test_pr_worker.validate
-    test_pr_worker.build_status.keys.sort == ["merge","make_build","make_custom"]
+    test_pr_worker.build_status.keys.sort == ["merge", "make_build", "make_custom"]
 
-    test_pr_worker.build_steps = ["make -j2 -p -H all","make custom"]
+    test_pr_worker.build_steps = ["make -j2 -p -H all", "make custom"]
     test_pr_worker.validate
-    test_pr_worker.build_status.keys.sort == ["merge","make_j2_p_H","make_custom"]
+    test_pr_worker.build_status.keys.sort == ["merge", "make_j2_p_H", "make_custom"]
 
     test_pr_worker.close
 
@@ -237,8 +237,6 @@ unit_tests do
 
 
     assert pr_worker.respond_to?(:org_member_code_reviews)
-
-
 
 
     create_privileged_test_code_reviews("thumbot/prtester", test_pr_worker.pr.number)

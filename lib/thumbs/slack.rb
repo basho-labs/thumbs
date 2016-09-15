@@ -1,4 +1,3 @@
-
 module Thumbs
   module Slack
     def add_slack_message(channel, message)

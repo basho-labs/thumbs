@@ -6,6 +6,7 @@ class HelloWorldTest < Test::Unit::TestCase
 
   include Sinatra::GeneralHelpers
   include Sinatra::WebhookHelpers
+
   def app
     ThumbsWeb
   end
@@ -53,7 +54,6 @@ class HelloWorldTest < Test::Unit::TestCase
 
     assert payload_type(new_pr_payload) == :new_pr, payload_type(new_pr_payload).to_s
   end
-
 
 
 end

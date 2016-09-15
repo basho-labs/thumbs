@@ -428,6 +428,7 @@ module Thumbs
 
 <% end %>
 </p>
+</details>
       EOS
       add_comment(comment)
     end
@@ -436,7 +437,6 @@ module Thumbs
       comment = render_template <<-EOS
 <% reviewers=reviews.collect { |r| "*@" + r[:user][:login] + "*" } %>
 Code reviews from: <%= reviewers.uniq.join(", ") %>.
-</details>
       EOS
       add_comment(comment)
     end

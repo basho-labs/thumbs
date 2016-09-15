@@ -50,7 +50,7 @@ class ThumbsWeb < Sinatra::Base
   post '/webhook' do
     @octo_client = Octokit::Client.new(:netrc=>true)
     payload = JSON.parse(request.body.read)
-    debug_message("received webhook #{payload.to_yaml}")
+    #debug_message("received webhook #{payload.to_yaml}")
     case payload_type(payload)
       when :new_pr
         repo, pr = process_payload(payload)
@@ -58,19 +58,18 @@ class ThumbsWeb < Sinatra::Base
         pr_worker = Thumbs::PullRequestWorker.new(:repo=>repo,:pr=>pr)
         return "OK" unless pr_worker.open?
         debug_message("new pull request #{pr_worker.repo}/pulls/#{pr_worker.pr.number} ")
-        pr_worker.add_comment("Thanks! @#{pr_worker.pr.user.login}")
+        pr_worker.add_comment("Thanks @#{pr_worker.pr.user.login}!")
         pr_worker.validate
         pr_worker.add_comment " .thumbs.yml config:\n``` #{pr_worker.thumb_config.to_yaml} ```"
 
         pr_worker.create_build_status_comment
-        unless pr_worker.reviews.length >= pr_worker.minimum_reviewers
-          plurality=(pr_worker.minimum_reviewers > 1 ? 's' : '')
-          pr_worker.add_comment("#{reviews.length} Code reviews, waiting for #{minimum_reviewers}" + (thumb_config['org_mode'] ? " from organization #{repo.split(/\//).shift}." : "."))
+        unless pr_worker.review_count >= pr_worker.minimum_reviewers
+          pr_worker.add_comment("#{pr_worker.review_count} Code reviews, waiting for #{pr_worker.minimum_reviewers}" + (pr_worker.thumb_config['org_mode'] ? " from organization #{pr_worker.repo.split(/\//).shift}." : "."))
           return "OK"
         end
 
         if pr_worker.valid_for_merge?
-          pr_worker.create_reviewers_comment if pr_worker.reviews.length > 0
+          pr_worker.create_reviewers_comment if pr_worker.review_count > 0
           pr_worker.add_comment "Merging and closing this pr"
           pr_worker.merge
         else
@@ -87,10 +86,10 @@ class ThumbsWeb < Sinatra::Base
         pr_worker.refresh_repo
         pr_worker.try_read_config
 
-        unless pr_worker.reviews.length >= pr_worker.thumb_config['minimum_reviewers']
-          debug_message " #{pr_worker.reviews.length} !>= #{pr_worker.thumb_config['minimum_reviewers']}"
-          plurality=(pr_worker.minimum_reviewers > 1 ? 's' : '')
-          message="Waiting for at least #{pr_worker.minimum_reviewers} code review#{plurality}"
+        unless pr_worker.review_count >= pr_worker.thumb_config['minimum_reviewers']
+          debug_message " #{pr_worker.review_count} !>= #{pr_worker.thumb_config['minimum_reviewers']}"
+          message= "#{pr_worker.review_count} Code reviews, waiting for #{pr_worker.minimum_reviewers}" + (pr_worker.thumb_config['org_mode'] ? " from organization #{pr_worker.repo.split(/\//).shift}." : ".")
+
           if pr_worker.thumb_config['org_mode'] == true
             message << " from organization #{repo.split(/\//).shift}"
           end
@@ -103,7 +102,7 @@ class ThumbsWeb < Sinatra::Base
 
         if pr_worker.valid_for_merge?
           debug_message("new comment #{pr_worker.repo}/pulls/#{pr_worker.pr.number} valid_for_merge? OK ")
-          pr_worker.create_reviewers_comment if pr_worker.reviews.length > 0
+          pr_worker.create_reviewers_comment if pr_worker.review_count > 0
           pr_worker.add_comment "Merging and closing this pr"
           pr_worker.merge
         else

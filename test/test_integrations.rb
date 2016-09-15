@@ -78,7 +78,7 @@ unit_tests do
     pr = Thumbs::PullRequestWorker.new(:repo => test_pr_worker.repo, :pr => test_pr_worker.pr.number)
     assert test_pr_worker.respond_to?(:reviews)
 
-    assert test_pr_worker.reviews.length == 0
+    assert test_pr_worker.review_count == 0
 
     assert test_pr_worker.respond_to?(:valid_for_merge?)
     assert_false test_pr_worker.valid_for_merge?
@@ -89,12 +89,12 @@ unit_tests do
     test_pr_worker=create_test_pr("thumbot/prtester")
 
     pr_worker = Thumbs::PullRequestWorker.new(:repo => test_pr_worker.repo, :pr => test_pr_worker.pr.number)
-    assert pr_worker.reviews.length == 0
+    assert pr_worker.review_count == 0
 
     assert_false pr_worker.valid_for_merge?
     create_test_code_reviews("thumbot/prtester", test_pr_worker.pr.number)
 
-    assert pr_worker.reviews.length == 2
+    assert pr_worker.review_count == 2
 
     pr_worker.validate
 
@@ -130,7 +130,7 @@ unit_tests do
 
     create_test_code_reviews(test_pr_worker.repo, test_pr_worker.pr.number)
 
-    assert test_pr_worker.reviews.length >= 2
+    assert test_pr_worker.review_count >= 2
     assert_false test_pr_worker.valid_for_merge?
 
     assert_true test_pr_worker.open?
@@ -181,12 +181,12 @@ unit_tests do
 
     pr_worker = Thumbs::PullRequestWorker.new(:repo => test_pr_worker.repo, :pr => test_pr_worker.pr.number)
 
-    assert pr_worker.reviews.length == 0
+    assert pr_worker.review_count == 0
     assert_false pr_worker.valid_for_merge?
 
     create_test_code_reviews("thumbot/prtester", test_pr_worker.pr.number)
 
-    assert pr_worker.reviews.length == 2
+    assert pr_worker.review_count == 2
 
     pr_worker.validate
 
@@ -198,16 +198,16 @@ unit_tests do
     test_pr_worker=create_test_pr("thumbot/prtester")
 
     pr_worker = Thumbs::PullRequestWorker.new(:repo => test_pr_worker.repo, :pr => test_pr_worker.pr.number)
-    assert pr_worker.reviews.length == 0
+    assert pr_worker.review_count == 0
 
     assert_false pr_worker.valid_for_merge?
     create_unprivileged_test_code_reviews("thumbot/prtester", test_pr_worker.pr.number)
 
-    assert pr_worker.reviews.length == 0
+    assert pr_worker.review_count == 0
 
     create_privileged_test_code_reviews("thumbot/prtester", test_pr_worker.pr.number)
 
-    assert pr_worker.reviews.length == 2
+    assert pr_worker.review_count == 2
     pr_worker.validate
 
     assert_true pr_worker.valid_for_merge?
@@ -223,7 +223,7 @@ unit_tests do
 
     assert_false pr_worker.valid_for_merge?
     create_privileged_test_code_reviews("thumbot/prtester", test_pr_worker.pr.number)
-    assert pr_worker.reviews.length == 2
+    assert pr_worker.review_count == 2
 
 
     test_pr_worker.close
@@ -242,7 +242,7 @@ unit_tests do
 
 
     create_privileged_test_code_reviews("thumbot/prtester", test_pr_worker.pr.number)
-    assert pr_worker.reviews.length == 2
+    assert pr_worker.review_count == 2
 
 
     test_pr_worker.close

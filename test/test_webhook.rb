@@ -10,7 +10,7 @@ class HelloWorldTest < Test::Unit::TestCase
     test_pr_worker = create_test_pr("thumbot/prtester")
 
     assert test_pr_worker.comments.length == 0
-    assert test_pr_worker.reviews.length == 0
+    assert test_pr_worker.review_count == 0
     assert test_pr_worker.bot_comments.length == 0
 
     new_pr_webhook_payload = {
@@ -24,7 +24,7 @@ class HelloWorldTest < Test::Unit::TestCase
     assert_true last_response.body.include?("OK"), last_response.body
 
     assert_true test_pr_worker.open?
-    assert test_pr_worker.reviews.length == 0
+    assert test_pr_worker.review_count == 0
 
     assert test_pr_worker.comments.length == 1
     assert test_pr_worker.bot_comments.length == 1
@@ -34,7 +34,7 @@ class HelloWorldTest < Test::Unit::TestCase
 
     create_test_code_reviews(test_pr_worker.repo, test_pr_worker.pr.number)
 
-    assert test_pr_worker.reviews.length >= 2
+    assert test_pr_worker.review_count >= 2
 
     new_comment_payload = {
         'repository' => {'full_name' => test_pr_worker.repo},

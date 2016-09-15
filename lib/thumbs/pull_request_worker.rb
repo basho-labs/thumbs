@@ -141,7 +141,7 @@ module Thumbs
 
     def contains_plus_one?(comment_body)
       debug_message "match comment_body #{comment_body}"
-     (/:\+1:/.match(comment_body) || /\+1/.match(comment_body)) ? true : false
+     (/:\+1:/.match(comment_body) || /\+1/.match(comment_body) || /\\U0001F44D/.match(comment_body.to_yaml) ) ? true : false
     end
 
     def non_author_comments
@@ -436,6 +436,7 @@ module Thumbs
       comment = render_template <<-EOS
 <% reviewers=reviews.collect { |r| "*@" + r[:user][:login] + "*" } %>
 Code reviews from: <%= reviewers.uniq.join(", ") %>.
+</details>
       EOS
       add_comment(comment)
     end

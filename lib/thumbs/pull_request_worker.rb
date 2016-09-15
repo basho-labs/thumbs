@@ -162,7 +162,6 @@ module Thumbs
     def review_count
       debug_message "reviews"
       debug_message reviews.collect { |r| r[:user][:login] }.uniq
-      debug_message reviews.collect{ |r| r.inspect }
       reviews.collect { |r| r[:user][:login] }.uniq.length
     end
 
@@ -496,8 +495,6 @@ Code reviews from: <%= reviewers.uniq.join(", ") %>.
         c.password = ENV['GITHUB_PASS']
       end
     end
-
-
 
     def result_image(result)
       case result

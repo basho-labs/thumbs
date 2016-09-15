@@ -72,7 +72,6 @@ class ThumbsWeb < Sinatra::Base
           debug_message " #{pr_worker.review_count} !>= #{pr_worker.thumb_config['minimum_reviewers']}"
           return false
         end
-        pr_worker.validate
 
         if pr_worker.valid_for_merge?
           debug_message("new comment #{pr_worker.repo}/pulls/#{pr_worker.pr.number} valid_for_merge? OK ")

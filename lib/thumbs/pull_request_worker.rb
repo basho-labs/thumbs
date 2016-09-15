@@ -30,6 +30,7 @@ module Thumbs
     def cleanup_build_dir
       FileUtils.rm_rf(@build_dir)
     end
+
     def try_read_config
       thumb_config_file="#{build_dir}/.thumbs.yml"
       if File.exist?(thumb_config_file)
@@ -44,6 +45,7 @@ module Thumbs
         clone
       end
     end
+
     def clone(dir=build_dir)
       status={}
       status[:started_at]=DateTime.now
@@ -140,7 +142,7 @@ module Thumbs
 
     def contains_plus_one?(comment_body)
       debug_message "match comment_body #{comment_body}"
-     (/:\+1:/.match(comment_body) || /\+1/.match(comment_body) || /\\U0001F44D/.match(comment_body.to_yaml) ) ? true : false
+      (/:\+1:/.match(comment_body) || /\+1/.match(comment_body) || /\\U0001F44D/.match(comment_body.to_yaml)) ? true : false
     end
 
     def non_author_comments
@@ -149,32 +151,26 @@ module Thumbs
 
     def org_member_comments
       org = @repo.split(/\//).shift
-      non_author_comments.collect { |comment| comment if @client.organization_member?(org, comment[:user][:login])}.compact
+      non_author_comments.collect { |comment| comment if @client.organization_member?(org, comment[:user][:login]) }.compact
     end
 
     def org_member_code_reviews
       org_member_comments.collect { |comment| comment if contains_plus_one?(comment[:body]) }.compact
     end
+
     def code_reviews
       non_author_comments.collect { |comment| comment if contains_plus_one?(comment[:body]) }.compact
     end
 
     def review_count
-      reviews.collect{|r| r[:user][:login] }.uniq.length
+      reviews.collect { |r| r[:user][:login] }.uniq.length
     end
-    def reviews
-      debug_message "calculating reviews"
-      debug_message "comments: #{comments.collect{|mc| mc[:user][:login]}}"
-      debug_message "bot_comments: #{bot_comments.collect{|mc| mc[:user][:login]}}"
-      debug_message "org_member_comments: #{org_member_comments.collect{|mc| mc[:user][:login]}}"
-      debug_message "org_member_code_reviews: #{org_member_code_reviews.collect{|mc| mc[:user][:login] }}"
-      debug_message "non_org_member_code_reviews: #{code_reviews.collect{|mc| mc[:user][:login] }}"
-      debug_message "non_org_member_code_reviews: #{code_reviews.collect{|mc| mc[:user][:login] }}"
 
-       if @thumb_config['org_mode']
-         debug_message "returning org_member_code_reviews"
-         return org_member_code_reviews
-       end
+    def reviews
+      if @thumb_config['org_mode']
+        debug_message "returning org_member_code_reviews"
+        return org_member_code_reviews
+      end
 
       code_reviews
     end
@@ -182,9 +178,11 @@ module Thumbs
     def debug_message(message)
       $logger.respond_to?(:debug) ? $logger.debug("#{@repo} #{@pr.number} #{@pr.state} #{message}") : ""
     end
+
     def error_message(message)
       $logger.respond_to?(:error) ? $logger.error("#{message}") : ""
     end
+
     def valid_for_merge?
       debug_message "determine valid_for_merge?"
       unless state == "open"

@@ -62,7 +62,6 @@ module Thumbs
 
     def try_merge
       pr_branch="feature_#{DateTime.now.strftime("%s")}"
-      # find the target branch in the pr
 
       status={}
       status[:started_at]=DateTime.now

@@ -12,9 +12,6 @@ class ThumbsWeb < Sinatra::Base
     FileUtils.mkdir_p 'log'
     $logger = Logger.new('log/thumbs.log','weekly')
     $logger.level = Logger::DEBUG
-
-    # Spit stdout and stderr to a file during production
-    # in case something goes wrong
     $stdout.reopen("log/thumbs_output.log", "w")
     $stdout.sync = true
     $stderr.reopen($stdout)
@@ -41,7 +38,6 @@ class ThumbsWeb < Sinatra::Base
         authenticated: @octo_client.basic_authenticated?,
         rate_limit: @octo_client.ratelimit.to_h
     }
-
     "<pre>#{status.to_yaml}</pre>"
   end
   get '/webhook' do
@@ -125,7 +121,6 @@ class ThumbsWeb < Sinatra::Base
         else
           debug_message("new push #{pr_worker.repo}/pulls/#{pr_worker.pr.number} valid_for_merge? returned False")
         end
-
       when :unregistered
         debug_message "This is not an event I recognize,: ignoring"
         debug_message payload_type(payload)

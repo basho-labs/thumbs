@@ -1,8 +1,7 @@
 require 'http'
-require 'log4r'
 module Thumbs
   class PullRequestWorker
-    include Log4r
+
     include Thumbs::Slack
     attr_reader :build_dir
     attr_reader :build_status
@@ -22,20 +21,19 @@ module Thumbs
       @build_dir=options[:build_dir] || "/tmp/thumbs/#{@repo.gsub(/\//, '_')}_#{@pr.number}"
       @build_status={:steps => {}}
       @build_steps = []
-      try_read_config
+      prepare_build_dir
+      load_thumbs_config
       @minimum_reviewers = thumb_config && thumb_config.key?('minimum_reviewers') ? thumb_config['minimum_reviewers'] : 2
       @timeout=thumb_config && thumb_config.key?('timeout') ? thumb_config['timeout'] : 1800
     end
 
+    def prepare_build_dir
+      cleanup_build_dir
+      clone
+      try_merge
+    end
     def cleanup_build_dir
       FileUtils.rm_rf(@build_dir)
-    end
-
-    def try_read_config
-      thumb_config_file="#{build_dir}/.thumbs.yml"
-      if File.exist?(thumb_config_file)
-        @thumb_config = YAML.load(IO.read(thumb_config_file))
-      end
     end
 
     def refresh_repo
@@ -81,7 +79,7 @@ module Thumbs
         status[:message]="Merge Success: #{@pr.head.sha} onto target branch: #{@pr.base.ref}"
         status[:output]=merge_result
       rescue => e
-        log.error "Merge Failed"
+        debug_message "Merge Failed"
         debug_message "PR ##{@pr[:number]} END"
 
         status[:result]=:error
@@ -141,7 +139,6 @@ module Thumbs
     end
 
     def contains_plus_one?(comment_body)
-      debug_message "match comment_body #{comment_body}"
       (/:\+1:/.match(comment_body) || /\+1/.match(comment_body) || /\\U0001F44D/.match(comment_body.to_yaml)) ? true : false
     end
 
@@ -163,6 +160,8 @@ module Thumbs
     end
 
     def review_count
+      debug_message "reviews"
+      debug_message reviews.collect { |r| r[:user][:login] }.uniq
       reviews.collect { |r| r[:user][:login] }.uniq.length
     end
 
@@ -176,7 +175,8 @@ module Thumbs
     end
 
     def debug_message(message)
-      $logger.respond_to?(:debug) ? $logger.debug("#{@repo} #{@pr.number} #{@pr.state} #{message}") : ""
+      log = Log4r::Logger['Thumbs']
+      log.debug("#{@repo} #{@pr.number} #{@pr.state} #{message}")
     end
 
     def error_message(message)
@@ -198,8 +198,15 @@ module Thumbs
         return false
       end
 
-      return false unless @build_status.key?(:steps)
-      return false unless @build_status[:steps].key?(:merge)
+      unless @build_status.key?(:steps)
+        debug_message "contains no steps"
+        return false
+      end
+      unless @build_status[:steps].key?(:merge)
+        debug_message "contains no merge step"
+
+        return false
+      end
 
       debug_message "passed initial"
       debug_message("")
@@ -227,32 +234,50 @@ module Thumbs
 
       unless review_count >= @thumb_config['minimum_reviewers']
         debug_message " #{review_count} !>= #{@thumb_config['minimum_reviewers']}"
-        message="#{review_count} Code reviews, waiting for #{minimum_reviewers}" + (thumb_config['org_mode'] ? " from organization #{repo.split(/\//).shift}." : ".")
-        add_comment(message)
         return false
       end
 
       unless @thumb_config['merge'] == true
         debug_message "thumb_config['merge'] != 'true' || thumbs config says: merge: #{thumb_config['merge'].inspect}"
-        add_comment "No Automerge:  *.thumbs.yml* says ```merge: #{thumb_config['merge'].inspect}```"
         return false
       end
       debug_message "valid_for_merge? TRUE"
       return true
     end
-
-    def validate
-      cleanup_build_dir
-      clone
-      try_merge
-
-      # before_steps.each do |before_step|
-      #   run_before_step(before_step)
-      # end
-      #
+    def run_build_steps
       build_steps.each do |build_step|
         build_step_name=build_step.gsub(/\s+/, '_').gsub(/-/, '')
         try_run_build_step(build_step_name, build_step)
+      end
+      persist_build_status(@repo, @pr.head.sha)
+    end
+    def persist_build_status(repo, rev)
+      repo=repo.gsub(/\//,'_')
+      file=File.join('/tmp/thumbs', "#{repo}_#{rev}.yml")
+      FileUtils.mkdir_p('/tmp/thumbs')
+      File.open(file, "w") do |f|
+        f.syswrite(@build_status.to_yaml)
+      end
+    end
+    def read_build_status(repo, rev)
+      repo=repo.gsub(/\//,'_')
+      file=File.join('/tmp/thumbs', "#{repo}_#{rev}.yml")
+      if File.exist?(file)
+        YAML.load(IO.read(file))
+      else
+        {:steps => {}}
+      end
+    end
+    def validate
+      @build_status = read_build_status(@repo, @pr.head.sha)
+      unless @build_status.key?(:steps) && @build_status[:steps].keys.length > 0
+        debug_message "no build status found, running build steps"
+        cleanup_build_dir
+        clone
+        try_merge
+        run_build_steps
+      else
+        debug_message "using persisted build status"
       end
     end
 
@@ -382,7 +407,7 @@ module Thumbs
       end
 
       comment = render_template <<-EOS
-<p>Build Status: <%= @status_title %></p>
+<p>Build Status: [<%= @pr.head.sha.slice(0,10) %>] <%= @status_title %></p>
 <% @build_status[:steps].each do |step_name, status| %>
 <% if status[:output] %>
 <% gist=client.create_gist( { :files => { step_name.to_s + ".txt" => { :content => status[:output] }} }) %>
@@ -438,19 +463,6 @@ Code reviews from: <%= reviewers.uniq.join(", ") %>.
       add_comment(comment)
     end
 
-    private
-
-    def render_template(template)
-      ERB.new(template).result(binding)
-    end
-
-    def authenticate_github
-      Octokit.configure do |c|
-        c.login = ENV['GITHUB_USER']
-        c.password = ENV['GITHUB_PASS']
-      end
-    end
-
     def load_thumbs_config
       thumb_file = File.join(@build_dir, ".thumbs.yml")
       unless File.exist?(thumb_file)
@@ -469,6 +481,19 @@ Code reviews from: <%= reviewers.uniq.join(", ") %>.
         return nil
       end
       @thumb_config
+    end
+
+    private
+
+    def render_template(template)
+      ERB.new(template).result(binding)
+    end
+
+    def authenticate_github
+      Octokit.configure do |c|
+        c.login = ENV['GITHUB_USER']
+        c.password = ENV['GITHUB_PASS']
+      end
     end
 
     def result_image(result)

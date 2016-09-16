@@ -55,7 +55,7 @@ module Thumbs
         status[:message]="Clone failed!"
         status[:output]=e
         @build_status[:steps][:clone]=status
-        raise StandardError
+        return status
       end
       git
     end
@@ -272,15 +272,15 @@ module Thumbs
     end
     def validate
       @build_status = read_build_status(@repo, @pr.head.sha)
+      refresh_repo
       unless @build_status.key?(:steps) && @build_status[:steps].keys.length > 0
         debug_message "no build status found, running build steps"
-        cleanup_build_dir
-        clone
         try_merge
         run_build_steps
       else
         debug_message "using persisted build status"
       end
+      true
     end
 
     def merge

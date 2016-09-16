@@ -176,7 +176,9 @@ module Thumbs
 
     def debug_message(message)
       log = Log4r::Logger['Thumbs']
-      log.debug("#{@repo} #{@pr.number} #{@pr.state} #{message}")
+      if log
+        log.debug("#{@repo} #{@pr.number} #{@pr.state} #{message}")
+      end
     end
 
     def error_message(message)

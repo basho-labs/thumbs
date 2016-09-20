@@ -67,13 +67,14 @@ class ThumbsWeb < Sinatra::Base
 
         pr_worker.validate
         pr_worker.load_thumbs_config
-
-        unless pr_worker.review_count >= pr_worker.thumb_config['minimum_reviewers']
-          debug_message " #{pr_worker.review_count} !>= #{pr_worker.thumb_config['minimum_reviewers']}"
-          return false
-        end
-
         if pr_worker.valid_for_merge?
+
+          unless pr_worker.review_count >= pr_worker.thumb_config['minimum_reviewers']
+            debug_message " #{pr_worker.review_count} !>= #{pr_worker.thumb_config['minimum_reviewers']}"
+           return false
+          end
+
+
           debug_message("new comment #{pr_worker.repo}/pulls/#{pr_worker.pr.number} valid_for_merge? OK ")
           pr_worker.create_reviewers_comment
           pr_worker.add_comment "Merging and closing this pr"
@@ -104,3 +105,4 @@ class ThumbsWeb < Sinatra::Base
     "OK"
   end
 end
+

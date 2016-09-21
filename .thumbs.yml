@@ -1,0 +1,6 @@
+minimum_reviewers: 2
+merge: true
+build_steps:
+ - echo "rake test"
+org_mode: true
+timeout: 1799

@@ -1,4 +1,4 @@
-minimum_reviewers: 2
+minimum_reviewers: 1
 merge: true
 build_steps:
  - echo "rake test"

@@ -1,5 +1,5 @@
 minimum_reviewers: 1
-merge: true
+merge: false
 build_steps:
  - rake test TESTOPTS=-v
 org_mode: true

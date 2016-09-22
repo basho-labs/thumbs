@@ -5,12 +5,9 @@ require 'rake/testtask'
 
 Rake::TestTask.new do |t|
   t.libs << "test"
-#  t.test_files = FileList['test/test*.rb']
- # t.test_files = FileList['test/test_payload.rb','test/test_webhook.rb','test/test_persisted_build_status']
   t.test_files = FileList['test/test.rb']
   t.verbose = true
 end
-
 task :default => [:test]
 
 task :console do

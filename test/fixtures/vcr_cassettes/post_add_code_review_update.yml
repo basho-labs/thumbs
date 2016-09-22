@@ -1,0 +1,638 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://thumbot:B%2FGUk%3E~22%3Ec%2A%24I%7CIa%3C%40@api.github.com/repos/basho-bin/tester/issues/27/comments
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept:
+      - application/vnd.github.v3+json
+      User-Agent:
+      - Octokit Ruby Gem 4.3.0
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - GitHub.com
+      Date:
+      - Thu, 22 Sep 2016 20:57:41 GMT
+      Content-Type:
+      - application/json; charset=utf-8
+      Transfer-Encoding:
+      - chunked
+      Status:
+      - 200 OK
+      X-Ratelimit-Limit:
+      - '5000'
+      X-Ratelimit-Remaining:
+      - '4857'
+      X-Ratelimit-Reset:
+      - '1474581378'
+      Cache-Control:
+      - private, max-age=60, s-maxage=60
+      Vary:
+      - Accept, Authorization, Cookie, X-GitHub-OTP
+      - Accept-Encoding
+      Etag:
+      - W/"049a98d5d555dc6fcdd3dc5194fdcb8b"
+      X-Github-Media-Type:
+      - github.v3; format=json
+      Access-Control-Expose-Headers:
+      - ETag, Link, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset,
+        X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval
+      Access-Control-Allow-Origin:
+      - "*"
+      Content-Security-Policy:
+      - default-src 'none'
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-Xss-Protection:
+      - 1; mode=block
+      X-Served-By:
+      - 52189b7290fad804d77890ef34a1eeae
+      X-Github-Request-Id:
+      - AD1C2EC5:2360:88170D5:57E445C5
+    body:
+      encoding: ASCII-8BIT
+      string: '[{"url":"https://api.github.com/repos/basho-bin/tester/issues/comments/249001720","html_url":"https://github.com/basho-bin/tester/pull/27#issuecomment-249001720","issue_url":"https://api.github.com/repos/basho-bin/tester/issues/27","id":249001720,"user":{"login":"thumbot","id":20921557,"avatar_url":"https://avatars.githubusercontent.com/u/20921557?v=3","gravatar_id":"","url":"https://api.github.com/users/thumbot","html_url":"https://github.com/thumbot","followers_url":"https://api.github.com/users/thumbot/followers","following_url":"https://api.github.com/users/thumbot/following{/other_user}","gists_url":"https://api.github.com/users/thumbot/gists{/gist_id}","starred_url":"https://api.github.com/users/thumbot/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/thumbot/subscriptions","organizations_url":"https://api.github.com/users/thumbot/orgs","repos_url":"https://api.github.com/users/thumbot/repos","events_url":"https://api.github.com/users/thumbot/events{/privacy}","received_events_url":"https://api.github.com/users/thumbot/received_events","type":"User","site_admin":false},"created_at":"2016-09-22T19:18:55Z","updated_at":"2016-09-22T19:18:55Z","body":"Thanks
+        @davidx!"},{"url":"https://api.github.com/repos/basho-bin/tester/issues/comments/249001723","html_url":"https://github.com/basho-bin/tester/pull/27#issuecomment-249001723","issue_url":"https://api.github.com/repos/basho-bin/tester/issues/27","id":249001723,"user":{"login":"thumbot","id":20921557,"avatar_url":"https://avatars.githubusercontent.com/u/20921557?v=3","gravatar_id":"","url":"https://api.github.com/users/thumbot","html_url":"https://github.com/thumbot","followers_url":"https://api.github.com/users/thumbot/followers","following_url":"https://api.github.com/users/thumbot/following{/other_user}","gists_url":"https://api.github.com/users/thumbot/gists{/gist_id}","starred_url":"https://api.github.com/users/thumbot/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/thumbot/subscriptions","organizations_url":"https://api.github.com/users/thumbot/orgs","repos_url":"https://api.github.com/users/thumbot/repos","events_url":"https://api.github.com/users/thumbot/events{/privacy}","received_events_url":"https://api.github.com/users/thumbot/received_events","type":"User","site_admin":false},"created_at":"2016-09-22T19:18:55Z","updated_at":"2016-09-22T19:18:55Z","body":"
+        .thumbs.yml config:\n``` ---\nminimum_reviewers: 2\nbuild_steps:\n- make\n-
+        make test\nmerge: true\norg_mode: true\ntimeout: 10\n ```"},{"url":"https://api.github.com/repos/basho-bin/tester/issues/comments/249001730","html_url":"https://github.com/basho-bin/tester/pull/27#issuecomment-249001730","issue_url":"https://api.github.com/repos/basho-bin/tester/issues/27","id":249001730,"user":{"login":"thumbot","id":20921557,"avatar_url":"https://avatars.githubusercontent.com/u/20921557?v=3","gravatar_id":"","url":"https://api.github.com/users/thumbot","html_url":"https://github.com/thumbot","followers_url":"https://api.github.com/users/thumbot/followers","following_url":"https://api.github.com/users/thumbot/following{/other_user}","gists_url":"https://api.github.com/users/thumbot/gists{/gist_id}","starred_url":"https://api.github.com/users/thumbot/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/thumbot/subscriptions","organizations_url":"https://api.github.com/users/thumbot/orgs","repos_url":"https://api.github.com/users/thumbot/repos","events_url":"https://api.github.com/users/thumbot/events{/privacy}","received_events_url":"https://api.github.com/users/thumbot/received_events","type":"User","site_admin":false},"created_at":"2016-09-22T19:18:57Z","updated_at":"2016-09-22T19:18:57Z","body":"<p>Build
+        Status: [c7b1b9121b] Looks good!  :+1:</p>\n\n\n\n\n<details>\n <summary>:white_check_mark:
+        MERGE </summary>\n\n <p>\n\n> Started at: 2016-09-22 12:18\n> Duration: 0
+        seconds.\n> Result:  OK\n> Message: Merge Success: c7b1b9121ba4c6d85de8c5d6391c01d85c09a2f2
+        onto target branch: master\n> Exit Code:  OK\n> <a href=\"https://gist.github.com/440e37f71cd71600fe4596b409049798\">:page_facing_up:</a>\n</p>\n\n```\n\n\n\nMerge
+        made by the ''recursive'' strategy.\n README.md | 5 +++++\n 1 file changed,
+        5 insertions(+)\n\n```\n\n--------------------------------------------------\n\n</details>\n\n\n\n\n\n<details>\n
+        <summary>:white_check_mark: MAKE </summary>\n\n <p>\n\n> Started at: 2016-09-22
+        12:18\n> Duration: 0 seconds.\n> Result:  OK\n> Message: OK\n> Exit Code:  0\n>
+        <a href=\"https://gist.github.com/3ea00f02b6900a2694f48fec447af0a5\">:page_facing_up:</a>\n</p>\n\n```\n\ncd
+        /tmp/thumbs/basho-bin_tester_27 && make 2>&1\n\nOK\n\n\n```\n\n--------------------------------------------------\n\n</details>\n\n\n\n\n\n<details>\n
+        <summary>:white_check_mark: MAKE_TEST </summary>\n\n <p>\n\n> Started at:
+        2016-09-22 12:18\n> Duration: 0 seconds.\n> Result:  OK\n> Message: OK\n>
+        Exit Code:  0\n> <a href=\"https://gist.github.com/7ef1b84e7c07601bc9a6f243d71d842f\">:page_facing_up:</a>\n</p>\n\n```\n\ncd
+        /tmp/thumbs/basho-bin_tester_27 && make test 2>&1\n\nTEST OK\n\n\n```\n\n--------------------------------------------------\n\n</details>\n\n\n\n\n<details>\n
+        <summary>:white_large_square: 0 of 2 Code reviews from organization basho-bin</summary>\n\n<p>\n\n</p>\n</details>\n"},{"url":"https://api.github.com/repos/basho-bin/tester/issues/comments/249007059","html_url":"https://github.com/basho-bin/tester/pull/27#issuecomment-249007059","issue_url":"https://api.github.com/repos/basho-bin/tester/issues/27","id":249007059,"user":{"login":"davidpuddy1","id":20779719,"avatar_url":"https://avatars.githubusercontent.com/u/20779719?v=3","gravatar_id":"","url":"https://api.github.com/users/davidpuddy1","html_url":"https://github.com/davidpuddy1","followers_url":"https://api.github.com/users/davidpuddy1/followers","following_url":"https://api.github.com/users/davidpuddy1/following{/other_user}","gists_url":"https://api.github.com/users/davidpuddy1/gists{/gist_id}","starred_url":"https://api.github.com/users/davidpuddy1/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/davidpuddy1/subscriptions","organizations_url":"https://api.github.com/users/davidpuddy1/orgs","repos_url":"https://api.github.com/users/davidpuddy1/repos","events_url":"https://api.github.com/users/davidpuddy1/events{/privacy}","received_events_url":"https://api.github.com/users/davidpuddy1/received_events","type":"User","site_admin":false},"created_at":"2016-09-22T19:41:13Z","updated_at":"2016-09-22T19:41:13Z","body":"+1"},{"url":"https://api.github.com/repos/basho-bin/tester/issues/comments/249011752","html_url":"https://github.com/basho-bin/tester/pull/27#issuecomment-249011752","issue_url":"https://api.github.com/repos/basho-bin/tester/issues/27","id":249011752,"user":{"login":"davidpuddy1","id":20779719,"avatar_url":"https://avatars.githubusercontent.com/u/20779719?v=3","gravatar_id":"","url":"https://api.github.com/users/davidpuddy1","html_url":"https://github.com/davidpuddy1","followers_url":"https://api.github.com/users/davidpuddy1/followers","following_url":"https://api.github.com/users/davidpuddy1/following{/other_user}","gists_url":"https://api.github.com/users/davidpuddy1/gists{/gist_id}","starred_url":"https://api.github.com/users/davidpuddy1/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/davidpuddy1/subscriptions","organizations_url":"https://api.github.com/users/davidpuddy1/orgs","repos_url":"https://api.github.com/users/davidpuddy1/repos","events_url":"https://api.github.com/users/davidpuddy1/events{/privacy}","received_events_url":"https://api.github.com/users/davidpuddy1/received_events","type":"User","site_admin":false},"created_at":"2016-09-22T20:00:40Z","updated_at":"2016-09-22T20:00:40Z","body":"This
+        looks great, thank you! +1  (ok to merge)"},{"url":"https://api.github.com/repos/basho-bin/tester/issues/comments/249012620","html_url":"https://github.com/basho-bin/tester/pull/27#issuecomment-249012620","issue_url":"https://api.github.com/repos/basho-bin/tester/issues/27","id":249012620,"user":{"login":"davidpuddy1","id":20779719,"avatar_url":"https://avatars.githubusercontent.com/u/20779719?v=3","gravatar_id":"","url":"https://api.github.com/users/davidpuddy1","html_url":"https://github.com/davidpuddy1","followers_url":"https://api.github.com/users/davidpuddy1/followers","following_url":"https://api.github.com/users/davidpuddy1/following{/other_user}","gists_url":"https://api.github.com/users/davidpuddy1/gists{/gist_id}","starred_url":"https://api.github.com/users/davidpuddy1/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/davidpuddy1/subscriptions","organizations_url":"https://api.github.com/users/davidpuddy1/orgs","repos_url":"https://api.github.com/users/davidpuddy1/repos","events_url":"https://api.github.com/users/davidpuddy1/events{/privacy}","received_events_url":"https://api.github.com/users/davidpuddy1/received_events","type":"User","site_admin":false},"created_at":"2016-09-22T20:04:15Z","updated_at":"2016-09-22T20:04:15Z","body":"This
+        looks great, thank you! +1  (ok to merge)"},{"url":"https://api.github.com/repos/basho-bin/tester/issues/comments/249013261","html_url":"https://github.com/basho-bin/tester/pull/27#issuecomment-249013261","issue_url":"https://api.github.com/repos/basho-bin/tester/issues/27","id":249013261,"user":{"login":"davidpuddy1","id":20779719,"avatar_url":"https://avatars.githubusercontent.com/u/20779719?v=3","gravatar_id":"","url":"https://api.github.com/users/davidpuddy1","html_url":"https://github.com/davidpuddy1","followers_url":"https://api.github.com/users/davidpuddy1/followers","following_url":"https://api.github.com/users/davidpuddy1/following{/other_user}","gists_url":"https://api.github.com/users/davidpuddy1/gists{/gist_id}","starred_url":"https://api.github.com/users/davidpuddy1/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/davidpuddy1/subscriptions","organizations_url":"https://api.github.com/users/davidpuddy1/orgs","repos_url":"https://api.github.com/users/davidpuddy1/repos","events_url":"https://api.github.com/users/davidpuddy1/events{/privacy}","received_events_url":"https://api.github.com/users/davidpuddy1/received_events","type":"User","site_admin":false},"created_at":"2016-09-22T20:06:47Z","updated_at":"2016-09-22T20:06:47Z","body":"This
+        looks great, thank you! +1  (ok to merge)"},{"url":"https://api.github.com/repos/basho-bin/tester/issues/comments/249014159","html_url":"https://github.com/basho-bin/tester/pull/27#issuecomment-249014159","issue_url":"https://api.github.com/repos/basho-bin/tester/issues/27","id":249014159,"user":{"login":"davidpuddy1","id":20779719,"avatar_url":"https://avatars.githubusercontent.com/u/20779719?v=3","gravatar_id":"","url":"https://api.github.com/users/davidpuddy1","html_url":"https://github.com/davidpuddy1","followers_url":"https://api.github.com/users/davidpuddy1/followers","following_url":"https://api.github.com/users/davidpuddy1/following{/other_user}","gists_url":"https://api.github.com/users/davidpuddy1/gists{/gist_id}","starred_url":"https://api.github.com/users/davidpuddy1/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/davidpuddy1/subscriptions","organizations_url":"https://api.github.com/users/davidpuddy1/orgs","repos_url":"https://api.github.com/users/davidpuddy1/repos","events_url":"https://api.github.com/users/davidpuddy1/events{/privacy}","received_events_url":"https://api.github.com/users/davidpuddy1/received_events","type":"User","site_admin":false},"created_at":"2016-09-22T20:10:32Z","updated_at":"2016-09-22T20:10:32Z","body":"This
+        looks great, thank you! +1  (ok to merge)"},{"url":"https://api.github.com/repos/basho-bin/tester/issues/comments/249021329","html_url":"https://github.com/basho-bin/tester/pull/27#issuecomment-249021329","issue_url":"https://api.github.com/repos/basho-bin/tester/issues/27","id":249021329,"user":{"login":"davidpuddy1","id":20779719,"avatar_url":"https://avatars.githubusercontent.com/u/20779719?v=3","gravatar_id":"","url":"https://api.github.com/users/davidpuddy1","html_url":"https://github.com/davidpuddy1","followers_url":"https://api.github.com/users/davidpuddy1/followers","following_url":"https://api.github.com/users/davidpuddy1/following{/other_user}","gists_url":"https://api.github.com/users/davidpuddy1/gists{/gist_id}","starred_url":"https://api.github.com/users/davidpuddy1/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/davidpuddy1/subscriptions","organizations_url":"https://api.github.com/users/davidpuddy1/orgs","repos_url":"https://api.github.com/users/davidpuddy1/repos","events_url":"https://api.github.com/users/davidpuddy1/events{/privacy}","received_events_url":"https://api.github.com/users/davidpuddy1/received_events","type":"User","site_admin":false},"created_at":"2016-09-22T20:39:54Z","updated_at":"2016-09-22T20:39:54Z","body":"This
+        looks great, thank you! +1  (ok to merge)"},{"url":"https://api.github.com/repos/basho-bin/tester/issues/comments/249023301","html_url":"https://github.com/basho-bin/tester/pull/27#issuecomment-249023301","issue_url":"https://api.github.com/repos/basho-bin/tester/issues/27","id":249023301,"user":{"login":"davidpuddy1","id":20779719,"avatar_url":"https://avatars.githubusercontent.com/u/20779719?v=3","gravatar_id":"","url":"https://api.github.com/users/davidpuddy1","html_url":"https://github.com/davidpuddy1","followers_url":"https://api.github.com/users/davidpuddy1/followers","following_url":"https://api.github.com/users/davidpuddy1/following{/other_user}","gists_url":"https://api.github.com/users/davidpuddy1/gists{/gist_id}","starred_url":"https://api.github.com/users/davidpuddy1/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/davidpuddy1/subscriptions","organizations_url":"https://api.github.com/users/davidpuddy1/orgs","repos_url":"https://api.github.com/users/davidpuddy1/repos","events_url":"https://api.github.com/users/davidpuddy1/events{/privacy}","received_events_url":"https://api.github.com/users/davidpuddy1/received_events","type":"User","site_admin":false},"created_at":"2016-09-22T20:47:43Z","updated_at":"2016-09-22T20:47:43Z","body":"This
+        looks great, thank you! +1  (ok to merge)"},{"url":"https://api.github.com/repos/basho-bin/tester/issues/comments/249024687","html_url":"https://github.com/basho-bin/tester/pull/27#issuecomment-249024687","issue_url":"https://api.github.com/repos/basho-bin/tester/issues/27","id":249024687,"user":{"login":"davidpuddy1","id":20779719,"avatar_url":"https://avatars.githubusercontent.com/u/20779719?v=3","gravatar_id":"","url":"https://api.github.com/users/davidpuddy1","html_url":"https://github.com/davidpuddy1","followers_url":"https://api.github.com/users/davidpuddy1/followers","following_url":"https://api.github.com/users/davidpuddy1/following{/other_user}","gists_url":"https://api.github.com/users/davidpuddy1/gists{/gist_id}","starred_url":"https://api.github.com/users/davidpuddy1/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/davidpuddy1/subscriptions","organizations_url":"https://api.github.com/users/davidpuddy1/orgs","repos_url":"https://api.github.com/users/davidpuddy1/repos","events_url":"https://api.github.com/users/davidpuddy1/events{/privacy}","received_events_url":"https://api.github.com/users/davidpuddy1/received_events","type":"User","site_admin":false},"created_at":"2016-09-22T20:53:26Z","updated_at":"2016-09-22T20:53:26Z","body":"This
+        looks great, thank you! +1  (ok to merge)"},{"url":"https://api.github.com/repos/basho-bin/tester/issues/comments/249025732","html_url":"https://github.com/basho-bin/tester/pull/27#issuecomment-249025732","issue_url":"https://api.github.com/repos/basho-bin/tester/issues/27","id":249025732,"user":{"login":"davidpuddy1","id":20779719,"avatar_url":"https://avatars.githubusercontent.com/u/20779719?v=3","gravatar_id":"","url":"https://api.github.com/users/davidpuddy1","html_url":"https://github.com/davidpuddy1","followers_url":"https://api.github.com/users/davidpuddy1/followers","following_url":"https://api.github.com/users/davidpuddy1/following{/other_user}","gists_url":"https://api.github.com/users/davidpuddy1/gists{/gist_id}","starred_url":"https://api.github.com/users/davidpuddy1/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/davidpuddy1/subscriptions","organizations_url":"https://api.github.com/users/davidpuddy1/orgs","repos_url":"https://api.github.com/users/davidpuddy1/repos","events_url":"https://api.github.com/users/davidpuddy1/events{/privacy}","received_events_url":"https://api.github.com/users/davidpuddy1/received_events","type":"User","site_admin":false},"created_at":"2016-09-22T20:57:41Z","updated_at":"2016-09-22T20:57:41Z","body":"This
+        looks great, thank you! +1  (ok to merge)"}]'
+    http_version: 
+  recorded_at: Thu, 22 Sep 2016 20:57:41 GMT
+- request:
+    method: get
+    uri: https://thumbot:B%2FGUk%3E~22%3Ec%2A%24I%7CIa%3C%40@api.github.com/orgs/basho-bin/members/davidpuddy1
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept:
+      - application/vnd.github.v3+json
+      User-Agent:
+      - Octokit Ruby Gem 4.3.0
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+  response:
+    status:
+      code: 204
+      message: No Content
+    headers:
+      Server:
+      - GitHub.com
+      Date:
+      - Thu, 22 Sep 2016 20:57:42 GMT
+      Status:
+      - 204 No Content
+      X-Ratelimit-Limit:
+      - '5000'
+      X-Ratelimit-Remaining:
+      - '4843'
+      X-Ratelimit-Reset:
+      - '1474581378'
+      X-Github-Media-Type:
+      - github.v3; format=json
+      Access-Control-Expose-Headers:
+      - ETag, Link, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset,
+        X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval
+      Access-Control-Allow-Origin:
+      - "*"
+      Content-Security-Policy:
+      - default-src 'none'
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-Xss-Protection:
+      - 1; mode=block
+      Vary:
+      - Accept-Encoding
+      X-Served-By:
+      - dc1ce2bfb41810a06c705e83b388572d
+      X-Github-Request-Id:
+      - AD1C2EC5:235F:52AE064:57E445C6
+    body:
+      encoding: UTF-8
+      string: ''
+    http_version: 
+  recorded_at: Thu, 22 Sep 2016 20:57:42 GMT
+- request:
+    method: get
+    uri: https://thumbot:B%2FGUk%3E~22%3Ec%2A%24I%7CIa%3C%40@api.github.com/orgs/basho-bin/members/davidpuddy1
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept:
+      - application/vnd.github.v3+json
+      User-Agent:
+      - Octokit Ruby Gem 4.3.0
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+  response:
+    status:
+      code: 204
+      message: No Content
+    headers:
+      Server:
+      - GitHub.com
+      Date:
+      - Thu, 22 Sep 2016 20:57:43 GMT
+      Status:
+      - 204 No Content
+      X-Ratelimit-Limit:
+      - '5000'
+      X-Ratelimit-Remaining:
+      - '4832'
+      X-Ratelimit-Reset:
+      - '1474581378'
+      X-Github-Media-Type:
+      - github.v3; format=json
+      Access-Control-Expose-Headers:
+      - ETag, Link, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset,
+        X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval
+      Access-Control-Allow-Origin:
+      - "*"
+      Content-Security-Policy:
+      - default-src 'none'
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-Xss-Protection:
+      - 1; mode=block
+      Vary:
+      - Accept-Encoding
+      X-Served-By:
+      - d021ed23fc00327f4c0f77bc363ef16f
+      X-Github-Request-Id:
+      - AD1C2EC5:2356:A6D9839:57E445C7
+    body:
+      encoding: UTF-8
+      string: ''
+    http_version: 
+  recorded_at: Thu, 22 Sep 2016 20:57:43 GMT
+- request:
+    method: get
+    uri: https://thumbot:B%2FGUk%3E~22%3Ec%2A%24I%7CIa%3C%40@api.github.com/orgs/basho-bin/members/davidpuddy1
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept:
+      - application/vnd.github.v3+json
+      User-Agent:
+      - Octokit Ruby Gem 4.3.0
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+  response:
+    status:
+      code: 204
+      message: No Content
+    headers:
+      Server:
+      - GitHub.com
+      Date:
+      - Thu, 22 Sep 2016 20:57:43 GMT
+      Status:
+      - 204 No Content
+      X-Ratelimit-Limit:
+      - '5000'
+      X-Ratelimit-Remaining:
+      - '4823'
+      X-Ratelimit-Reset:
+      - '1474581378'
+      X-Github-Media-Type:
+      - github.v3; format=json
+      Access-Control-Expose-Headers:
+      - ETag, Link, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset,
+        X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval
+      Access-Control-Allow-Origin:
+      - "*"
+      Content-Security-Policy:
+      - default-src 'none'
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-Xss-Protection:
+      - 1; mode=block
+      Vary:
+      - Accept-Encoding
+      X-Served-By:
+      - 5aeb3f30c9e3ef6ef7bcbcddfd9a68f7
+      X-Github-Request-Id:
+      - AD1C2EC5:2360:881728E:57E445C7
+    body:
+      encoding: UTF-8
+      string: ''
+    http_version: 
+  recorded_at: Thu, 22 Sep 2016 20:57:43 GMT
+- request:
+    method: get
+    uri: https://thumbot:B%2FGUk%3E~22%3Ec%2A%24I%7CIa%3C%40@api.github.com/orgs/basho-bin/members/davidpuddy1
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept:
+      - application/vnd.github.v3+json
+      User-Agent:
+      - Octokit Ruby Gem 4.3.0
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+  response:
+    status:
+      code: 204
+      message: No Content
+    headers:
+      Server:
+      - GitHub.com
+      Date:
+      - Thu, 22 Sep 2016 20:57:44 GMT
+      Status:
+      - 204 No Content
+      X-Ratelimit-Limit:
+      - '5000'
+      X-Ratelimit-Remaining:
+      - '4814'
+      X-Ratelimit-Reset:
+      - '1474581378'
+      X-Github-Media-Type:
+      - github.v3; format=json
+      Access-Control-Expose-Headers:
+      - ETag, Link, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset,
+        X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval
+      Access-Control-Allow-Origin:
+      - "*"
+      Content-Security-Policy:
+      - default-src 'none'
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-Xss-Protection:
+      - 1; mode=block
+      Vary:
+      - Accept-Encoding
+      X-Served-By:
+      - 139317cebd6caf9cd03889139437f00b
+      X-Github-Request-Id:
+      - AD1C2EC5:2360:8817319:57E445C8
+    body:
+      encoding: UTF-8
+      string: ''
+    http_version: 
+  recorded_at: Thu, 22 Sep 2016 20:57:44 GMT
+- request:
+    method: get
+    uri: https://thumbot:B%2FGUk%3E~22%3Ec%2A%24I%7CIa%3C%40@api.github.com/orgs/basho-bin/members/davidpuddy1
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept:
+      - application/vnd.github.v3+json
+      User-Agent:
+      - Octokit Ruby Gem 4.3.0
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+  response:
+    status:
+      code: 204
+      message: No Content
+    headers:
+      Server:
+      - GitHub.com
+      Date:
+      - Thu, 22 Sep 2016 20:57:44 GMT
+      Status:
+      - 204 No Content
+      X-Ratelimit-Limit:
+      - '5000'
+      X-Ratelimit-Remaining:
+      - '4806'
+      X-Ratelimit-Reset:
+      - '1474581378'
+      X-Github-Media-Type:
+      - github.v3; format=json
+      Access-Control-Expose-Headers:
+      - ETag, Link, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset,
+        X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval
+      Access-Control-Allow-Origin:
+      - "*"
+      Content-Security-Policy:
+      - default-src 'none'
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-Xss-Protection:
+      - 1; mode=block
+      Vary:
+      - Accept-Encoding
+      X-Served-By:
+      - 01d096e6cfe28f8aea352e988c332cd3
+      X-Github-Request-Id:
+      - AD1C2EC5:235F:52AE147:57E445C8
+    body:
+      encoding: UTF-8
+      string: ''
+    http_version: 
+  recorded_at: Thu, 22 Sep 2016 20:57:44 GMT
+- request:
+    method: get
+    uri: https://thumbot:B%2FGUk%3E~22%3Ec%2A%24I%7CIa%3C%40@api.github.com/orgs/basho-bin/members/davidpuddy1
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept:
+      - application/vnd.github.v3+json
+      User-Agent:
+      - Octokit Ruby Gem 4.3.0
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+  response:
+    status:
+      code: 204
+      message: No Content
+    headers:
+      Server:
+      - GitHub.com
+      Date:
+      - Thu, 22 Sep 2016 20:57:45 GMT
+      Status:
+      - 204 No Content
+      X-Ratelimit-Limit:
+      - '5000'
+      X-Ratelimit-Remaining:
+      - '4796'
+      X-Ratelimit-Reset:
+      - '1474581378'
+      X-Github-Media-Type:
+      - github.v3; format=json
+      Access-Control-Expose-Headers:
+      - ETag, Link, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset,
+        X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval
+      Access-Control-Allow-Origin:
+      - "*"
+      Content-Security-Policy:
+      - default-src 'none'
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-Xss-Protection:
+      - 1; mode=block
+      Vary:
+      - Accept-Encoding
+      X-Served-By:
+      - 07ff1c8a09e44b62e277fae50a1b1dc4
+      X-Github-Request-Id:
+      - AD1C2EC5:2356:A6D9A75:57E445C8
+    body:
+      encoding: UTF-8
+      string: ''
+    http_version: 
+  recorded_at: Thu, 22 Sep 2016 20:57:45 GMT
+- request:
+    method: get
+    uri: https://thumbot:B%2FGUk%3E~22%3Ec%2A%24I%7CIa%3C%40@api.github.com/orgs/basho-bin/members/davidpuddy1
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept:
+      - application/vnd.github.v3+json
+      User-Agent:
+      - Octokit Ruby Gem 4.3.0
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+  response:
+    status:
+      code: 204
+      message: No Content
+    headers:
+      Server:
+      - GitHub.com
+      Date:
+      - Thu, 22 Sep 2016 20:57:45 GMT
+      Status:
+      - 204 No Content
+      X-Ratelimit-Limit:
+      - '5000'
+      X-Ratelimit-Remaining:
+      - '4787'
+      X-Ratelimit-Reset:
+      - '1474581378'
+      X-Github-Media-Type:
+      - github.v3; format=json
+      Access-Control-Expose-Headers:
+      - ETag, Link, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset,
+        X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval
+      Access-Control-Allow-Origin:
+      - "*"
+      Content-Security-Policy:
+      - default-src 'none'
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-Xss-Protection:
+      - 1; mode=block
+      Vary:
+      - Accept-Encoding
+      X-Served-By:
+      - 065b43cd9674091fec48a221b420fbb3
+      X-Github-Request-Id:
+      - AD1C2EC5:2356:A6D9AF2:57E445C9
+    body:
+      encoding: UTF-8
+      string: ''
+    http_version: 
+  recorded_at: Thu, 22 Sep 2016 20:57:45 GMT
+- request:
+    method: get
+    uri: https://thumbot:B%2FGUk%3E~22%3Ec%2A%24I%7CIa%3C%40@api.github.com/orgs/basho-bin/members/davidpuddy1
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept:
+      - application/vnd.github.v3+json
+      User-Agent:
+      - Octokit Ruby Gem 4.3.0
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+  response:
+    status:
+      code: 204
+      message: No Content
+    headers:
+      Server:
+      - GitHub.com
+      Date:
+      - Thu, 22 Sep 2016 20:57:46 GMT
+      Status:
+      - 204 No Content
+      X-Ratelimit-Limit:
+      - '5000'
+      X-Ratelimit-Remaining:
+      - '4785'
+      X-Ratelimit-Reset:
+      - '1474581378'
+      X-Github-Media-Type:
+      - github.v3; format=json
+      Access-Control-Expose-Headers:
+      - ETag, Link, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset,
+        X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval
+      Access-Control-Allow-Origin:
+      - "*"
+      Content-Security-Policy:
+      - default-src 'none'
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-Xss-Protection:
+      - 1; mode=block
+      Vary:
+      - Accept-Encoding
+      X-Served-By:
+      - 075bb2f6b7031ca3c0e69edb17939fae
+      X-Github-Request-Id:
+      - AD1C2EC5:2356:A6D9B7D:57E445C9
+    body:
+      encoding: UTF-8
+      string: ''
+    http_version: 
+  recorded_at: Thu, 22 Sep 2016 20:57:46 GMT
+- request:
+    method: get
+    uri: https://thumbot:B%2FGUk%3E~22%3Ec%2A%24I%7CIa%3C%40@api.github.com/orgs/basho-bin/members/davidpuddy1
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept:
+      - application/vnd.github.v3+json
+      User-Agent:
+      - Octokit Ruby Gem 4.3.0
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+  response:
+    status:
+      code: 204
+      message: No Content
+    headers:
+      Server:
+      - GitHub.com
+      Date:
+      - Thu, 22 Sep 2016 20:57:46 GMT
+      Status:
+      - 204 No Content
+      X-Ratelimit-Limit:
+      - '5000'
+      X-Ratelimit-Remaining:
+      - '4784'
+      X-Ratelimit-Reset:
+      - '1474581378'
+      X-Github-Media-Type:
+      - github.v3; format=json
+      Access-Control-Expose-Headers:
+      - ETag, Link, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset,
+        X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval
+      Access-Control-Allow-Origin:
+      - "*"
+      Content-Security-Policy:
+      - default-src 'none'
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-Xss-Protection:
+      - 1; mode=block
+      Vary:
+      - Accept-Encoding
+      X-Served-By:
+      - d594a23ec74671eba905bf91ef329026
+      X-Github-Request-Id:
+      - AD1C2EC5:2360:881756E:57E445CA
+    body:
+      encoding: UTF-8
+      string: ''
+    http_version: 
+  recorded_at: Thu, 22 Sep 2016 20:57:46 GMT
+recorded_with: VCR 3.0.3

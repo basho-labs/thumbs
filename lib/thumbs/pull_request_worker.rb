@@ -9,7 +9,7 @@ module Thumbs
     attr_reader :minimum_reviewers
     attr_reader :repo
     attr_reader :pr
-    attr_reader :thumb_config
+    attr_accessor :thumb_config
     attr_reader :log
     attr_reader :client
 
@@ -26,7 +26,9 @@ module Thumbs
       @minimum_reviewers = thumb_config && thumb_config.key?('minimum_reviewers') ? thumb_config['minimum_reviewers'] : 2
       @timeout=thumb_config && thumb_config.key?('timeout') ? thumb_config['timeout'] : 1800
     end
-
+    def reset_build_status
+       @build_status={:steps => {}}
+    end
     def prepare_build_dir
       cleanup_build_dir
       clone
@@ -384,7 +386,7 @@ module Thumbs
       client.pull_request(@repo, @pr.number).state == "open"
     end
 
-    def add_comment(comment)
+    def add_comment(comment, options={})
       client.add_comment(@repo, @pr.number, comment, options = {})
     end
 

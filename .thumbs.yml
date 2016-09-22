@@ -1,6 +1,6 @@
 minimum_reviewers: 1
 merge: false
 build_steps:
- - rake test TESTOPTS=-v
+ - rake test
 org_mode: true
 timeout: 1799

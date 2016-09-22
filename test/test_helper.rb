@@ -8,11 +8,17 @@ require 'dust'
 require 'rack/test'
 require './lib/thumbs'
 require 'vcr'
-
+require 'log4r'
 
 TESTREPO='thumbot/prtester'
 TEST_PRW=Thumbs::PullRequestWorker.new(:repo => TESTREPO, :pr => 453)
-TESTPR=TEST_PRW.pr.number
+TESTPR=453
+ORGTESTREPO='basho-bin/tester'
+ORGTEST_PRW=Thumbs::PullRequestWorker.new(:repo => TESTREPO, :pr => 27)
+ORGTESTPR=27
+Thumbs.start_logger if ENV.key?('DEBUG')
+
+include Thumbs
 
 VCR.configure do |config|
   config.cassette_library_dir = "test/fixtures/vcr_cassettes"
@@ -22,7 +28,6 @@ end
 def cassette(name, options={}, &block)
   VCR.use_cassette(name, options,  &block)
 end
-
 
 #COMMENT_PAYLOAD = YAML.load(IO.read(File.join(File.expand_path(File.dirname('__FILE__'), './test/data/new_comment_payload.yml'))))
 
@@ -54,31 +59,36 @@ def create_test_pr(repo_name)
 end
 
 def create_test_code_reviews(test_repo, pr_number)
-  cassette(:create_test_code_reviews, :record => :new_episodes) do
+  cassette(:create_test_code_review_1, :record => :all) do
+    cassette(:create_test_code_review_2, :record => :all) do
     client2 = Octokit::Client.new(:login => ENV['GITHUB_USER1'], :password => ENV['GITHUB_PASS1'])
     client2.add_comment(test_repo, pr_number, "Great! +1", options = {})
+
     client3 = Octokit::Client.new(:login => ENV['GITHUB_USER2'], :password => ENV['GITHUB_PASS2'])
     client3.add_comment(test_repo, pr_number, "Looks good +1", options = {})
   end
-end
-def remove_comments(test_repo, pr_number)
-  client1 = Octokit::Client.new(:netrc => true)
-  cassette(:get_pr_for_review_removal, :record => :all) do
-    prw=Thumbs::PullRequestWorker.new(:repo => TESTREPO, :pr => TESTPR)
-    cassette(:remove_test_code_reviews, :record => :all) do
-      prw.comments.each do |comment|
-        cassette(:delete_pull_request_comment, :record => :all) do
-          client1.delete_pull_request_comment(TESTREPO, comment[:id])
-        end
-      end
-    end
   end
 end
 
+def remove_comments(test_repo, pr_number)
+  # client2 = Octokit::Client.new(:login => ENV['ORG_MEMBER_GITHUB_USER2'], :password => ENV['ORG_MEMBER_GITHUB_PASS2'])
+  # cassette(:get_pr_for_review_removal, :record => :all) do
+  #   prw=Thumbs::PullRequestWorker.new(:repo => test_repo, :pr => pr_number)
+  #   cassette(:remove_test_code_reviews, :record => :all) do
+  #     prw.comments.each do |comment|
+  #       p "removing comment #{comment.to_h[:id]}"
+  #       cassette(:delete_comment, :record => :all) do
+  #         p client2.delete_comment(TESTREPO, comment.to_h[:id])
+  #       end
+  #     end
+  #   end
+  # end
+end
+
 def create_org_member_test_code_reviews(test_repo, pr_number)
-  cassette(:create_org_member_test_code_reviews) do
-    client1 = Octokit::Client.new(:login => ENV['ORG_MEMBER_GITHUB_USER1'], :password => ENV['ORG_MEMBER_GITHUB_PASS1'])
-    client1.add_comment(test_repo, pr_number, "This is acceptable +1", options = {})
+  cassette(:create_org_member_test_code_reviews, :record =>:all) do
+    # client1 = Octokit::Client.new(:login => ENV['ORG_MEMBER_GITHUB_USER1'], :password => ENV['ORG_MEMBER_GITHUB_PASS1'])
+    # client1.add_comment(test_repo, pr_number, "This is acceptable +1", options = {})
     client2 = Octokit::Client.new(:login => ENV['ORG_MEMBER_GITHUB_USER2'], :password => ENV['ORG_MEMBER_GITHUB_PASS2'])
     client2.add_comment(test_repo, pr_number, "This looks great, thank you! +1  (ok to merge)", options = {})
   end

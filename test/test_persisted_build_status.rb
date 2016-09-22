@@ -20,8 +20,8 @@ unit_tests do
         assert status.kind_of?(Hash)
         assert status.key?(:steps)
         assert status[:steps].key?(:merge)
-        assert status[:steps].key?(:make), status[:steps]
-        assert status[:steps].key?(:make_test), status[:steps]
+        assert status[:steps].key?(:make), status[:steps].inspect
+        assert status[:steps].key?(:make_test), status[:steps].inspect
 
         assert prw.build_status[:steps].keys.length == [:merge, :make, :make_test].length
 

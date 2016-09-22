@@ -1,0 +1,207 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://bobsmith1:%23seRjid~X%21W0qE%2Cx9%3BY@api.github.com/repos/basho-bin/tester/issues/27/comments
+    body:
+      encoding: UTF-8
+      string: '{"body":"Great! +1"}'
+    headers:
+      Accept:
+      - application/vnd.github.v3+json
+      User-Agent:
+      - Octokit Ruby Gem 4.3.0
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+  response:
+    status:
+      code: 404
+      message: Not Found
+    headers:
+      Server:
+      - GitHub.com
+      Date:
+      - Thu, 22 Sep 2016 20:31:48 GMT
+      Content-Type:
+      - application/json; charset=utf-8
+      Transfer-Encoding:
+      - chunked
+      Status:
+      - 404 Not Found
+      X-Ratelimit-Limit:
+      - '5000'
+      X-Ratelimit-Remaining:
+      - '4995'
+      X-Ratelimit-Reset:
+      - '1474578283'
+      X-Github-Media-Type:
+      - github.v3; format=json
+      Access-Control-Expose-Headers:
+      - ETag, Link, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset,
+        X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval
+      Access-Control-Allow-Origin:
+      - "*"
+      Content-Security-Policy:
+      - default-src 'none'
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-Xss-Protection:
+      - 1; mode=block
+      X-Github-Request-Id:
+      - AD1C2EC5:2360:87B7AE4:57E43FB4
+    body:
+      encoding: ASCII-8BIT
+      string: '{"message":"Not Found","documentation_url":"https://developer.github.com/v3"}'
+    http_version: 
+  recorded_at: Thu, 22 Sep 2016 20:31:48 GMT
+- request:
+    method: post
+    uri: https://bobsmith1:%23seRjid~X%21W0qE%2Cx9%3BY@api.github.com/repos/thumbot/prtester/issues/453/comments
+    body:
+      encoding: UTF-8
+      string: '{"body":"Great! +1"}'
+    headers:
+      Accept:
+      - application/vnd.github.v3+json
+      User-Agent:
+      - Octokit Ruby Gem 4.3.0
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+  response:
+    status:
+      code: 201
+      message: Created
+    headers:
+      Server:
+      - GitHub.com
+      Date:
+      - Thu, 22 Sep 2016 20:57:56 GMT
+      Content-Type:
+      - application/json; charset=utf-8
+      Content-Length:
+      - '1233'
+      Status:
+      - 201 Created
+      X-Ratelimit-Limit:
+      - '5000'
+      X-Ratelimit-Remaining:
+      - '4992'
+      X-Ratelimit-Reset:
+      - '1474578283'
+      Cache-Control:
+      - private, max-age=60, s-maxage=60
+      Vary:
+      - Accept, Authorization, Cookie, X-GitHub-OTP
+      - Accept-Encoding
+      Etag:
+      - '"cacb3e34dbbd799bdd26d644b86c1016"'
+      Location:
+      - https://api.github.com/repos/thumbot/prtester/issues/comments/249025785
+      X-Github-Media-Type:
+      - github.v3; format=json
+      Access-Control-Expose-Headers:
+      - ETag, Link, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset,
+        X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval
+      Access-Control-Allow-Origin:
+      - "*"
+      Content-Security-Policy:
+      - default-src 'none'
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-Xss-Protection:
+      - 1; mode=block
+      X-Served-By:
+      - cee4c0729c8e9147e7abcb45b9d69689
+      X-Github-Request-Id:
+      - AD1C2EC5:2356:A6DA66C:57E445D4
+    body:
+      encoding: UTF-8
+      string: '{"url":"https://api.github.com/repos/thumbot/prtester/issues/comments/249025785","html_url":"https://github.com/thumbot/prtester/pull/453#issuecomment-249025785","issue_url":"https://api.github.com/repos/thumbot/prtester/issues/453","id":249025785,"user":{"login":"bobsmith1","id":20779654,"avatar_url":"https://avatars.githubusercontent.com/u/20779654?v=3","gravatar_id":"","url":"https://api.github.com/users/bobsmith1","html_url":"https://github.com/bobsmith1","followers_url":"https://api.github.com/users/bobsmith1/followers","following_url":"https://api.github.com/users/bobsmith1/following{/other_user}","gists_url":"https://api.github.com/users/bobsmith1/gists{/gist_id}","starred_url":"https://api.github.com/users/bobsmith1/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/bobsmith1/subscriptions","organizations_url":"https://api.github.com/users/bobsmith1/orgs","repos_url":"https://api.github.com/users/bobsmith1/repos","events_url":"https://api.github.com/users/bobsmith1/events{/privacy}","received_events_url":"https://api.github.com/users/bobsmith1/received_events","type":"User","site_admin":false},"created_at":"2016-09-22T20:57:56Z","updated_at":"2016-09-22T20:57:56Z","body":"Great!
+        +1"}'
+    http_version: 
+  recorded_at: Thu, 22 Sep 2016 20:57:56 GMT
+- request:
+    method: post
+    uri: https://davidpuddy1:nho.jN%28%3BRZY%40S0yoA%5DV@api.github.com/repos/thumbot/prtester/issues/453/comments
+    body:
+      encoding: UTF-8
+      string: '{"body":"Looks good +1"}'
+    headers:
+      Accept:
+      - application/vnd.github.v3+json
+      User-Agent:
+      - Octokit Ruby Gem 4.3.0
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+  response:
+    status:
+      code: 201
+      message: Created
+    headers:
+      Server:
+      - GitHub.com
+      Date:
+      - Thu, 22 Sep 2016 20:57:57 GMT
+      Content-Type:
+      - application/json; charset=utf-8
+      Content-Length:
+      - '1261'
+      Status:
+      - 201 Created
+      X-Ratelimit-Limit:
+      - '5000'
+      X-Ratelimit-Remaining:
+      - '4960'
+      X-Ratelimit-Reset:
+      - '1474580351'
+      Cache-Control:
+      - private, max-age=60, s-maxage=60
+      Vary:
+      - Accept, Authorization, Cookie, X-GitHub-OTP
+      - Accept-Encoding
+      Etag:
+      - '"da60037ae6f93323fb3f9c7ff45d854f"'
+      Location:
+      - https://api.github.com/repos/thumbot/prtester/issues/comments/249025787
+      X-Github-Media-Type:
+      - github.v3; format=json
+      Access-Control-Expose-Headers:
+      - ETag, Link, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset,
+        X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval
+      Access-Control-Allow-Origin:
+      - "*"
+      Content-Security-Policy:
+      - default-src 'none'
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-Xss-Protection:
+      - 1; mode=block
+      X-Served-By:
+      - d594a23ec74671eba905bf91ef329026
+      X-Github-Request-Id:
+      - AD1C2EC5:2360:8818086:57E445D5
+    body:
+      encoding: UTF-8
+      string: '{"url":"https://api.github.com/repos/thumbot/prtester/issues/comments/249025787","html_url":"https://github.com/thumbot/prtester/pull/453#issuecomment-249025787","issue_url":"https://api.github.com/repos/thumbot/prtester/issues/453","id":249025787,"user":{"login":"davidpuddy1","id":20779719,"avatar_url":"https://avatars.githubusercontent.com/u/20779719?v=3","gravatar_id":"","url":"https://api.github.com/users/davidpuddy1","html_url":"https://github.com/davidpuddy1","followers_url":"https://api.github.com/users/davidpuddy1/followers","following_url":"https://api.github.com/users/davidpuddy1/following{/other_user}","gists_url":"https://api.github.com/users/davidpuddy1/gists{/gist_id}","starred_url":"https://api.github.com/users/davidpuddy1/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/davidpuddy1/subscriptions","organizations_url":"https://api.github.com/users/davidpuddy1/orgs","repos_url":"https://api.github.com/users/davidpuddy1/repos","events_url":"https://api.github.com/users/davidpuddy1/events{/privacy}","received_events_url":"https://api.github.com/users/davidpuddy1/received_events","type":"User","site_admin":false},"created_at":"2016-09-22T20:57:57Z","updated_at":"2016-09-22T20:57:57Z","body":"Looks
+        good +1"}'
+    http_version: 
+  recorded_at: Thu, 22 Sep 2016 20:57:57 GMT
+recorded_with: VCR 3.0.3

@@ -30,7 +30,7 @@ unit_tests do
       assert status.key?(:result)
       assert status.key?(:message)
       assert status.key?(:command)
-      assert_equal "cd /tmp/thumbs/thumbot_prtester_#{prw.pr.head.sha.slice(0,8)} && uptime 2>&1", status[:command]
+      assert_equal "cd /tmp/thumbs/thumbot_prtester_#{prw.pr.head.sha.slice(0, 8)} && uptime 2>&1", status[:command]
       assert status.key?(:output)
 
       assert status.key?(:exit_code)
@@ -123,8 +123,8 @@ unit_tests do
           prw=Thumbs::PullRequestWorker.new(:repo => TESTREPO, :pr => TESTPR)
           prw.build_steps=["make test"]
           cassette(:validate_comments) do
-            try_merge
-            run_build_steps
+            prw.try_merge
+            prw.run_build_steps
             cassette(:get_state) do
               assert_equal false, prw.valid_for_merge?
             end
@@ -181,13 +181,18 @@ unit_tests do
         comment_length = prw.comments.length
         cassette(:add_comment, :record => :all) do
           comment = prw.add_comment("test")
-          cassette(:get_comments_update, :record => :all) do
-            new_comment_length = prw.comments.length
-            assert new_comment_length > comment_length, new_comment_length
-            client1 = Octokit::Client.new(:netrc => true)
 
-            cassette(:delete_pull_request_comment, :record => :all) do
-              client1.delete_pull_request_comment(TESTREPO, comment.to_h[:id])
+          cassette(:load_pr_update, :record => :all) do
+            prw2=Thumbs::PullRequestWorker.new(:repo => TESTREPO, :pr => TESTPR)
+            cassette(:get_comments_update, :record => :all) do
+
+              new_comment_length = prw2.comments.length
+              assert new_comment_length > comment_length, new_comment_length.to_s
+              client1 = Octokit::Client.new(:netrc => true)
+
+              cassette(:delete_pull_request_comment, :record => :all) do
+                client1.delete_pull_request_comment(TESTREPO, comment.to_h[:id])
+              end
             end
           end
         end
@@ -202,99 +207,135 @@ unit_tests do
         prw=Thumbs::PullRequestWorker.new(:repo => TESTREPO, :pr => TESTPR)
 
         prw.respond_to?(:build_steps)
-        assert prw.build_steps.sort == ["make", "make test"].sort, prw.build_steps.inspect
-        prw.try_merge
-        prw.run_build_steps
+        prw.reset_build_status
 
-        assert prw.build_status[:steps].keys.sort == [:merge, :make, :make_test].sort, prw.build_status[:steps]
+        assert prw.build_steps.sort == ["make", "make test"].sort, prw.build_steps.inspect
+        prw.run_build_steps
+        assert prw.build_steps.sort == ["make", "make test"].sort, prw.build_steps.inspect
+
+        assert prw.build_status[:steps].keys.sort == [:make, :make_test].sort, prw.build_status[:steps].inspect
+        prw.reset_build_status
 
         prw.build_steps = ["make build", "make custom"]
+        assert prw.build_steps.include?("make build")
         prw.run_build_steps
-        assert prw.build_status[:steps].keys.sort == ["merge", "make_build", "make_custom"].sort
+        assert prw.build_status[:steps].keys.sort == [:make_build, :make_custom].sort, prw.build_status[:steps].keys.sort.inspect
+
+        prw.reset_build_status
 
         prw.build_steps = ["make -j2 -p -H all", "make custom"]
         prw.run_build_steps
-        assert prw.build_status[:steps].keys.sort == ["merge", "make_j2_p_H", "make_custom"]
+        assert prw.build_status[:steps].keys.sort == [:make_custom, :make_j2_p_H_all].sort, prw.build_status[:steps].keys.sort.inspect
       end
     end
   end
 
   test "code reviews from random users are not counted" do
+
     cassette(:load_pr) do
       cassette(:load_comments) do
-        prw=Thumbs::PullRequestWorker.new(:repo => TESTREPO, :pr => TESTPR)
-        remove_comments(TESTREPO, TESTPR)
-        assert prw.review_count == 0
-        cassette(:get_state, :record => :new_episodes) do
-          assert_equal false, prw.valid_for_merge?
-          cassette(:create_test_code_reviews) do
-            create_test_code_reviews("thumbot/prtester", prw.pr.number)
-            assert prw.review_count > 2
-            prw.run_build_steps
-            assert_equal false, prw.valid_for_merge?, prw.build_status
-          end
+        prw=Thumbs::PullRequestWorker.new(:repo => ORGTESTREPO, :pr => ORGTESTPR)
+        cassette(:load_comments_update, :record => :all) do
+          cassette(:get_state, :record => :new_episodes) do
+            assert_equal false, prw.valid_for_merge?
+            #cassette(:create_code_reviews, :record => :all) do
+              #create_test_code_reviews(ORGTESTREPO, ORGTESTPR)
+              cassette(:update_reviews, :record => :all) do
+                assert prw.review_count => 2
+                prw.run_build_steps
+                assert_equal false, prw.valid_for_merge?, prw.build_status
+              end
+#end
+             end
+
+
         end
-
       end
-    end
 
-  end
-  test "ensure code reviews are from org members" do
-    cassette(:load_pr) do
-      cassette(:load_comments) do
-        prw=Thumbs::PullRequestWorker.new(:repo => TESTREPO, :pr => TESTPR)
-        remove_comments(TESTREPO, TESTPR)
-
-        assert prw.review_count == 0
-
-        assert_equal false, prw.valid_for_merge?
-        create_unprivileged_test_code_reviews("thumbot/prtester", prw.pr.number)
-        assert prw.review_count == 0
-        create_privileged_test_code_reviews("thumbot/prtester", prw.pr.number)
-        assert prw.review_count == 2
-        prw.try_merge
-        prw.run_build_steps
-        assert_equal true, prw.valid_for_merge?
-      end
     end
   end
 
-  test "should not merge if merge=false in thumbs." do
+    # test "ensure code reviews are from org members" do
+    #   cassette(:load_pull_request, :record => :new_episodes) do
+    #     cassette(:load_comments, :record => :new_episodes) do
+    #       prw=Thumbs::PullRequestWorker.new(:repo => ORGTESTREPO, :pr => ORGTESTPR)
+    #
+    #       remove_comments(ORGTESTREPO, ORGTESTPR)
+    #       assert prw.review_count == 0
+    #       cassette(:get_state) do
+    #
+    #         assert_equal false, prw.valid_for_merge?
+    #
+    #         cassette(:issue_comments_update) do
+    #
+    #
+    #           assert prw.review_count == 0
+    #           create_org_member_test_code_reviews(ORGTESTREPO, ORGTESTPR)
+    #           assert prw.review_count == 2, prw.review_count.to_s
+    #           assert prw.review_count >= prw.minimum_reviewers
+    #           assert prw.aggregate_build_status_result == :ok
+    #
+    #           prw.try_merge
+    #           prw.run_build_steps
+    #           cassette(:get_state_updated_false) do
+    #             assert_equal false, prw.valid_for_merge?
+    #             cassette(:get_state_updated_true) do
+    #               prw.thumb_config['merge']=true
+    #               assert_equal true, prw.valid_for_merge?
+    #             end
+    #           end
+    #         end
+    #       end
+    #     end
+    #   end
+    # end
+
+
+  test "should not merge if merge false in thumbs." do
     cassette(:load_pr) do
       cassette(:load_comments) do
         prw=Thumbs::PullRequestWorker.new(:repo => TESTREPO, :pr => TESTPR)
-        remove_comments(TESTREPO, TESTPR)
+        #remove_comments(TESTREPO, TESTPR)
         prw.try_merge
-        assert prw.thumb_config.key('merge')
-        assert prw.thumb_config['merge'] == true
+        assert prw.thumb_config.key?('merge')
+        assert prw.thumb_config['merge'] == false
 
         cassette(:get_state) do
           assert_equal false, prw.valid_for_merge?
-          create_privileged_test_code_reviews("thumbot/prtester", prw.pr.number)
-          assert prw.review_count == 2
-          assert prw.aggreg
-          assert_equal false, prw.valid_for_merge?
+          create_test_code_reviews(TESTREPO, TESTPR)
+          cassette(:get_post_code_review_count) do
+            assert prw.review_count >= 2, prw.review_count.to_s
+            assert prw.aggregate_build_status_result == :ok
+            cassette(:get_updated_state) do
+              assert_equal false, prw.valid_for_merge?
+            end
+          end
         end
       end
     end
   end
 
   test "should identify org code reviews" do
-    cassette(:load_pr, :record => :new_episodes) do
-      cassette(:load_comments, :record => :all) do
-        prw=Thumbs::PullRequestWorker.new(:repo => TESTREPO, :pr => TESTPR)
-        org_member_code_review_count = prw.org_member_code_reviews.length
-        assert_equal false, prw.valid_for_merge?
-        assert prw.respond_to?(:org_member_code_reviews)
-        cassette(:create_member_reviews, :record => :all) do
-          create_org_member_test_code_reviews("thumbot/prtester", prw.pr.number)
-          cassette(:list_member_reviews, :record => :all) do
-            assert prw.org_member_code_reviews > org_member_code_review_count
-            assert prw.code_reviews == 0
+    cassette(:remove_org_comments, :record => :all) do
+      remove_comments(ORGTESTREPO, ORGTESTPR)
 
+      cassette(:load_org_pr) do
+        cassette(:load_org_comments_issues) do
+          prw=Thumbs::PullRequestWorker.new(:repo => ORGTESTREPO, :pr => ORGTESTPR)
+          cassette(:get_comments_issues, :record => :all) do
+            org_member_code_review_count = prw.org_member_code_reviews.length
+            assert_equal false, prw.valid_for_merge?
+            assert prw.respond_to?(:org_member_code_reviews), "doesnt respond to"
+            create_org_member_test_code_reviews(ORGTESTREPO, ORGTESTPR)
+            cassette(:post_add_code_review_update, :record => :all) do
+
+              assert prw.org_member_code_reviews.length > org_member_code_review_count, org_member_code_review_count.to_s
+              remove_comments(ORGTESTREPO, ORGTESTPR)
             end
+          end
         end
       end
+
     end
   end
 end

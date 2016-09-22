@@ -2,7 +2,7 @@
 http_interactions:
 - request:
     method: delete
-    uri: https://thumbot:B%2FGUk%3E~22%3Ec%2A%24I%7CIa%3C%40@api.github.com/repos/thumbot/prtester/pulls/comments/248829606
+    uri: https://thumbot:B%2FGUk%3E~22%3Ec%2A%24I%7CIa%3C%40@api.github.com/repos/thumbot/prtester/pulls/comments/249012072
     body:
       encoding: UTF-8
       string: "{}"
@@ -23,7 +23,7 @@ http_interactions:
       Server:
       - GitHub.com
       Date:
-      - Thu, 22 Sep 2016 07:48:03 GMT
+      - Thu, 22 Sep 2016 20:02:10 GMT
       Content-Type:
       - application/json; charset=utf-8
       Transfer-Encoding:
@@ -33,9 +33,9 @@ http_interactions:
       X-Ratelimit-Limit:
       - '5000'
       X-Ratelimit-Remaining:
-      - '4553'
+      - '4895'
       X-Ratelimit-Reset:
-      - '1474532401'
+      - '1474577734'
       X-Github-Media-Type:
       - github.v3; format=json
       Access-Control-Expose-Headers:
@@ -54,15 +54,15 @@ http_interactions:
       X-Xss-Protection:
       - 1; mode=block
       X-Github-Request-Id:
-      - AD1C2EC5:2358:29902D3:57E38CB3
+      - AD1C2EC5:2360:87487AD:57E438C2
     body:
       encoding: ASCII-8BIT
       string: '{"message":"Not Found","documentation_url":"https://developer.github.com/v3"}'
     http_version: 
-  recorded_at: Thu, 22 Sep 2016 07:48:03 GMT
+  recorded_at: Thu, 22 Sep 2016 20:02:10 GMT
 - request:
     method: delete
-    uri: https://thumbot:B%2FGUk%3E~22%3Ec%2A%24I%7CIa%3C%40@api.github.com/repos/thumbot/prtester/pulls/comments/248830491
+    uri: https://thumbot:B%2FGUk%3E~22%3Ec%2A%24I%7CIa%3C%40@api.github.com/repos/thumbot/prtester/pulls/comments/249013607
     body:
       encoding: UTF-8
       string: "{}"
@@ -83,7 +83,7 @@ http_interactions:
       Server:
       - GitHub.com
       Date:
-      - Thu, 22 Sep 2016 07:48:04 GMT
+      - Thu, 22 Sep 2016 20:08:22 GMT
       Content-Type:
       - application/json; charset=utf-8
       Transfer-Encoding:
@@ -93,9 +93,9 @@ http_interactions:
       X-Ratelimit-Limit:
       - '5000'
       X-Ratelimit-Remaining:
-      - '4552'
+      - '4675'
       X-Ratelimit-Reset:
-      - '1474532401'
+      - '1474577734'
       X-Github-Media-Type:
       - github.v3; format=json
       Access-Control-Expose-Headers:
@@ -114,15 +114,15 @@ http_interactions:
       X-Xss-Protection:
       - 1; mode=block
       X-Github-Request-Id:
-      - AD1C2EC5:2360:7CB82A1:57E38CB3
+      - AD1C2EC5:2356:A608A40:57E43A36
     body:
       encoding: ASCII-8BIT
       string: '{"message":"Not Found","documentation_url":"https://developer.github.com/v3"}'
     http_version: 
-  recorded_at: Thu, 22 Sep 2016 07:48:04 GMT
+  recorded_at: Thu, 22 Sep 2016 20:08:22 GMT
 - request:
     method: delete
-    uri: https://thumbot:B%2FGUk%3E~22%3Ec%2A%24I%7CIa%3C%40@api.github.com/repos/thumbot/prtester/pulls/comments/248830670
+    uri: https://thumbot:B%2FGUk%3E~22%3Ec%2A%24I%7CIa%3C%40@api.github.com/repos/thumbot/prtester/pulls/comments/249020779
     body:
       encoding: UTF-8
       string: "{}"
@@ -143,7 +143,7 @@ http_interactions:
       Server:
       - GitHub.com
       Date:
-      - Thu, 22 Sep 2016 07:48:04 GMT
+      - Thu, 22 Sep 2016 20:37:42 GMT
       Content-Type:
       - application/json; charset=utf-8
       Transfer-Encoding:
@@ -153,9 +153,9 @@ http_interactions:
       X-Ratelimit-Limit:
       - '5000'
       X-Ratelimit-Remaining:
-      - '4551'
+      - '4283'
       X-Ratelimit-Reset:
-      - '1474532401'
+      - '1474577734'
       X-Github-Media-Type:
       - github.v3; format=json
       Access-Control-Expose-Headers:
@@ -174,15 +174,15 @@ http_interactions:
       X-Xss-Protection:
       - 1; mode=block
       X-Github-Request-Id:
-      - AD1C2EC5:2358:2990314:57E38CB4
+      - AD1C2EC5:2360:87CC964:57E44116
     body:
       encoding: ASCII-8BIT
       string: '{"message":"Not Found","documentation_url":"https://developer.github.com/v3"}'
     http_version: 
-  recorded_at: Thu, 22 Sep 2016 07:48:04 GMT
+  recorded_at: Thu, 22 Sep 2016 20:37:42 GMT
 - request:
     method: delete
-    uri: https://thumbot:B%2FGUk%3E~22%3Ec%2A%24I%7CIa%3C%40@api.github.com/repos/thumbot/prtester/pulls/comments/248831407
+    uri: https://thumbot:B%2FGUk%3E~22%3Ec%2A%24I%7CIa%3C%40@api.github.com/repos/thumbot/prtester/pulls/comments/249021971
     body:
       encoding: UTF-8
       string: "{}"
@@ -203,7 +203,7 @@ http_interactions:
       Server:
       - GitHub.com
       Date:
-      - Thu, 22 Sep 2016 07:48:05 GMT
+      - Thu, 22 Sep 2016 20:42:35 GMT
       Content-Type:
       - application/json; charset=utf-8
       Transfer-Encoding:
@@ -213,9 +213,9 @@ http_interactions:
       X-Ratelimit-Limit:
       - '5000'
       X-Ratelimit-Remaining:
-      - '4550'
+      - '4117'
       X-Ratelimit-Reset:
-      - '1474532401'
+      - '1474577734'
       X-Github-Media-Type:
       - github.v3; format=json
       Access-Control-Expose-Headers:
@@ -234,15 +234,15 @@ http_interactions:
       X-Xss-Protection:
       - 1; mode=block
       X-Github-Request-Id:
-      - AD1C2EC5:2356:999C981:57E38CB4
+      - AD1C2EC5:2360:87DEBAB:57E4423B
     body:
       encoding: ASCII-8BIT
       string: '{"message":"Not Found","documentation_url":"https://developer.github.com/v3"}'
     http_version: 
-  recorded_at: Thu, 22 Sep 2016 07:48:05 GMT
+  recorded_at: Thu, 22 Sep 2016 20:42:35 GMT
 - request:
     method: delete
-    uri: https://thumbot:B%2FGUk%3E~22%3Ec%2A%24I%7CIa%3C%40@api.github.com/repos/thumbot/prtester/pulls/comments/248831761
+    uri: https://thumbot:B%2FGUk%3E~22%3Ec%2A%24I%7CIa%3C%40@api.github.com/repos/thumbot/prtester/pulls/comments/249022694
     body:
       encoding: UTF-8
       string: "{}"
@@ -263,7 +263,7 @@ http_interactions:
       Server:
       - GitHub.com
       Date:
-      - Thu, 22 Sep 2016 07:48:05 GMT
+      - Thu, 22 Sep 2016 20:45:26 GMT
       Content-Type:
       - application/json; charset=utf-8
       Transfer-Encoding:
@@ -273,9 +273,9 @@ http_interactions:
       X-Ratelimit-Limit:
       - '5000'
       X-Ratelimit-Remaining:
-      - '4549'
+      - '4014'
       X-Ratelimit-Reset:
-      - '1474532401'
+      - '1474577734'
       X-Github-Media-Type:
       - github.v3; format=json
       Access-Control-Expose-Headers:
@@ -294,15 +294,15 @@ http_interactions:
       X-Xss-Protection:
       - 1; mode=block
       X-Github-Request-Id:
-      - AD1C2EC5:2360:7CB83F0:57E38CB5
+      - AD1C2EC5:2356:A6A7A92:57E442E5
     body:
       encoding: ASCII-8BIT
       string: '{"message":"Not Found","documentation_url":"https://developer.github.com/v3"}'
     http_version: 
-  recorded_at: Thu, 22 Sep 2016 07:48:05 GMT
+  recorded_at: Thu, 22 Sep 2016 20:45:25 GMT
 - request:
     method: delete
-    uri: https://thumbot:B%2FGUk%3E~22%3Ec%2A%24I%7CIa%3C%40@api.github.com/repos/thumbot/prtester/pulls/comments/248832641
+    uri: https://thumbot:B%2FGUk%3E~22%3Ec%2A%24I%7CIa%3C%40@api.github.com/repos/thumbot/prtester/pulls/comments/249024055
     body:
       encoding: UTF-8
       string: "{}"
@@ -323,7 +323,7 @@ http_interactions:
       Server:
       - GitHub.com
       Date:
-      - Thu, 22 Sep 2016 07:48:06 GMT
+      - Thu, 22 Sep 2016 20:50:57 GMT
       Content-Type:
       - application/json; charset=utf-8
       Transfer-Encoding:
@@ -333,9 +333,9 @@ http_interactions:
       X-Ratelimit-Limit:
       - '5000'
       X-Ratelimit-Remaining:
-      - '4548'
+      - '3831'
       X-Ratelimit-Reset:
-      - '1474532401'
+      - '1474577734'
       X-Github-Media-Type:
       - github.v3; format=json
       Access-Control-Expose-Headers:
@@ -354,15 +354,15 @@ http_interactions:
       X-Xss-Protection:
       - 1; mode=block
       X-Github-Request-Id:
-      - AD1C2EC5:2360:7CB845B:57E38CB5
+      - AD1C2EC5:2358:2E65A6C:57E44431
     body:
       encoding: ASCII-8BIT
       string: '{"message":"Not Found","documentation_url":"https://developer.github.com/v3"}'
     http_version: 
-  recorded_at: Thu, 22 Sep 2016 07:48:06 GMT
+  recorded_at: Thu, 22 Sep 2016 20:50:57 GMT
 - request:
     method: delete
-    uri: https://thumbot:B%2FGUk%3E~22%3Ec%2A%24I%7CIa%3C%40@api.github.com/repos/thumbot/prtester/pulls/comments/248825006
+    uri: https://thumbot:B%2FGUk%3E~22%3Ec%2A%24I%7CIa%3C%40@api.github.com/repos/thumbot/prtester/pulls/comments/249025066
     body:
       encoding: UTF-8
       string: "{}"
@@ -383,7 +383,7 @@ http_interactions:
       Server:
       - GitHub.com
       Date:
-      - Thu, 22 Sep 2016 07:52:55 GMT
+      - Thu, 22 Sep 2016 20:55:07 GMT
       Content-Type:
       - application/json; charset=utf-8
       Transfer-Encoding:
@@ -393,9 +393,9 @@ http_interactions:
       X-Ratelimit-Limit:
       - '5000'
       X-Ratelimit-Remaining:
-      - '4455'
+      - '3619'
       X-Ratelimit-Reset:
-      - '1474532401'
+      - '1474577734'
       X-Github-Media-Type:
       - github.v3; format=json
       Access-Control-Expose-Headers:
@@ -414,1390 +414,10 @@ http_interactions:
       X-Xss-Protection:
       - 1; mode=block
       X-Github-Request-Id:
-      - AD1C2EC5:2360:7CC7C3F:57E38DD7
+      - AD1C2EC5:2356:A6CE8F0:57E4452B
     body:
       encoding: ASCII-8BIT
       string: '{"message":"Not Found","documentation_url":"https://developer.github.com/v3"}'
     http_version: 
-  recorded_at: Thu, 22 Sep 2016 07:52:55 GMT
-- request:
-    method: delete
-    uri: https://thumbot:B%2FGUk%3E~22%3Ec%2A%24I%7CIa%3C%40@api.github.com/repos/thumbot/prtester/pulls/comments/248825063
-    body:
-      encoding: UTF-8
-      string: "{}"
-    headers:
-      Accept:
-      - application/vnd.github.v3+json
-      User-Agent:
-      - Octokit Ruby Gem 4.3.0
-      Content-Type:
-      - application/json
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-  response:
-    status:
-      code: 404
-      message: Not Found
-    headers:
-      Server:
-      - GitHub.com
-      Date:
-      - Thu, 22 Sep 2016 07:52:56 GMT
-      Content-Type:
-      - application/json; charset=utf-8
-      Transfer-Encoding:
-      - chunked
-      Status:
-      - 404 Not Found
-      X-Ratelimit-Limit:
-      - '5000'
-      X-Ratelimit-Remaining:
-      - '4454'
-      X-Ratelimit-Reset:
-      - '1474532401'
-      X-Github-Media-Type:
-      - github.v3; format=json
-      Access-Control-Expose-Headers:
-      - ETag, Link, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset,
-        X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval
-      Access-Control-Allow-Origin:
-      - "*"
-      Content-Security-Policy:
-      - default-src 'none'
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubdomains; preload
-      X-Content-Type-Options:
-      - nosniff
-      X-Frame-Options:
-      - deny
-      X-Xss-Protection:
-      - 1; mode=block
-      X-Github-Request-Id:
-      - AD1C2EC5:235F:4AF492C:57E38DD8
-    body:
-      encoding: ASCII-8BIT
-      string: '{"message":"Not Found","documentation_url":"https://developer.github.com/v3"}'
-    http_version: 
-  recorded_at: Thu, 22 Sep 2016 07:52:56 GMT
-- request:
-    method: delete
-    uri: https://thumbot:B%2FGUk%3E~22%3Ec%2A%24I%7CIa%3C%40@api.github.com/repos/thumbot/prtester/pulls/comments/248825699
-    body:
-      encoding: UTF-8
-      string: "{}"
-    headers:
-      Accept:
-      - application/vnd.github.v3+json
-      User-Agent:
-      - Octokit Ruby Gem 4.3.0
-      Content-Type:
-      - application/json
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-  response:
-    status:
-      code: 404
-      message: Not Found
-    headers:
-      Server:
-      - GitHub.com
-      Date:
-      - Thu, 22 Sep 2016 07:52:57 GMT
-      Content-Type:
-      - application/json; charset=utf-8
-      Transfer-Encoding:
-      - chunked
-      Status:
-      - 404 Not Found
-      X-Ratelimit-Limit:
-      - '5000'
-      X-Ratelimit-Remaining:
-      - '4453'
-      X-Ratelimit-Reset:
-      - '1474532401'
-      X-Github-Media-Type:
-      - github.v3; format=json
-      Access-Control-Expose-Headers:
-      - ETag, Link, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset,
-        X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval
-      Access-Control-Allow-Origin:
-      - "*"
-      Content-Security-Policy:
-      - default-src 'none'
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubdomains; preload
-      X-Content-Type-Options:
-      - nosniff
-      X-Frame-Options:
-      - deny
-      X-Xss-Protection:
-      - 1; mode=block
-      X-Github-Request-Id:
-      - AD1C2EC5:2356:99AC9CC:57E38DD8
-    body:
-      encoding: ASCII-8BIT
-      string: '{"message":"Not Found","documentation_url":"https://developer.github.com/v3"}'
-    http_version: 
-  recorded_at: Thu, 22 Sep 2016 07:52:57 GMT
-- request:
-    method: delete
-    uri: https://thumbot:B%2FGUk%3E~22%3Ec%2A%24I%7CIa%3C%40@api.github.com/repos/thumbot/prtester/pulls/comments/248825992
-    body:
-      encoding: UTF-8
-      string: "{}"
-    headers:
-      Accept:
-      - application/vnd.github.v3+json
-      User-Agent:
-      - Octokit Ruby Gem 4.3.0
-      Content-Type:
-      - application/json
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-  response:
-    status:
-      code: 404
-      message: Not Found
-    headers:
-      Server:
-      - GitHub.com
-      Date:
-      - Thu, 22 Sep 2016 07:52:57 GMT
-      Content-Type:
-      - application/json; charset=utf-8
-      Transfer-Encoding:
-      - chunked
-      Status:
-      - 404 Not Found
-      X-Ratelimit-Limit:
-      - '5000'
-      X-Ratelimit-Remaining:
-      - '4452'
-      X-Ratelimit-Reset:
-      - '1474532401'
-      X-Github-Media-Type:
-      - github.v3; format=json
-      Access-Control-Expose-Headers:
-      - ETag, Link, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset,
-        X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval
-      Access-Control-Allow-Origin:
-      - "*"
-      Content-Security-Policy:
-      - default-src 'none'
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubdomains; preload
-      X-Content-Type-Options:
-      - nosniff
-      X-Frame-Options:
-      - deny
-      X-Xss-Protection:
-      - 1; mode=block
-      X-Github-Request-Id:
-      - AD1C2EC5:2356:99ACA1B:57E38DD9
-    body:
-      encoding: ASCII-8BIT
-      string: '{"message":"Not Found","documentation_url":"https://developer.github.com/v3"}'
-    http_version: 
-  recorded_at: Thu, 22 Sep 2016 07:52:57 GMT
-- request:
-    method: delete
-    uri: https://thumbot:B%2FGUk%3E~22%3Ec%2A%24I%7CIa%3C%40@api.github.com/repos/thumbot/prtester/pulls/comments/248827362
-    body:
-      encoding: UTF-8
-      string: "{}"
-    headers:
-      Accept:
-      - application/vnd.github.v3+json
-      User-Agent:
-      - Octokit Ruby Gem 4.3.0
-      Content-Type:
-      - application/json
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-  response:
-    status:
-      code: 404
-      message: Not Found
-    headers:
-      Server:
-      - GitHub.com
-      Date:
-      - Thu, 22 Sep 2016 07:52:58 GMT
-      Content-Type:
-      - application/json; charset=utf-8
-      Transfer-Encoding:
-      - chunked
-      Status:
-      - 404 Not Found
-      X-Ratelimit-Limit:
-      - '5000'
-      X-Ratelimit-Remaining:
-      - '4451'
-      X-Ratelimit-Reset:
-      - '1474532401'
-      X-Github-Media-Type:
-      - github.v3; format=json
-      Access-Control-Expose-Headers:
-      - ETag, Link, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset,
-        X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval
-      Access-Control-Allow-Origin:
-      - "*"
-      Content-Security-Policy:
-      - default-src 'none'
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubdomains; preload
-      X-Content-Type-Options:
-      - nosniff
-      X-Frame-Options:
-      - deny
-      X-Xss-Protection:
-      - 1; mode=block
-      X-Github-Request-Id:
-      - AD1C2EC5:2356:99ACA77:57E38DD9
-    body:
-      encoding: ASCII-8BIT
-      string: '{"message":"Not Found","documentation_url":"https://developer.github.com/v3"}'
-    http_version: 
-  recorded_at: Thu, 22 Sep 2016 07:52:58 GMT
-- request:
-    method: delete
-    uri: https://thumbot:B%2FGUk%3E~22%3Ec%2A%24I%7CIa%3C%40@api.github.com/repos/thumbot/prtester/pulls/comments/248828371
-    body:
-      encoding: UTF-8
-      string: "{}"
-    headers:
-      Accept:
-      - application/vnd.github.v3+json
-      User-Agent:
-      - Octokit Ruby Gem 4.3.0
-      Content-Type:
-      - application/json
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-  response:
-    status:
-      code: 404
-      message: Not Found
-    headers:
-      Server:
-      - GitHub.com
-      Date:
-      - Thu, 22 Sep 2016 07:52:58 GMT
-      Content-Type:
-      - application/json; charset=utf-8
-      Transfer-Encoding:
-      - chunked
-      Status:
-      - 404 Not Found
-      X-Ratelimit-Limit:
-      - '5000'
-      X-Ratelimit-Remaining:
-      - '4450'
-      X-Ratelimit-Reset:
-      - '1474532401'
-      X-Github-Media-Type:
-      - github.v3; format=json
-      Access-Control-Expose-Headers:
-      - ETag, Link, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset,
-        X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval
-      Access-Control-Allow-Origin:
-      - "*"
-      Content-Security-Policy:
-      - default-src 'none'
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubdomains; preload
-      X-Content-Type-Options:
-      - nosniff
-      X-Frame-Options:
-      - deny
-      X-Xss-Protection:
-      - 1; mode=block
-      X-Github-Request-Id:
-      - AD1C2EC5:2360:7CC7EF7:57E38DDA
-    body:
-      encoding: ASCII-8BIT
-      string: '{"message":"Not Found","documentation_url":"https://developer.github.com/v3"}'
-    http_version: 
-  recorded_at: Thu, 22 Sep 2016 07:52:58 GMT
-- request:
-    method: delete
-    uri: https://thumbot:B%2FGUk%3E~22%3Ec%2A%24I%7CIa%3C%40@api.github.com/repos/thumbot/prtester/pulls/comments/248828569
-    body:
-      encoding: UTF-8
-      string: "{}"
-    headers:
-      Accept:
-      - application/vnd.github.v3+json
-      User-Agent:
-      - Octokit Ruby Gem 4.3.0
-      Content-Type:
-      - application/json
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-  response:
-    status:
-      code: 404
-      message: Not Found
-    headers:
-      Server:
-      - GitHub.com
-      Date:
-      - Thu, 22 Sep 2016 07:52:59 GMT
-      Content-Type:
-      - application/json; charset=utf-8
-      Transfer-Encoding:
-      - chunked
-      Status:
-      - 404 Not Found
-      X-Ratelimit-Limit:
-      - '5000'
-      X-Ratelimit-Remaining:
-      - '4449'
-      X-Ratelimit-Reset:
-      - '1474532401'
-      X-Github-Media-Type:
-      - github.v3; format=json
-      Access-Control-Expose-Headers:
-      - ETag, Link, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset,
-        X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval
-      Access-Control-Allow-Origin:
-      - "*"
-      Content-Security-Policy:
-      - default-src 'none'
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubdomains; preload
-      X-Content-Type-Options:
-      - nosniff
-      X-Frame-Options:
-      - deny
-      X-Xss-Protection:
-      - 1; mode=block
-      X-Github-Request-Id:
-      - AD1C2EC5:2356:99ACB51:57E38DDA
-    body:
-      encoding: ASCII-8BIT
-      string: '{"message":"Not Found","documentation_url":"https://developer.github.com/v3"}'
-    http_version: 
-  recorded_at: Thu, 22 Sep 2016 07:52:59 GMT
-- request:
-    method: delete
-    uri: https://thumbot:B%2FGUk%3E~22%3Ec%2A%24I%7CIa%3C%40@api.github.com/repos/thumbot/prtester/pulls/comments/248834475
-    body:
-      encoding: UTF-8
-      string: "{}"
-    headers:
-      Accept:
-      - application/vnd.github.v3+json
-      User-Agent:
-      - Octokit Ruby Gem 4.3.0
-      Content-Type:
-      - application/json
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-  response:
-    status:
-      code: 404
-      message: Not Found
-    headers:
-      Server:
-      - GitHub.com
-      Date:
-      - Thu, 22 Sep 2016 07:52:59 GMT
-      Content-Type:
-      - application/json; charset=utf-8
-      Transfer-Encoding:
-      - chunked
-      Status:
-      - 404 Not Found
-      X-Ratelimit-Limit:
-      - '5000'
-      X-Ratelimit-Remaining:
-      - '4448'
-      X-Ratelimit-Reset:
-      - '1474532401'
-      X-Github-Media-Type:
-      - github.v3; format=json
-      Access-Control-Expose-Headers:
-      - ETag, Link, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset,
-        X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval
-      Access-Control-Allow-Origin:
-      - "*"
-      Content-Security-Policy:
-      - default-src 'none'
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubdomains; preload
-      X-Content-Type-Options:
-      - nosniff
-      X-Frame-Options:
-      - deny
-      X-Xss-Protection:
-      - 1; mode=block
-      X-Github-Request-Id:
-      - AD1C2EC5:2360:7CC801B:57E38DDB
-    body:
-      encoding: ASCII-8BIT
-      string: '{"message":"Not Found","documentation_url":"https://developer.github.com/v3"}'
-    http_version: 
-  recorded_at: Thu, 22 Sep 2016 07:52:59 GMT
-- request:
-    method: delete
-    uri: https://thumbot:B%2FGUk%3E~22%3Ec%2A%24I%7CIa%3C%40@api.github.com/repos/thumbot/prtester/pulls/comments/248816691
-    body:
-      encoding: UTF-8
-      string: "{}"
-    headers:
-      Accept:
-      - application/vnd.github.v3+json
-      User-Agent:
-      - Octokit Ruby Gem 4.3.0
-      Content-Type:
-      - application/json
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-  response:
-    status:
-      code: 404
-      message: Not Found
-    headers:
-      Server:
-      - GitHub.com
-      Date:
-      - Thu, 22 Sep 2016 08:02:10 GMT
-      Content-Type:
-      - application/json; charset=utf-8
-      Transfer-Encoding:
-      - chunked
-      Status:
-      - 404 Not Found
-      X-Ratelimit-Limit:
-      - '5000'
-      X-Ratelimit-Remaining:
-      - '4323'
-      X-Ratelimit-Reset:
-      - '1474532401'
-      X-Github-Media-Type:
-      - github.v3; format=json
-      Access-Control-Expose-Headers:
-      - ETag, Link, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset,
-        X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval
-      Access-Control-Allow-Origin:
-      - "*"
-      Content-Security-Policy:
-      - default-src 'none'
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubdomains; preload
-      X-Content-Type-Options:
-      - nosniff
-      X-Frame-Options:
-      - deny
-      X-Xss-Protection:
-      - 1; mode=block
-      X-Github-Request-Id:
-      - AD1C2EC5:2360:7CE83DC:57E39001
-    body:
-      encoding: ASCII-8BIT
-      string: '{"message":"Not Found","documentation_url":"https://developer.github.com/v3"}'
-    http_version: 
-  recorded_at: Thu, 22 Sep 2016 08:02:10 GMT
-- request:
-    method: delete
-    uri: https://thumbot:B%2FGUk%3E~22%3Ec%2A%24I%7CIa%3C%40@api.github.com/repos/thumbot/prtester/pulls/comments/248817283
-    body:
-      encoding: UTF-8
-      string: "{}"
-    headers:
-      Accept:
-      - application/vnd.github.v3+json
-      User-Agent:
-      - Octokit Ruby Gem 4.3.0
-      Content-Type:
-      - application/json
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-  response:
-    status:
-      code: 404
-      message: Not Found
-    headers:
-      Server:
-      - GitHub.com
-      Date:
-      - Thu, 22 Sep 2016 08:02:10 GMT
-      Content-Type:
-      - application/json; charset=utf-8
-      Transfer-Encoding:
-      - chunked
-      Status:
-      - 404 Not Found
-      X-Ratelimit-Limit:
-      - '5000'
-      X-Ratelimit-Remaining:
-      - '4322'
-      X-Ratelimit-Reset:
-      - '1474532401'
-      X-Github-Media-Type:
-      - github.v3; format=json
-      Access-Control-Expose-Headers:
-      - ETag, Link, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset,
-        X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval
-      Access-Control-Allow-Origin:
-      - "*"
-      Content-Security-Policy:
-      - default-src 'none'
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubdomains; preload
-      X-Content-Type-Options:
-      - nosniff
-      X-Frame-Options:
-      - deny
-      X-Xss-Protection:
-      - 1; mode=block
-      X-Github-Request-Id:
-      - AD1C2EC5:2358:29A282D:57E39002
-    body:
-      encoding: ASCII-8BIT
-      string: '{"message":"Not Found","documentation_url":"https://developer.github.com/v3"}'
-    http_version: 
-  recorded_at: Thu, 22 Sep 2016 08:02:10 GMT
-- request:
-    method: delete
-    uri: https://thumbot:B%2FGUk%3E~22%3Ec%2A%24I%7CIa%3C%40@api.github.com/repos/thumbot/prtester/pulls/comments/248817688
-    body:
-      encoding: UTF-8
-      string: "{}"
-    headers:
-      Accept:
-      - application/vnd.github.v3+json
-      User-Agent:
-      - Octokit Ruby Gem 4.3.0
-      Content-Type:
-      - application/json
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-  response:
-    status:
-      code: 404
-      message: Not Found
-    headers:
-      Server:
-      - GitHub.com
-      Date:
-      - Thu, 22 Sep 2016 08:02:11 GMT
-      Content-Type:
-      - application/json; charset=utf-8
-      Transfer-Encoding:
-      - chunked
-      Status:
-      - 404 Not Found
-      X-Ratelimit-Limit:
-      - '5000'
-      X-Ratelimit-Remaining:
-      - '4321'
-      X-Ratelimit-Reset:
-      - '1474532401'
-      X-Github-Media-Type:
-      - github.v3; format=json
-      Access-Control-Expose-Headers:
-      - ETag, Link, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset,
-        X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval
-      Access-Control-Allow-Origin:
-      - "*"
-      Content-Security-Policy:
-      - default-src 'none'
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubdomains; preload
-      X-Content-Type-Options:
-      - nosniff
-      X-Frame-Options:
-      - deny
-      X-Xss-Protection:
-      - 1; mode=block
-      X-Github-Request-Id:
-      - AD1C2EC5:2360:7CE8561:57E39003
-    body:
-      encoding: ASCII-8BIT
-      string: '{"message":"Not Found","documentation_url":"https://developer.github.com/v3"}'
-    http_version: 
-  recorded_at: Thu, 22 Sep 2016 08:02:11 GMT
-- request:
-    method: delete
-    uri: https://thumbot:B%2FGUk%3E~22%3Ec%2A%24I%7CIa%3C%40@api.github.com/repos/thumbot/prtester/pulls/comments/248817911
-    body:
-      encoding: UTF-8
-      string: "{}"
-    headers:
-      Accept:
-      - application/vnd.github.v3+json
-      User-Agent:
-      - Octokit Ruby Gem 4.3.0
-      Content-Type:
-      - application/json
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-  response:
-    status:
-      code: 404
-      message: Not Found
-    headers:
-      Server:
-      - GitHub.com
-      Date:
-      - Thu, 22 Sep 2016 08:02:11 GMT
-      Content-Type:
-      - application/json; charset=utf-8
-      Transfer-Encoding:
-      - chunked
-      Status:
-      - 404 Not Found
-      X-Ratelimit-Limit:
-      - '5000'
-      X-Ratelimit-Remaining:
-      - '4320'
-      X-Ratelimit-Reset:
-      - '1474532401'
-      X-Github-Media-Type:
-      - github.v3; format=json
-      Access-Control-Expose-Headers:
-      - ETag, Link, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset,
-        X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval
-      Access-Control-Allow-Origin:
-      - "*"
-      Content-Security-Policy:
-      - default-src 'none'
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubdomains; preload
-      X-Content-Type-Options:
-      - nosniff
-      X-Frame-Options:
-      - deny
-      X-Xss-Protection:
-      - 1; mode=block
-      X-Github-Request-Id:
-      - AD1C2EC5:235F:4B097AA:57E39003
-    body:
-      encoding: ASCII-8BIT
-      string: '{"message":"Not Found","documentation_url":"https://developer.github.com/v3"}'
-    http_version: 
-  recorded_at: Thu, 22 Sep 2016 08:02:11 GMT
-- request:
-    method: delete
-    uri: https://thumbot:B%2FGUk%3E~22%3Ec%2A%24I%7CIa%3C%40@api.github.com/repos/thumbot/prtester/pulls/comments/248821518
-    body:
-      encoding: UTF-8
-      string: "{}"
-    headers:
-      Accept:
-      - application/vnd.github.v3+json
-      User-Agent:
-      - Octokit Ruby Gem 4.3.0
-      Content-Type:
-      - application/json
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-  response:
-    status:
-      code: 404
-      message: Not Found
-    headers:
-      Server:
-      - GitHub.com
-      Date:
-      - Thu, 22 Sep 2016 08:02:12 GMT
-      Content-Type:
-      - application/json; charset=utf-8
-      Transfer-Encoding:
-      - chunked
-      Status:
-      - 404 Not Found
-      X-Ratelimit-Limit:
-      - '5000'
-      X-Ratelimit-Remaining:
-      - '4319'
-      X-Ratelimit-Reset:
-      - '1474532401'
-      X-Github-Media-Type:
-      - github.v3; format=json
-      Access-Control-Expose-Headers:
-      - ETag, Link, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset,
-        X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval
-      Access-Control-Allow-Origin:
-      - "*"
-      Content-Security-Policy:
-      - default-src 'none'
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubdomains; preload
-      X-Content-Type-Options:
-      - nosniff
-      X-Frame-Options:
-      - deny
-      X-Xss-Protection:
-      - 1; mode=block
-      X-Github-Request-Id:
-      - AD1C2EC5:235F:4B0982A:57E39004
-    body:
-      encoding: ASCII-8BIT
-      string: '{"message":"Not Found","documentation_url":"https://developer.github.com/v3"}'
-    http_version: 
-  recorded_at: Thu, 22 Sep 2016 08:02:12 GMT
-- request:
-    method: delete
-    uri: https://thumbot:B%2FGUk%3E~22%3Ec%2A%24I%7CIa%3C%40@api.github.com/repos/thumbot/prtester/pulls/comments/248821669
-    body:
-      encoding: UTF-8
-      string: "{}"
-    headers:
-      Accept:
-      - application/vnd.github.v3+json
-      User-Agent:
-      - Octokit Ruby Gem 4.3.0
-      Content-Type:
-      - application/json
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-  response:
-    status:
-      code: 404
-      message: Not Found
-    headers:
-      Server:
-      - GitHub.com
-      Date:
-      - Thu, 22 Sep 2016 08:02:13 GMT
-      Content-Type:
-      - application/json; charset=utf-8
-      Transfer-Encoding:
-      - chunked
-      Status:
-      - 404 Not Found
-      X-Ratelimit-Limit:
-      - '5000'
-      X-Ratelimit-Remaining:
-      - '4318'
-      X-Ratelimit-Reset:
-      - '1474532401'
-      X-Github-Media-Type:
-      - github.v3; format=json
-      Access-Control-Expose-Headers:
-      - ETag, Link, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset,
-        X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval
-      Access-Control-Allow-Origin:
-      - "*"
-      Content-Security-Policy:
-      - default-src 'none'
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubdomains; preload
-      X-Content-Type-Options:
-      - nosniff
-      X-Frame-Options:
-      - deny
-      X-Xss-Protection:
-      - 1; mode=block
-      X-Github-Request-Id:
-      - AD1C2EC5:2360:7CE8790:57E39005
-    body:
-      encoding: ASCII-8BIT
-      string: '{"message":"Not Found","documentation_url":"https://developer.github.com/v3"}'
-    http_version: 
-  recorded_at: Thu, 22 Sep 2016 08:02:13 GMT
-- request:
-    method: delete
-    uri: https://thumbot:B%2FGUk%3E~22%3Ec%2A%24I%7CIa%3C%40@api.github.com/repos/thumbot/prtester/pulls/comments/248823455
-    body:
-      encoding: UTF-8
-      string: "{}"
-    headers:
-      Accept:
-      - application/vnd.github.v3+json
-      User-Agent:
-      - Octokit Ruby Gem 4.3.0
-      Content-Type:
-      - application/json
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-  response:
-    status:
-      code: 404
-      message: Not Found
-    headers:
-      Server:
-      - GitHub.com
-      Date:
-      - Thu, 22 Sep 2016 08:02:13 GMT
-      Content-Type:
-      - application/json; charset=utf-8
-      Transfer-Encoding:
-      - chunked
-      Status:
-      - 404 Not Found
-      X-Ratelimit-Limit:
-      - '5000'
-      X-Ratelimit-Remaining:
-      - '4317'
-      X-Ratelimit-Reset:
-      - '1474532401'
-      X-Github-Media-Type:
-      - github.v3; format=json
-      Access-Control-Expose-Headers:
-      - ETag, Link, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset,
-        X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval
-      Access-Control-Allow-Origin:
-      - "*"
-      Content-Security-Policy:
-      - default-src 'none'
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubdomains; preload
-      X-Content-Type-Options:
-      - nosniff
-      X-Frame-Options:
-      - deny
-      X-Xss-Protection:
-      - 1; mode=block
-      X-Github-Request-Id:
-      - AD1C2EC5:2358:29A29B5:57E39005
-    body:
-      encoding: ASCII-8BIT
-      string: '{"message":"Not Found","documentation_url":"https://developer.github.com/v3"}'
-    http_version: 
-  recorded_at: Thu, 22 Sep 2016 08:02:13 GMT
-- request:
-    method: delete
-    uri: https://thumbot:B%2FGUk%3E~22%3Ec%2A%24I%7CIa%3C%40@api.github.com/repos/thumbot/prtester/pulls/comments/248823787
-    body:
-      encoding: UTF-8
-      string: "{}"
-    headers:
-      Accept:
-      - application/vnd.github.v3+json
-      User-Agent:
-      - Octokit Ruby Gem 4.3.0
-      Content-Type:
-      - application/json
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-  response:
-    status:
-      code: 404
-      message: Not Found
-    headers:
-      Server:
-      - GitHub.com
-      Date:
-      - Thu, 22 Sep 2016 08:02:14 GMT
-      Content-Type:
-      - application/json; charset=utf-8
-      Transfer-Encoding:
-      - chunked
-      Status:
-      - 404 Not Found
-      X-Ratelimit-Limit:
-      - '5000'
-      X-Ratelimit-Remaining:
-      - '4316'
-      X-Ratelimit-Reset:
-      - '1474532401'
-      X-Github-Media-Type:
-      - github.v3; format=json
-      Access-Control-Expose-Headers:
-      - ETag, Link, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset,
-        X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval
-      Access-Control-Allow-Origin:
-      - "*"
-      Content-Security-Policy:
-      - default-src 'none'
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubdomains; preload
-      X-Content-Type-Options:
-      - nosniff
-      X-Frame-Options:
-      - deny
-      X-Xss-Protection:
-      - 1; mode=block
-      X-Github-Request-Id:
-      - AD1C2EC5:2360:7CE88AC:57E39006
-    body:
-      encoding: ASCII-8BIT
-      string: '{"message":"Not Found","documentation_url":"https://developer.github.com/v3"}'
-    http_version: 
-  recorded_at: Thu, 22 Sep 2016 08:02:14 GMT
-- request:
-    method: delete
-    uri: https://thumbot:B%2FGUk%3E~22%3Ec%2A%24I%7CIa%3C%40@api.github.com/repos/thumbot/prtester/pulls/comments/248823830
-    body:
-      encoding: UTF-8
-      string: "{}"
-    headers:
-      Accept:
-      - application/vnd.github.v3+json
-      User-Agent:
-      - Octokit Ruby Gem 4.3.0
-      Content-Type:
-      - application/json
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-  response:
-    status:
-      code: 404
-      message: Not Found
-    headers:
-      Server:
-      - GitHub.com
-      Date:
-      - Thu, 22 Sep 2016 08:02:14 GMT
-      Content-Type:
-      - application/json; charset=utf-8
-      Transfer-Encoding:
-      - chunked
-      Status:
-      - 404 Not Found
-      X-Ratelimit-Limit:
-      - '5000'
-      X-Ratelimit-Remaining:
-      - '4315'
-      X-Ratelimit-Reset:
-      - '1474532401'
-      X-Github-Media-Type:
-      - github.v3; format=json
-      Access-Control-Expose-Headers:
-      - ETag, Link, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset,
-        X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval
-      Access-Control-Allow-Origin:
-      - "*"
-      Content-Security-Policy:
-      - default-src 'none'
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubdomains; preload
-      X-Content-Type-Options:
-      - nosniff
-      X-Frame-Options:
-      - deny
-      X-Xss-Protection:
-      - 1; mode=block
-      X-Github-Request-Id:
-      - AD1C2EC5:2356:99D1A40:57E39006
-    body:
-      encoding: ASCII-8BIT
-      string: '{"message":"Not Found","documentation_url":"https://developer.github.com/v3"}'
-    http_version: 
-  recorded_at: Thu, 22 Sep 2016 08:02:14 GMT
-- request:
-    method: delete
-    uri: https://thumbot:B%2FGUk%3E~22%3Ec%2A%24I%7CIa%3C%40@api.github.com/repos/thumbot/prtester/pulls/comments/248824172
-    body:
-      encoding: UTF-8
-      string: "{}"
-    headers:
-      Accept:
-      - application/vnd.github.v3+json
-      User-Agent:
-      - Octokit Ruby Gem 4.3.0
-      Content-Type:
-      - application/json
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-  response:
-    status:
-      code: 404
-      message: Not Found
-    headers:
-      Server:
-      - GitHub.com
-      Date:
-      - Thu, 22 Sep 2016 08:02:15 GMT
-      Content-Type:
-      - application/json; charset=utf-8
-      Transfer-Encoding:
-      - chunked
-      Status:
-      - 404 Not Found
-      X-Ratelimit-Limit:
-      - '5000'
-      X-Ratelimit-Remaining:
-      - '4314'
-      X-Ratelimit-Reset:
-      - '1474532401'
-      X-Github-Media-Type:
-      - github.v3; format=json
-      Access-Control-Expose-Headers:
-      - ETag, Link, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset,
-        X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval
-      Access-Control-Allow-Origin:
-      - "*"
-      Content-Security-Policy:
-      - default-src 'none'
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubdomains; preload
-      X-Content-Type-Options:
-      - nosniff
-      X-Frame-Options:
-      - deny
-      X-Xss-Protection:
-      - 1; mode=block
-      X-Github-Request-Id:
-      - AD1C2EC5:2356:99D1AC9:57E39007
-    body:
-      encoding: ASCII-8BIT
-      string: '{"message":"Not Found","documentation_url":"https://developer.github.com/v3"}'
-    http_version: 
-  recorded_at: Thu, 22 Sep 2016 08:02:15 GMT
-- request:
-    method: delete
-    uri: https://thumbot:B%2FGUk%3E~22%3Ec%2A%24I%7CIa%3C%40@api.github.com/repos/thumbot/prtester/pulls/comments/248824273
-    body:
-      encoding: UTF-8
-      string: "{}"
-    headers:
-      Accept:
-      - application/vnd.github.v3+json
-      User-Agent:
-      - Octokit Ruby Gem 4.3.0
-      Content-Type:
-      - application/json
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-  response:
-    status:
-      code: 404
-      message: Not Found
-    headers:
-      Server:
-      - GitHub.com
-      Date:
-      - Thu, 22 Sep 2016 08:02:16 GMT
-      Content-Type:
-      - application/json; charset=utf-8
-      Transfer-Encoding:
-      - chunked
-      Status:
-      - 404 Not Found
-      X-Ratelimit-Limit:
-      - '5000'
-      X-Ratelimit-Remaining:
-      - '4313'
-      X-Ratelimit-Reset:
-      - '1474532401'
-      X-Github-Media-Type:
-      - github.v3; format=json
-      Access-Control-Expose-Headers:
-      - ETag, Link, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset,
-        X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval
-      Access-Control-Allow-Origin:
-      - "*"
-      Content-Security-Policy:
-      - default-src 'none'
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubdomains; preload
-      X-Content-Type-Options:
-      - nosniff
-      X-Frame-Options:
-      - deny
-      X-Xss-Protection:
-      - 1; mode=block
-      X-Github-Request-Id:
-      - AD1C2EC5:2356:99D1B6E:57E39007
-    body:
-      encoding: ASCII-8BIT
-      string: '{"message":"Not Found","documentation_url":"https://developer.github.com/v3"}'
-    http_version: 
-  recorded_at: Thu, 22 Sep 2016 08:02:15 GMT
-- request:
-    method: delete
-    uri: https://thumbot:B%2FGUk%3E~22%3Ec%2A%24I%7CIa%3C%40@api.github.com/repos/thumbot/prtester/pulls/comments/248824606
-    body:
-      encoding: UTF-8
-      string: "{}"
-    headers:
-      Accept:
-      - application/vnd.github.v3+json
-      User-Agent:
-      - Octokit Ruby Gem 4.3.0
-      Content-Type:
-      - application/json
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-  response:
-    status:
-      code: 404
-      message: Not Found
-    headers:
-      Server:
-      - GitHub.com
-      Date:
-      - Thu, 22 Sep 2016 08:02:16 GMT
-      Content-Type:
-      - application/json; charset=utf-8
-      Transfer-Encoding:
-      - chunked
-      Status:
-      - 404 Not Found
-      X-Ratelimit-Limit:
-      - '5000'
-      X-Ratelimit-Remaining:
-      - '4312'
-      X-Ratelimit-Reset:
-      - '1474532401'
-      X-Github-Media-Type:
-      - github.v3; format=json
-      Access-Control-Expose-Headers:
-      - ETag, Link, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset,
-        X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval
-      Access-Control-Allow-Origin:
-      - "*"
-      Content-Security-Policy:
-      - default-src 'none'
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubdomains; preload
-      X-Content-Type-Options:
-      - nosniff
-      X-Frame-Options:
-      - deny
-      X-Xss-Protection:
-      - 1; mode=block
-      X-Github-Request-Id:
-      - AD1C2EC5:2360:7CE8AAD:57E39008
-    body:
-      encoding: ASCII-8BIT
-      string: '{"message":"Not Found","documentation_url":"https://developer.github.com/v3"}'
-    http_version: 
-  recorded_at: Thu, 22 Sep 2016 08:02:16 GMT
-- request:
-    method: delete
-    uri: https://thumbot:B%2FGUk%3E~22%3Ec%2A%24I%7CIa%3C%40@api.github.com/repos/thumbot/prtester/pulls/comments/248835297
-    body:
-      encoding: UTF-8
-      string: "{}"
-    headers:
-      Accept:
-      - application/vnd.github.v3+json
-      User-Agent:
-      - Octokit Ruby Gem 4.3.0
-      Content-Type:
-      - application/json
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-  response:
-    status:
-      code: 404
-      message: Not Found
-    headers:
-      Server:
-      - GitHub.com
-      Date:
-      - Thu, 22 Sep 2016 08:02:17 GMT
-      Content-Type:
-      - application/json; charset=utf-8
-      Transfer-Encoding:
-      - chunked
-      Status:
-      - 404 Not Found
-      X-Ratelimit-Limit:
-      - '5000'
-      X-Ratelimit-Remaining:
-      - '4311'
-      X-Ratelimit-Reset:
-      - '1474532401'
-      X-Github-Media-Type:
-      - github.v3; format=json
-      Access-Control-Expose-Headers:
-      - ETag, Link, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset,
-        X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval
-      Access-Control-Allow-Origin:
-      - "*"
-      Content-Security-Policy:
-      - default-src 'none'
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubdomains; preload
-      X-Content-Type-Options:
-      - nosniff
-      X-Frame-Options:
-      - deny
-      X-Xss-Protection:
-      - 1; mode=block
-      X-Github-Request-Id:
-      - AD1C2EC5:235F:4B09C20:57E39008
-    body:
-      encoding: ASCII-8BIT
-      string: '{"message":"Not Found","documentation_url":"https://developer.github.com/v3"}'
-    http_version: 
-  recorded_at: Thu, 22 Sep 2016 08:02:16 GMT
-- request:
-    method: delete
-    uri: https://thumbot:B%2FGUk%3E~22%3Ec%2A%24I%7CIa%3C%40@api.github.com/repos/thumbot/prtester/pulls/comments/248836197
-    body:
-      encoding: UTF-8
-      string: "{}"
-    headers:
-      Accept:
-      - application/vnd.github.v3+json
-      User-Agent:
-      - Octokit Ruby Gem 4.3.0
-      Content-Type:
-      - application/json
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-  response:
-    status:
-      code: 404
-      message: Not Found
-    headers:
-      Server:
-      - GitHub.com
-      Date:
-      - Thu, 22 Sep 2016 08:02:17 GMT
-      Content-Type:
-      - application/json; charset=utf-8
-      Transfer-Encoding:
-      - chunked
-      Status:
-      - 404 Not Found
-      X-Ratelimit-Limit:
-      - '5000'
-      X-Ratelimit-Remaining:
-      - '4310'
-      X-Ratelimit-Reset:
-      - '1474532401'
-      X-Github-Media-Type:
-      - github.v3; format=json
-      Access-Control-Expose-Headers:
-      - ETag, Link, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset,
-        X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval
-      Access-Control-Allow-Origin:
-      - "*"
-      Content-Security-Policy:
-      - default-src 'none'
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubdomains; preload
-      X-Content-Type-Options:
-      - nosniff
-      X-Frame-Options:
-      - deny
-      X-Xss-Protection:
-      - 1; mode=block
-      X-Github-Request-Id:
-      - AD1C2EC5:2360:7CE8BB7:57E39009
-    body:
-      encoding: ASCII-8BIT
-      string: '{"message":"Not Found","documentation_url":"https://developer.github.com/v3"}'
-    http_version: 
-  recorded_at: Thu, 22 Sep 2016 08:02:17 GMT
-- request:
-    method: delete
-    uri: https://thumbot:B%2FGUk%3E~22%3Ec%2A%24I%7CIa%3C%40@api.github.com/repos/thumbot/prtester/pulls/comments/248836518
-    body:
-      encoding: UTF-8
-      string: "{}"
-    headers:
-      Accept:
-      - application/vnd.github.v3+json
-      User-Agent:
-      - Octokit Ruby Gem 4.3.0
-      Content-Type:
-      - application/json
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-  response:
-    status:
-      code: 404
-      message: Not Found
-    headers:
-      Server:
-      - GitHub.com
-      Date:
-      - Thu, 22 Sep 2016 08:02:18 GMT
-      Content-Type:
-      - application/json; charset=utf-8
-      Transfer-Encoding:
-      - chunked
-      Status:
-      - 404 Not Found
-      X-Ratelimit-Limit:
-      - '5000'
-      X-Ratelimit-Remaining:
-      - '4309'
-      X-Ratelimit-Reset:
-      - '1474532401'
-      X-Github-Media-Type:
-      - github.v3; format=json
-      Access-Control-Expose-Headers:
-      - ETag, Link, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset,
-        X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval
-      Access-Control-Allow-Origin:
-      - "*"
-      Content-Security-Policy:
-      - default-src 'none'
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubdomains; preload
-      X-Content-Type-Options:
-      - nosniff
-      X-Frame-Options:
-      - deny
-      X-Xss-Protection:
-      - 1; mode=block
-      X-Github-Request-Id:
-      - AD1C2EC5:2356:99D1DF8:57E39009
-    body:
-      encoding: ASCII-8BIT
-      string: '{"message":"Not Found","documentation_url":"https://developer.github.com/v3"}'
-    http_version: 
-  recorded_at: Thu, 22 Sep 2016 08:02:17 GMT
-- request:
-    method: delete
-    uri: https://thumbot:B%2FGUk%3E~22%3Ec%2A%24I%7CIa%3C%40@api.github.com/repos/thumbot/prtester/pulls/comments/248836623
-    body:
-      encoding: UTF-8
-      string: "{}"
-    headers:
-      Accept:
-      - application/vnd.github.v3+json
-      User-Agent:
-      - Octokit Ruby Gem 4.3.0
-      Content-Type:
-      - application/json
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-  response:
-    status:
-      code: 404
-      message: Not Found
-    headers:
-      Server:
-      - GitHub.com
-      Date:
-      - Thu, 22 Sep 2016 08:02:18 GMT
-      Content-Type:
-      - application/json; charset=utf-8
-      Transfer-Encoding:
-      - chunked
-      Status:
-      - 404 Not Found
-      X-Ratelimit-Limit:
-      - '5000'
-      X-Ratelimit-Remaining:
-      - '4308'
-      X-Ratelimit-Reset:
-      - '1474532401'
-      X-Github-Media-Type:
-      - github.v3; format=json
-      Access-Control-Expose-Headers:
-      - ETag, Link, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset,
-        X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval
-      Access-Control-Allow-Origin:
-      - "*"
-      Content-Security-Policy:
-      - default-src 'none'
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubdomains; preload
-      X-Content-Type-Options:
-      - nosniff
-      X-Frame-Options:
-      - deny
-      X-Xss-Protection:
-      - 1; mode=block
-      X-Github-Request-Id:
-      - AD1C2EC5:2360:7CE8CFD:57E3900A
-    body:
-      encoding: ASCII-8BIT
-      string: '{"message":"Not Found","documentation_url":"https://developer.github.com/v3"}'
-    http_version: 
-  recorded_at: Thu, 22 Sep 2016 08:02:18 GMT
+  recorded_at: Thu, 22 Sep 2016 20:55:07 GMT
 recorded_with: VCR 3.0.3

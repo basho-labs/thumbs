@@ -1,0 +1,287 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://thumbot:B%2FGUk%3E~22%3Ec%2A%24I%7CIa%3C%40@api.github.com/repos/thumbot/prtester/issues/453/comments
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept:
+      - application/vnd.github.v3+json
+      User-Agent:
+      - Octokit Ruby Gem 4.3.0
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - GitHub.com
+      Date:
+      - Thu, 22 Sep 2016 20:04:44 GMT
+      Content-Type:
+      - application/json; charset=utf-8
+      Transfer-Encoding:
+      - chunked
+      Status:
+      - 200 OK
+      X-Ratelimit-Limit:
+      - '5000'
+      X-Ratelimit-Remaining:
+      - '4789'
+      X-Ratelimit-Reset:
+      - '1474577734'
+      Cache-Control:
+      - private, max-age=60, s-maxage=60
+      Vary:
+      - Accept, Authorization, Cookie, X-GitHub-OTP
+      - Accept-Encoding
+      Etag:
+      - W/"83d54c17d5d5341359b3cf2c65f797fe"
+      X-Github-Media-Type:
+      - github.v3; format=json
+      Access-Control-Expose-Headers:
+      - ETag, Link, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset,
+        X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval
+      Access-Control-Allow-Origin:
+      - "*"
+      Content-Security-Policy:
+      - default-src 'none'
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-Xss-Protection:
+      - 1; mode=block
+      X-Served-By:
+      - 7b641bda7ec2ca7cd9df72d2578baf75
+      X-Github-Request-Id:
+      - AD1C2EC5:2360:8751EC1:57E4395C
+    body:
+      encoding: ASCII-8BIT
+      string: '[{"url":"https://api.github.com/repos/thumbot/prtester/issues/comments/249012737","html_url":"https://github.com/thumbot/prtester/pull/453#issuecomment-249012737","issue_url":"https://api.github.com/repos/thumbot/prtester/issues/453","id":249012737,"user":{"login":"bobsmith1","id":20779654,"avatar_url":"https://avatars.githubusercontent.com/u/20779654?v=3","gravatar_id":"","url":"https://api.github.com/users/bobsmith1","html_url":"https://github.com/bobsmith1","followers_url":"https://api.github.com/users/bobsmith1/followers","following_url":"https://api.github.com/users/bobsmith1/following{/other_user}","gists_url":"https://api.github.com/users/bobsmith1/gists{/gist_id}","starred_url":"https://api.github.com/users/bobsmith1/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/bobsmith1/subscriptions","organizations_url":"https://api.github.com/users/bobsmith1/orgs","repos_url":"https://api.github.com/users/bobsmith1/repos","events_url":"https://api.github.com/users/bobsmith1/events{/privacy}","received_events_url":"https://api.github.com/users/bobsmith1/received_events","type":"User","site_admin":false},"created_at":"2016-09-22T20:04:43Z","updated_at":"2016-09-22T20:04:43Z","body":"Great!
+        +1"},{"url":"https://api.github.com/repos/thumbot/prtester/issues/comments/249012744","html_url":"https://github.com/thumbot/prtester/pull/453#issuecomment-249012744","issue_url":"https://api.github.com/repos/thumbot/prtester/issues/453","id":249012744,"user":{"login":"davidpuddy1","id":20779719,"avatar_url":"https://avatars.githubusercontent.com/u/20779719?v=3","gravatar_id":"","url":"https://api.github.com/users/davidpuddy1","html_url":"https://github.com/davidpuddy1","followers_url":"https://api.github.com/users/davidpuddy1/followers","following_url":"https://api.github.com/users/davidpuddy1/following{/other_user}","gists_url":"https://api.github.com/users/davidpuddy1/gists{/gist_id}","starred_url":"https://api.github.com/users/davidpuddy1/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/davidpuddy1/subscriptions","organizations_url":"https://api.github.com/users/davidpuddy1/orgs","repos_url":"https://api.github.com/users/davidpuddy1/repos","events_url":"https://api.github.com/users/davidpuddy1/events{/privacy}","received_events_url":"https://api.github.com/users/davidpuddy1/received_events","type":"User","site_admin":false},"created_at":"2016-09-22T20:04:43Z","updated_at":"2016-09-22T20:04:43Z","body":"Looks
+        good +1"}]'
+    http_version: 
+  recorded_at: Thu, 22 Sep 2016 20:04:44 GMT
+- request:
+    method: get
+    uri: https://thumbot:B%2FGUk%3E~22%3Ec%2A%24I%7CIa%3C%40@api.github.com/repos/thumbot/prtester/issues/453/comments
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept:
+      - application/vnd.github.v3+json
+      User-Agent:
+      - Octokit Ruby Gem 4.3.0
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - GitHub.com
+      Date:
+      - Thu, 22 Sep 2016 20:04:45 GMT
+      Content-Type:
+      - application/json; charset=utf-8
+      Transfer-Encoding:
+      - chunked
+      Status:
+      - 200 OK
+      X-Ratelimit-Limit:
+      - '5000'
+      X-Ratelimit-Remaining:
+      - '4788'
+      X-Ratelimit-Reset:
+      - '1474577734'
+      Cache-Control:
+      - private, max-age=60, s-maxage=60
+      Vary:
+      - Accept, Authorization, Cookie, X-GitHub-OTP
+      - Accept-Encoding
+      Etag:
+      - W/"83d54c17d5d5341359b3cf2c65f797fe"
+      X-Github-Media-Type:
+      - github.v3; format=json
+      Access-Control-Expose-Headers:
+      - ETag, Link, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset,
+        X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval
+      Access-Control-Allow-Origin:
+      - "*"
+      Content-Security-Policy:
+      - default-src 'none'
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-Xss-Protection:
+      - 1; mode=block
+      X-Served-By:
+      - 7f48e2f7761567e923121f17538d7a6d
+      X-Github-Request-Id:
+      - AD1C2EC5:2360:8751F38:57E4395C
+    body:
+      encoding: ASCII-8BIT
+      string: '[{"url":"https://api.github.com/repos/thumbot/prtester/issues/comments/249012737","html_url":"https://github.com/thumbot/prtester/pull/453#issuecomment-249012737","issue_url":"https://api.github.com/repos/thumbot/prtester/issues/453","id":249012737,"user":{"login":"bobsmith1","id":20779654,"avatar_url":"https://avatars.githubusercontent.com/u/20779654?v=3","gravatar_id":"","url":"https://api.github.com/users/bobsmith1","html_url":"https://github.com/bobsmith1","followers_url":"https://api.github.com/users/bobsmith1/followers","following_url":"https://api.github.com/users/bobsmith1/following{/other_user}","gists_url":"https://api.github.com/users/bobsmith1/gists{/gist_id}","starred_url":"https://api.github.com/users/bobsmith1/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/bobsmith1/subscriptions","organizations_url":"https://api.github.com/users/bobsmith1/orgs","repos_url":"https://api.github.com/users/bobsmith1/repos","events_url":"https://api.github.com/users/bobsmith1/events{/privacy}","received_events_url":"https://api.github.com/users/bobsmith1/received_events","type":"User","site_admin":false},"created_at":"2016-09-22T20:04:43Z","updated_at":"2016-09-22T20:04:43Z","body":"Great!
+        +1"},{"url":"https://api.github.com/repos/thumbot/prtester/issues/comments/249012744","html_url":"https://github.com/thumbot/prtester/pull/453#issuecomment-249012744","issue_url":"https://api.github.com/repos/thumbot/prtester/issues/453","id":249012744,"user":{"login":"davidpuddy1","id":20779719,"avatar_url":"https://avatars.githubusercontent.com/u/20779719?v=3","gravatar_id":"","url":"https://api.github.com/users/davidpuddy1","html_url":"https://github.com/davidpuddy1","followers_url":"https://api.github.com/users/davidpuddy1/followers","following_url":"https://api.github.com/users/davidpuddy1/following{/other_user}","gists_url":"https://api.github.com/users/davidpuddy1/gists{/gist_id}","starred_url":"https://api.github.com/users/davidpuddy1/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/davidpuddy1/subscriptions","organizations_url":"https://api.github.com/users/davidpuddy1/orgs","repos_url":"https://api.github.com/users/davidpuddy1/repos","events_url":"https://api.github.com/users/davidpuddy1/events{/privacy}","received_events_url":"https://api.github.com/users/davidpuddy1/received_events","type":"User","site_admin":false},"created_at":"2016-09-22T20:04:43Z","updated_at":"2016-09-22T20:04:43Z","body":"Looks
+        good +1"}]'
+    http_version: 
+  recorded_at: Thu, 22 Sep 2016 20:04:45 GMT
+- request:
+    method: get
+    uri: https://thumbot:B%2FGUk%3E~22%3Ec%2A%24I%7CIa%3C%40@api.github.com/repos/thumbot/prtester/issues/453/comments
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept:
+      - application/vnd.github.v3+json
+      User-Agent:
+      - Octokit Ruby Gem 4.3.0
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - GitHub.com
+      Date:
+      - Thu, 22 Sep 2016 20:04:45 GMT
+      Content-Type:
+      - application/json; charset=utf-8
+      Transfer-Encoding:
+      - chunked
+      Status:
+      - 200 OK
+      X-Ratelimit-Limit:
+      - '5000'
+      X-Ratelimit-Remaining:
+      - '4787'
+      X-Ratelimit-Reset:
+      - '1474577734'
+      Cache-Control:
+      - private, max-age=60, s-maxage=60
+      Vary:
+      - Accept, Authorization, Cookie, X-GitHub-OTP
+      - Accept-Encoding
+      Etag:
+      - W/"83d54c17d5d5341359b3cf2c65f797fe"
+      X-Github-Media-Type:
+      - github.v3; format=json
+      Access-Control-Expose-Headers:
+      - ETag, Link, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset,
+        X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval
+      Access-Control-Allow-Origin:
+      - "*"
+      Content-Security-Policy:
+      - default-src 'none'
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-Xss-Protection:
+      - 1; mode=block
+      X-Served-By:
+      - 626ed3a9050b8faa02ef5f3c540b508d
+      X-Github-Request-Id:
+      - AD1C2EC5:2356:A5F9ACA:57E4395D
+    body:
+      encoding: ASCII-8BIT
+      string: '[{"url":"https://api.github.com/repos/thumbot/prtester/issues/comments/249012737","html_url":"https://github.com/thumbot/prtester/pull/453#issuecomment-249012737","issue_url":"https://api.github.com/repos/thumbot/prtester/issues/453","id":249012737,"user":{"login":"bobsmith1","id":20779654,"avatar_url":"https://avatars.githubusercontent.com/u/20779654?v=3","gravatar_id":"","url":"https://api.github.com/users/bobsmith1","html_url":"https://github.com/bobsmith1","followers_url":"https://api.github.com/users/bobsmith1/followers","following_url":"https://api.github.com/users/bobsmith1/following{/other_user}","gists_url":"https://api.github.com/users/bobsmith1/gists{/gist_id}","starred_url":"https://api.github.com/users/bobsmith1/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/bobsmith1/subscriptions","organizations_url":"https://api.github.com/users/bobsmith1/orgs","repos_url":"https://api.github.com/users/bobsmith1/repos","events_url":"https://api.github.com/users/bobsmith1/events{/privacy}","received_events_url":"https://api.github.com/users/bobsmith1/received_events","type":"User","site_admin":false},"created_at":"2016-09-22T20:04:43Z","updated_at":"2016-09-22T20:04:43Z","body":"Great!
+        +1"},{"url":"https://api.github.com/repos/thumbot/prtester/issues/comments/249012744","html_url":"https://github.com/thumbot/prtester/pull/453#issuecomment-249012744","issue_url":"https://api.github.com/repos/thumbot/prtester/issues/453","id":249012744,"user":{"login":"davidpuddy1","id":20779719,"avatar_url":"https://avatars.githubusercontent.com/u/20779719?v=3","gravatar_id":"","url":"https://api.github.com/users/davidpuddy1","html_url":"https://github.com/davidpuddy1","followers_url":"https://api.github.com/users/davidpuddy1/followers","following_url":"https://api.github.com/users/davidpuddy1/following{/other_user}","gists_url":"https://api.github.com/users/davidpuddy1/gists{/gist_id}","starred_url":"https://api.github.com/users/davidpuddy1/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/davidpuddy1/subscriptions","organizations_url":"https://api.github.com/users/davidpuddy1/orgs","repos_url":"https://api.github.com/users/davidpuddy1/repos","events_url":"https://api.github.com/users/davidpuddy1/events{/privacy}","received_events_url":"https://api.github.com/users/davidpuddy1/received_events","type":"User","site_admin":false},"created_at":"2016-09-22T20:04:43Z","updated_at":"2016-09-22T20:04:43Z","body":"Looks
+        good +1"}]'
+    http_version: 
+  recorded_at: Thu, 22 Sep 2016 20:04:45 GMT
+- request:
+    method: get
+    uri: https://thumbot:B%2FGUk%3E~22%3Ec%2A%24I%7CIa%3C%40@api.github.com/repos/thumbot/prtester/issues/453/comments
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept:
+      - application/vnd.github.v3+json
+      User-Agent:
+      - Octokit Ruby Gem 4.3.0
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - GitHub.com
+      Date:
+      - Thu, 22 Sep 2016 20:04:46 GMT
+      Content-Type:
+      - application/json; charset=utf-8
+      Transfer-Encoding:
+      - chunked
+      Status:
+      - 200 OK
+      X-Ratelimit-Limit:
+      - '5000'
+      X-Ratelimit-Remaining:
+      - '4786'
+      X-Ratelimit-Reset:
+      - '1474577734'
+      Cache-Control:
+      - private, max-age=60, s-maxage=60
+      Vary:
+      - Accept, Authorization, Cookie, X-GitHub-OTP
+      - Accept-Encoding
+      Etag:
+      - W/"83d54c17d5d5341359b3cf2c65f797fe"
+      X-Github-Media-Type:
+      - github.v3; format=json
+      Access-Control-Expose-Headers:
+      - ETag, Link, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset,
+        X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval
+      Access-Control-Allow-Origin:
+      - "*"
+      Content-Security-Policy:
+      - default-src 'none'
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-Xss-Protection:
+      - 1; mode=block
+      X-Served-By:
+      - ef96c2e493b28ffea49b891b085ed2dd
+      X-Github-Request-Id:
+      - AD1C2EC5:2360:87520A7:57E4395E
+    body:
+      encoding: ASCII-8BIT
+      string: '[{"url":"https://api.github.com/repos/thumbot/prtester/issues/comments/249012737","html_url":"https://github.com/thumbot/prtester/pull/453#issuecomment-249012737","issue_url":"https://api.github.com/repos/thumbot/prtester/issues/453","id":249012737,"user":{"login":"bobsmith1","id":20779654,"avatar_url":"https://avatars.githubusercontent.com/u/20779654?v=3","gravatar_id":"","url":"https://api.github.com/users/bobsmith1","html_url":"https://github.com/bobsmith1","followers_url":"https://api.github.com/users/bobsmith1/followers","following_url":"https://api.github.com/users/bobsmith1/following{/other_user}","gists_url":"https://api.github.com/users/bobsmith1/gists{/gist_id}","starred_url":"https://api.github.com/users/bobsmith1/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/bobsmith1/subscriptions","organizations_url":"https://api.github.com/users/bobsmith1/orgs","repos_url":"https://api.github.com/users/bobsmith1/repos","events_url":"https://api.github.com/users/bobsmith1/events{/privacy}","received_events_url":"https://api.github.com/users/bobsmith1/received_events","type":"User","site_admin":false},"created_at":"2016-09-22T20:04:43Z","updated_at":"2016-09-22T20:04:43Z","body":"Great!
+        +1"},{"url":"https://api.github.com/repos/thumbot/prtester/issues/comments/249012744","html_url":"https://github.com/thumbot/prtester/pull/453#issuecomment-249012744","issue_url":"https://api.github.com/repos/thumbot/prtester/issues/453","id":249012744,"user":{"login":"davidpuddy1","id":20779719,"avatar_url":"https://avatars.githubusercontent.com/u/20779719?v=3","gravatar_id":"","url":"https://api.github.com/users/davidpuddy1","html_url":"https://github.com/davidpuddy1","followers_url":"https://api.github.com/users/davidpuddy1/followers","following_url":"https://api.github.com/users/davidpuddy1/following{/other_user}","gists_url":"https://api.github.com/users/davidpuddy1/gists{/gist_id}","starred_url":"https://api.github.com/users/davidpuddy1/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/davidpuddy1/subscriptions","organizations_url":"https://api.github.com/users/davidpuddy1/orgs","repos_url":"https://api.github.com/users/davidpuddy1/repos","events_url":"https://api.github.com/users/davidpuddy1/events{/privacy}","received_events_url":"https://api.github.com/users/davidpuddy1/received_events","type":"User","site_admin":false},"created_at":"2016-09-22T20:04:43Z","updated_at":"2016-09-22T20:04:43Z","body":"Looks
+        good +1"}]'
+    http_version: 
+  recorded_at: Thu, 22 Sep 2016 20:04:46 GMT
+recorded_with: VCR 3.0.3

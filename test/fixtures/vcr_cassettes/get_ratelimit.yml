@@ -23,7 +23,7 @@ http_interactions:
       Server:
       - GitHub.com
       Date:
-      - Thu, 22 Sep 2016 06:52:08 GMT
+      - Thu, 22 Sep 2016 20:05:23 GMT
       Content-Type:
       - application/json; charset=utf-8
       Transfer-Encoding:
@@ -33,9 +33,9 @@ http_interactions:
       X-Ratelimit-Limit:
       - '5000'
       X-Ratelimit-Remaining:
-      - '4383'
+      - '4781'
       X-Ratelimit-Reset:
-      - '1474528711'
+      - '1474577734'
       Cache-Control:
       - no-cache
       X-Github-Media-Type:
@@ -58,12 +58,12 @@ http_interactions:
       Vary:
       - Accept-Encoding
       X-Served-By:
-      - 173530fed4bbeb1e264b2ed22e8b5c20
+      - 8a5c38021a5cd7cef7b8f49a296fee40
       X-Github-Request-Id:
-      - AD1C2EC5:2360:7C08C9D:57E37F98
+      - AD1C2EC5:2356:A5FC3A6:57E43983
     body:
       encoding: ASCII-8BIT
-      string: '{"resources":{"core":{"limit":5000,"remaining":4383,"reset":1474528711},"search":{"limit":30,"remaining":30,"reset":1474527188},"graphql":{"limit":200,"remaining":200,"reset":1474530728}},"rate":{"limit":5000,"remaining":4383,"reset":1474528711}}'
+      string: '{"resources":{"core":{"limit":5000,"remaining":4781,"reset":1474577734},"search":{"limit":30,"remaining":30,"reset":1474574783},"graphql":{"limit":200,"remaining":200,"reset":1474578323}},"rate":{"limit":5000,"remaining":4781,"reset":1474577734}}'
     http_version: 
-  recorded_at: Thu, 22 Sep 2016 06:52:08 GMT
+  recorded_at: Thu, 22 Sep 2016 20:05:23 GMT
 recorded_with: VCR 3.0.3

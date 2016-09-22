@@ -25,6 +25,7 @@ module Thumbs
       load_thumbs_config
       @minimum_reviewers = thumb_config && thumb_config.key?('minimum_reviewers') ? thumb_config['minimum_reviewers'] : 2
       @timeout=thumb_config && thumb_config.key?('timeout') ? thumb_config['timeout'] : 1800
+      @runtime_user=ENV['RUNTIME_USER']||'ubuntu'
     end
 
     def prepare_build_dir
@@ -93,13 +94,15 @@ module Thumbs
 
     def try_run_build_step(name, command)
       status={}
+      command = "cd #{@build_dir} && #{command}"
+      sudo_wrapped_command = "sudo su - #{@runtime_user} -c \"#{command} 2>&1 \" 2>&1"
+      debug_message "running command #{sudo_wrapped_command}"
 
-      command = "cd #{@build_dir} && #{command} 2>&1"
       status[:started_at]=DateTime.now
       status[:command] = command
       begin
         Timeout::timeout(@timeout) do
-          output = `#{command}`
+          output = `#{sudo_wrapped_command}`
           status[:ended_at]=DateTime.now
           unless $? == 0
             result = :error

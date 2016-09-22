@@ -96,7 +96,7 @@ module Thumbs
     def try_run_build_step(name, command)
       status={}
 
-      command = "cd #{@build_dir} && #{command} 2>&1"
+      command = "cd #{@build_dir} && su - ubuntu -c \"#{command}\" 2>&1"
       status[:started_at]=DateTime.now
       status[:command] = command
       begin

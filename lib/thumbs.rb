@@ -3,10 +3,7 @@ require 'log4r'
 require 'octokit'
 require 'git'
 require 'erb'
-require 'slack-ruby-client'
 require 'netrc'
-
-CONFIGURED_SLACK_CHANNELS=%w[testing]
 
 $:.unshift(File.dirname(__FILE__))
 

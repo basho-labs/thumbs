@@ -1,6 +1,6 @@
 minimum_reviewers: 1
 merge: true
 build_steps:
- - echo "rake test"
+ - rake test TESTOPTS=-v
 org_mode: true
 timeout: 1799

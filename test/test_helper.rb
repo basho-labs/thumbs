@@ -1,15 +1,30 @@
 ENV['RACK_ENV'] = 'test'
 
+require 'rubygems'
+require 'test/unit'
 $:.unshift(File.join(File.dirname(__FILE__), '/../'))
 require 'app'
-require 'test/unit'
-require 'rack/test'
 require 'dust'
-#require 'pacto'
+require 'rack/test'
+require './lib/thumbs'
+require 'vcr'
 
-#Pacto.generate!
 
-COMMENT_PAYLOAD = YAML.load(IO.read(File.join(File.expand_path(File.dirname('__FILE__'), './test/data/new_comment_payload.yml'))))
+TESTREPO='thumbot/prtester'
+TEST_PRW=Thumbs::PullRequestWorker.new(:repo => TESTREPO, :pr => 453)
+TESTPR=TEST_PRW.pr.number
+
+VCR.configure do |config|
+  config.cassette_library_dir = "test/fixtures/vcr_cassettes"
+  config.hook_into :webmock # or :fakeweb
+end
+
+def cassette(name, options={}, &block)
+  VCR.use_cassette(name, options,  &block)
+end
+
+
+#COMMENT_PAYLOAD = YAML.load(IO.read(File.join(File.expand_path(File.dirname('__FILE__'), './test/data/new_comment_payload.yml'))))
 
 def create_test_pr(repo_name)
   # prep test data
@@ -30,27 +45,44 @@ def create_test_pr(repo_name)
   g.branch(pr_branch).checkout
   g.repack
   system("cd #{test_dir} && git push -q origin #{pr_branch}")
-  client1 = Octokit::Client.new(:login => ENV['GITHUB_USER'], :password => ENV['GITHUB_PASS'])
-  pr = client1.create_pull_request(repo_name, "master", pr_branch, "Testing PR", "Thumbs Git Robot: This pr has been created for testing purposes")
-  prw=Thumbs::PullRequestWorker.new(:repo => repo_name, :pr => pr.number)
-  prw.build_steps = ["make", "make build", "make test"]
-  prw
+  client1 = Octokit::Client.new(:netrc => true)
+  cassette(:create_pull_request, :record => :all) do
+    pr = client1.create_pull_request(repo_name, "master", pr_branch, "Testing PR", "Thumbs Git Robot: This pr has been created for testing purposes")
+    prw=Thumbs::PullRequestWorker.new(:repo => repo_name, :pr => pr.number)
+    return prw
+  end
 end
 
 def create_test_code_reviews(test_repo, pr_number)
-  client1 = Octokit::Client.new(:login => ENV['GITHUB_USER'], :password => ENV['GITHUB_PASS'])
-  client1.add_comment(test_repo, pr_number, "Hey Guys, check out my PR, think its pretty sweet!", options = {})
-  client2 = Octokit::Client.new(:login => ENV['GITHUB_USER2'], :password => ENV['GITHUB_PASS2'])
-  client2.add_comment(test_repo, pr_number, "YAAAAAAAASSSS +1", options = {})
-  client3 = Octokit::Client.new(:login => ENV['GITHUB_USER3'], :password => ENV['GITHUB_PASS3'])
-  client3.add_comment(test_repo, pr_number, "Looks good +1", options = {})
+  cassette(:create_test_code_reviews, :record => :new_episodes) do
+    client2 = Octokit::Client.new(:login => ENV['GITHUB_USER1'], :password => ENV['GITHUB_PASS1'])
+    client2.add_comment(test_repo, pr_number, "Great! +1", options = {})
+    client3 = Octokit::Client.new(:login => ENV['GITHUB_USER2'], :password => ENV['GITHUB_PASS2'])
+    client3.add_comment(test_repo, pr_number, "Looks good +1", options = {})
+  end
+end
+def remove_comments(test_repo, pr_number)
+  client1 = Octokit::Client.new(:netrc => true)
+  cassette(:get_pr_for_review_removal, :record => :all) do
+    prw=Thumbs::PullRequestWorker.new(:repo => TESTREPO, :pr => TESTPR)
+    cassette(:remove_test_code_reviews, :record => :all) do
+      prw.comments.each do |comment|
+        cassette(:delete_pull_request_comment, :record => :all) do
+          client1.delete_pull_request_comment(TESTREPO, comment[:id])
+        end
+      end
+    end
+  end
 end
 
 def create_org_member_test_code_reviews(test_repo, pr_number)
-  client1 = Octokit::Client.new(:login => ENV['ORG_MEMBER_GITHUB_USER'], :password => ENV['ORG_MEMBER_GITHUB_PASS'])
-  client1.add_comment(test_repo, pr_number, "Yeh, works for me, +1", options = {})
-  client2 = Octokit::Client.new(:login => ENV['ORG_MEMBER_GITHUB_USER2'], :password => ENV['ORG_MEMBER_GITHUB_PASS2'])
-  client2.add_comment(test_repo, pr_number, "This looks great, thank you! +1  (ok to merge)", options = {})
+  cassette(:create_org_member_test_code_reviews) do
+    client1 = Octokit::Client.new(:login => ENV['ORG_MEMBER_GITHUB_USER1'], :password => ENV['ORG_MEMBER_GITHUB_PASS1'])
+    client1.add_comment(test_repo, pr_number, "This is acceptable +1", options = {})
+    client2 = Octokit::Client.new(:login => ENV['ORG_MEMBER_GITHUB_USER2'], :password => ENV['ORG_MEMBER_GITHUB_PASS2'])
+    client2.add_comment(test_repo, pr_number, "This looks great, thank you! +1  (ok to merge)", options = {})
+  end
 end
+
 
 

@@ -1,17 +1,20 @@
 $:.unshift(File.dirname(__FILE__))
 require 'app'
 require 'thumbs'
-require 'test/test_helper'
-require "irb"
+require 'rake/testtask'
+
+Rake::TestTask.new do |t|
+  t.libs << "test"
+#  t.test_files = FileList['test/test*.rb']
+ # t.test_files = FileList['test/test_payload.rb','test/test_webhook.rb','test/test_persisted_build_status']
+  t.test_files = FileList['test/test.rb']
+  t.verbose = true
+end
 
 task :default => [:test]
 
 task :console do
   ruby "bin/console"
-end
-task :test do
-#  ruby FileList.new('test/*.rb')
-  ruby FileList.new('test/test_minimal.rb')
 end
 
 task :start do

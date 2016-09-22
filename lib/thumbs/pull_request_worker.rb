@@ -5,7 +5,7 @@ module Thumbs
     include Thumbs::Slack
     attr_reader :build_dir
     attr_reader :build_status
-    attr_reader :build_steps
+    attr_accessor :build_steps
     attr_reader :minimum_reviewers
     attr_reader :repo
     attr_reader :pr
@@ -396,8 +396,11 @@ module Thumbs
       @build_status[:steps].collect { |step_name, status| step_name if status[:result] != :ok }.compact
     end
 
+
     def aggregate_build_status_result
-      @build_status[:steps].each { |step_name, status| return :error unless status[:result] == :ok }
+      build_status[:steps].each do |step_name, status|
+        return :error unless status.kind_of?(Hash) && status.key?(:result) && status[:result] == :ok
+      end
       :ok
     end
 

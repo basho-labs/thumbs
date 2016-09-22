@@ -2,17 +2,13 @@ ENV['RACK_ENV'] = 'test'
 
 $:.unshift(File.dirname(__FILE__))
 
-require 'test_helper'
+ENV['RACK_ENV'] = 'test'
 
-#Pacto.generate!
+$:.unshift(File.join(File.dirname(__FILE__), '/../'))
+require 'test/test_helper'
 
-#contracts = Pacto.load_contracts('contracts/services', 'http://api.github.com')
-#contracts.stub_providers
-
+require 'test/test_webhook'
+require 'test/test_payload'
 require 'test/test_persisted_build_status'
+require 'test/test_build_steps'
 
-#require 'test/test_minimal'
-#require 'test/test_basic_flow'
-#require 'test/test_integrations'
-#require 'test/test_webhook'
-#require 'test/test_slack'

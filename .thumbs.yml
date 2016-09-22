@@ -1,6 +1,7 @@
 minimum_reviewers: 1
 merge: false
 build_steps:
- - rake test
+ - env
+ - bundle rake test
 org_mode: true
 timeout: 1799

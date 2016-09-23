@@ -15,10 +15,10 @@ TESTPR=453
 ORGTESTREPO='basho-bin/tester'
 ORGTEST_PRW=Thumbs::PullRequestWorker.new(:repo => TESTREPO, :pr => 27)
 ORGTESTPR=27
-#Thumbs.start_logger if ENV.key?('DEBUG')
+Thumbs.start_logger if ENV.key?('DEBUG')
 
-def debug_message(foo)
-
+def debug_message(message)
+  ENV.key?('DEBUG') ? Log4r::Logger['Thumbs'].debug(message) : nil
 end
 include Thumbs
 
@@ -31,7 +31,19 @@ end
 def cassette(name, options={}, &block)
   VCR.use_cassette(name, options, &block)
 end
-
+def default_vcr_state(&block)
+  cassette(:load_pull_request, :allow_playback_repeats => true) do
+    cassette(:load_comments, :record => :new_episodes, :allow_playback_repeats => true) do
+      cassette(:get_comments_issues, :record => :new_episodes, :allow_playback_repeats => true) do
+        cassette(:get_events, :record => :all, :allow_playback_repeats => true) do
+          cassette(:get_pull_events, :record => :all, :allow_playback_repeats => true) do
+            block.call
+          end
+        end
+      end
+    end
+  end
+end
 def create_test_pr(repo_name)
   # prep test data
   build_dir='/tmp/thumbs'
@@ -137,6 +149,4 @@ module Octokit
     end
   end
 end
-
-
 

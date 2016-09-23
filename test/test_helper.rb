@@ -23,6 +23,7 @@ include Thumbs
 VCR.configure do |config|
   config.cassette_library_dir = "test/fixtures/vcr_cassettes"
   config.hook_into :webmock # or :fakeweb
+  config.debug_logger = File.open(File.join(File.dirname(__FILE__), '/../log/vcr.debug.log'), 'w')
 end
 
 def cassette(name, options={}, &block)

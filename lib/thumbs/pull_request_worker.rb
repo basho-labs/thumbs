@@ -1,24 +1,23 @@
 require 'http'
+require 'etc'
 module Thumbs
   class PullRequestWorker
 
-    include Thumbs::Slack
     attr_reader :build_dir
     attr_reader :build_status
-    attr_reader :build_steps
+    attr_accessor :build_steps
     attr_reader :minimum_reviewers
     attr_reader :repo
     attr_reader :pr
-    attr_reader :thumb_config
+    attr_accessor :thumb_config
     attr_reader :log
     attr_reader :client
-
 
     def initialize(options)
       @repo = options[:repo]
       @client = Octokit::Client.new(:netrc => true)
       @pr = @client.pull_request(options[:repo], options[:pr])
-      @build_dir=options[:build_dir] || "/tmp/thumbs/#{@repo.gsub(/\//, '_')}_#{@pr.head.sha.slice(0,8)}"
+      @build_dir=options[:build_dir] || "/tmp/thumbs/#{@repo.gsub(/\//, '_')}_#{@pr.head.sha.slice(0, 8)}"
       @build_status={:steps => {}}
       @build_steps = []
       prepare_build_dir
@@ -27,11 +26,16 @@ module Thumbs
       @timeout=thumb_config && thumb_config.key?('timeout') ? thumb_config['timeout'] : 1800
     end
 
+    def reset_build_status
+      @build_status={:steps => {}}
+    end
+
     def prepare_build_dir
       cleanup_build_dir
       clone
       try_merge
     end
+
     def cleanup_build_dir
       FileUtils.rm_rf(@build_dir)
     end
@@ -93,10 +97,13 @@ module Thumbs
 
     def try_run_build_step(name, command)
       status={}
-
       command = "cd #{@build_dir} && #{command} 2>&1"
+
+      debug_message "running command #{command}"
+
       status[:started_at]=DateTime.now
       status[:command] = command
+
       begin
         Timeout::timeout(@timeout) do
           output = `#{command}`
@@ -118,6 +125,7 @@ module Thumbs
           debug_message "[ #{name.upcase} ] [#{result.upcase}] \"#{command}\""
           return status
         end
+
       rescue Timeout::Error => e
         status[:ended_at]=DateTime.now
         status[:result] = :error
@@ -130,8 +138,28 @@ module Thumbs
       end
     end
 
+    def events
+      client.repository_events(@repo).collect { |e| e.to_h }
+    end
+
+    def push_time_stamp(sha)
+      time_stamp=events.collect { |e| e[:created_at] if e[:type] == 'PushEvent' && e[:payload][:head] == sha }.compact.first
+      time_stamp ? time_stamp : pr.created_at
+    end
+
+    def comments_after_head_sha
+      sha_time_stamp=push_time_stamp(pr.head.sha)
+      comments_after_sha=all_comments.compact.collect do |c|
+        c.to_h if c[:created_at] > sha_time_stamp
+      end.compact
+    end
+
+    def all_comments
+      client.issue_comments(repo, pr.number)
+    end
+
     def comments
-      client.issue_comments(@repo, @pr.number)
+      comments_after_head_sha
     end
 
     def bot_comments
@@ -223,29 +251,30 @@ module Thumbs
       end
       debug_message "all keys and result ok present"
 
-      unless @thumb_config
+      unless thumb_config
         debug_message "config missing"
         return false
       end
-      unless @thumb_config.key?('minimum_reviewers')
+      unless thumb_config.key?('minimum_reviewers')
         debug_message "minimum_reviewers config option missing"
         return false
       end
       debug_message "minimum reviewers: #{thumb_config['minimum_reviewers']}"
       debug_message "review_count: #{review_count} >= #{thumb_config['minimum_reviewers']}"
 
-      unless review_count >= @thumb_config['minimum_reviewers']
-        debug_message " #{review_count} !>= #{@thumb_config['minimum_reviewers']}"
+      unless review_count >= thumb_config['minimum_reviewers']
+        debug_message " #{review_count} !>= #{thumb_config['minimum_reviewers']}"
         return false
       end
 
-      unless @thumb_config['merge'] == true
+      unless thumb_config['merge'] == true
         debug_message "thumb_config['merge'] != 'true' || thumbs config says: merge: #{thumb_config['merge'].inspect}"
         return false
       end
       debug_message "valid_for_merge? TRUE"
       return true
     end
+
     def run_build_steps
       build_steps.each do |build_step|
         build_step_name=build_step.gsub(/\s+/, '_').gsub(/-/, '')
@@ -253,16 +282,19 @@ module Thumbs
       end
       persist_build_status(@repo, @pr.head.sha)
     end
+
     def persist_build_status(repo, rev)
-      repo=repo.gsub(/\//,'_')
+      repo=repo.gsub(/\//, '_')
       file=File.join('/tmp/thumbs', "#{repo}_#{rev}.yml")
       FileUtils.mkdir_p('/tmp/thumbs')
       File.open(file, "w") do |f|
         f.syswrite(@build_status.to_yaml)
       end
+      true
     end
+
     def read_build_status(repo, rev)
-      repo=repo.gsub(/\//,'_')
+      repo=repo.gsub(/\//, '_')
       file=File.join('/tmp/thumbs', "#{repo}_#{rev}.yml")
       if File.exist?(file)
         YAML.load(IO.read(file))
@@ -270,6 +302,7 @@ module Thumbs
         {:steps => {}}
       end
     end
+
     def validate
       @build_status = read_build_status(@repo, @pr.head.sha)
       refresh_repo
@@ -384,7 +417,7 @@ module Thumbs
       client.pull_request(@repo, @pr.number).state == "open"
     end
 
-    def add_comment(comment)
+    def add_comment(comment, options={})
       client.add_comment(@repo, @pr.number, comment, options = {})
     end
 
@@ -396,8 +429,11 @@ module Thumbs
       @build_status[:steps].collect { |step_name, status| step_name if status[:result] != :ok }.compact
     end
 
+
     def aggregate_build_status_result
-      @build_status[:steps].each { |step_name, status| return :error unless status[:result] == :ok }
+      build_status[:steps].each do |step_name, status|
+        return :error unless status.kind_of?(Hash) && status.key?(:result) && status[:result] == :ok
+      end
       :ok
     end
 
@@ -412,7 +448,8 @@ module Thumbs
 <p>Build Status: [<%= @pr.head.sha.slice(0,10) %>] <%= @status_title %></p>
 <% @build_status[:steps].each do |step_name, status| %>
 <% if status[:output] %>
-<% gist=client.create_gist( { :files => { step_name.to_s + ".txt" => { :content => status[:output] }} }) %>
+<% title_file = step_name.to_s.gsub(/\\//,'_') +  ".txt" %>
+<% gist=client.create_gist( { :files => { title_file => { :content => status[:output] } } } )  %>
 <% end %>
 <details>
  <summary><%= result_image(status[:result]) %> <%= step_name.upcase %> </summary>
@@ -424,7 +461,9 @@ module Thumbs
 > Result:  <%= status[:result].upcase %>
 > Message: <%= status[:message] %>
 > Exit Code:  <%= status[:exit_code] || status[:result].upcase %>
+<% if gist.respond_to?(:html_url) %>
 > <a href="<%= gist.html_url %>">:page_facing_up:</a>
+<% end %>
 </p>
 
 ```
@@ -440,28 +479,30 @@ module Thumbs
 </details>
 
 <% end %>
-<% status_code= (review_count >= minimum_reviewers ? :ok : :unchecked) %>
-<% org_msg=  thumb_config['org_mode'] ? " from organization #{repo.split(/\//).shift}"  : "." %>
-<details>
- <summary><%= result_image(status_code) %> <%= review_count %> of <%= minimum_reviewers %> Code reviews<%= org_msg %></summary>
-
-<p>
-<% reviews.each do |review| %>
-
-  @<%= review[:user][:login] %>: <%= review[:body] %> 
-
-<% end %>
-</p>
-</details>
+<%= render_reviewers_comment_template %>
       EOS
       add_comment(comment)
     end
 
-    def create_reviewers_comment
+    def render_reviewers_comment_template
       comment = render_template <<-EOS
-<% reviewers=reviews.collect { |r| "*@" + r[:user][:login] + "*" } %>
-Code reviews from: <%= reviewers.uniq.join(", ") %>.
+<% status_code= (review_count >= minimum_reviewers ? :ok : :unchecked) %>
+<% org_msg=  thumb_config['org_mode'] ? " from organization #{repo.split(/\//).shift}"  : "." %>
+<details>
+<summary><%= result_image(status_code) %> <%= review_count %> of <%= minimum_reviewers %> Code reviews<%= org_msg %></summary>
+
+
+<% reviews.each do |review| %>
+- @<%= review[:user][:login] %>: <%= review[:body] %> 
+
+<% end %>
+</details>
+
       EOS
+    end
+
+    def create_reviewers_comment
+      comment = render_reviewers_comment_template
       add_comment(comment)
     end
 

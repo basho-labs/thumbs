@@ -1,8 +1,8 @@
 require 'http'
+require 'etc'
 module Thumbs
   class PullRequestWorker
 
-    include Thumbs::Slack
     attr_reader :build_dir
     attr_reader :build_status
     attr_accessor :build_steps
@@ -13,12 +13,11 @@ module Thumbs
     attr_reader :log
     attr_reader :client
 
-
     def initialize(options)
       @repo = options[:repo]
       @client = Octokit::Client.new(:netrc => true)
       @pr = @client.pull_request(options[:repo], options[:pr])
-      @build_dir=options[:build_dir] || "/tmp/thumbs/#{@repo.gsub(/\//, '_')}_#{@pr.head.sha.slice(0,8)}"
+      @build_dir=options[:build_dir] || "/tmp/thumbs/#{@repo.gsub(/\//, '_')}_#{@pr.head.sha.slice(0, 8)}"
       @build_status={:steps => {}}
       @build_steps = []
       prepare_build_dir
@@ -26,14 +25,17 @@ module Thumbs
       @minimum_reviewers = thumb_config && thumb_config.key?('minimum_reviewers') ? thumb_config['minimum_reviewers'] : 2
       @timeout=thumb_config && thumb_config.key?('timeout') ? thumb_config['timeout'] : 1800
     end
+
     def reset_build_status
-       @build_status={:steps => {}}
+      @build_status={:steps => {}}
     end
+
     def prepare_build_dir
       cleanup_build_dir
       clone
       try_merge
     end
+
     def cleanup_build_dir
       FileUtils.rm_rf(@build_dir)
     end
@@ -95,10 +97,13 @@ module Thumbs
 
     def try_run_build_step(name, command)
       status={}
+      command = "cd #{@build_dir} && #{command} 2>&1"
 
-      command = "cd #{@build_dir} && su - ubuntu -c \"#{command}\" 2>&1"
+      debug_message "running command #{command}"
+
       status[:started_at]=DateTime.now
       status[:command] = command
+
       begin
         Timeout::timeout(@timeout) do
           output = `#{command}`
@@ -120,6 +125,7 @@ module Thumbs
           debug_message "[ #{name.upcase} ] [#{result.upcase}] \"#{command}\""
           return status
         end
+
       rescue Timeout::Error => e
         status[:ended_at]=DateTime.now
         status[:result] = :error
@@ -248,6 +254,7 @@ module Thumbs
       debug_message "valid_for_merge? TRUE"
       return true
     end
+
     def run_build_steps
       build_steps.each do |build_step|
         build_step_name=build_step.gsub(/\s+/, '_').gsub(/-/, '')
@@ -255,16 +262,18 @@ module Thumbs
       end
       persist_build_status(@repo, @pr.head.sha)
     end
+
     def persist_build_status(repo, rev)
-      repo=repo.gsub(/\//,'_')
+      repo=repo.gsub(/\//, '_')
       file=File.join('/tmp/thumbs', "#{repo}_#{rev}.yml")
       FileUtils.mkdir_p('/tmp/thumbs')
       File.open(file, "w") do |f|
         f.syswrite(@build_status.to_yaml)
       end
     end
+
     def read_build_status(repo, rev)
-      repo=repo.gsub(/\//,'_')
+      repo=repo.gsub(/\//, '_')
       file=File.join('/tmp/thumbs', "#{repo}_#{rev}.yml")
       if File.exist?(file)
         YAML.load(IO.read(file))
@@ -272,6 +281,7 @@ module Thumbs
         {:steps => {}}
       end
     end
+
     def validate
       @build_status = read_build_status(@repo, @pr.head.sha)
       refresh_repo

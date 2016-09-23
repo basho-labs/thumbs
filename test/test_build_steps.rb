@@ -77,6 +77,7 @@ unit_tests do
       assert status[:result]==:ok
       build_dir_path="/tmp/thumbs/#{prw.repo.gsub(/\//, '_')}_#{prw.pr.head.sha.slice(0, 8)}"
       assert_equal "cd #{build_dir_path} && make build 2>&1", status[:command]
+
       assert_equal "BUILD OK\n", status[:output]
     end
   end
@@ -170,31 +171,21 @@ unit_tests do
       assert_equal :ok, prw.aggregate_build_status_result
       prw.build_steps=["make", "make error"]
       prw.run_build_steps
+
       assert_equal :error, prw.aggregate_build_status_result, prw.build_status.inspect
     end
 
   end
   test "add comment" do
-    cassette(:load_pr, :record => :new_episodes) do
+    cassette(:load_pr) do
       prw=Thumbs::PullRequestWorker.new(:repo => TESTREPO, :pr => TESTPR)
-      cassette(:get_comments, :record => :all) do
+      cassette(:get_comments) do
         comment_length = prw.comments.length
-        cassette(:add_comment, :record => :all) do
+        cassette(:add_comment_test) do
+          assert prw.respond_to?(:add_comment)
           comment = prw.add_comment("test")
-
-          cassette(:load_pr_update, :record => :all) do
-            prw2=Thumbs::PullRequestWorker.new(:repo => TESTREPO, :pr => TESTPR)
-            cassette(:get_comments_update, :record => :all) do
-
-              new_comment_length = prw2.comments.length
-              assert new_comment_length > comment_length, new_comment_length.to_s
-              client1 = Octokit::Client.new(:netrc => true)
-
-              cassette(:delete_pull_request_comment, :record => :all) do
-                client1.delete_pull_request_comment(TESTREPO, comment.to_h[:id])
-              end
-            end
-          end
+          assert comment.to_h.key?(:created_at), comment.to_h.to_yaml
+          assert comment.to_h.key?(:id), comment.to_h.to_yaml
         end
       end
     end
@@ -238,14 +229,13 @@ unit_tests do
         cassette(:load_comments_update, :record => :all) do
           cassette(:get_state, :record => :new_episodes) do
             assert_equal false, prw.valid_for_merge?
-            #cassette(:create_code_reviews, :record => :all) do
-              #create_test_code_reviews(ORGTESTREPO, ORGTESTPR)
+
               cassette(:update_reviews, :record => :all) do
                 assert prw.review_count => 2
                 prw.run_build_steps
                 assert_equal false, prw.valid_for_merge?, prw.build_status
               end
-#end
+
              end
 
 

@@ -23,7 +23,7 @@ http_interactions:
       Server:
       - GitHub.com
       Date:
-      - Thu, 22 Sep 2016 23:57:29 GMT
+      - Fri, 23 Sep 2016 00:44:28 GMT
       Content-Type:
       - application/json; charset=utf-8
       Content-Length:
@@ -33,18 +33,18 @@ http_interactions:
       X-Ratelimit-Limit:
       - '5000'
       X-Ratelimit-Remaining:
-      - '4995'
+      - '4999'
       X-Ratelimit-Reset:
-      - '1474590369'
+      - '1474595068'
       Cache-Control:
       - private, max-age=60, s-maxage=60
       Vary:
       - Accept, Authorization, Cookie, X-GitHub-OTP
       - Accept-Encoding
       Etag:
-      - '"25233d588cb44e79c02a8393a43e4466"'
+      - '"90c671ade225cdf33feb45d82727b8e0"'
       Location:
-      - https://api.github.com/repos/basho-bin/tester/issues/comments/249061849
+      - https://api.github.com/repos/basho-bin/tester/issues/comments/249069814
       X-Github-Media-Type:
       - github.v3; format=json
       Access-Control-Expose-Headers:
@@ -63,13 +63,13 @@ http_interactions:
       X-Xss-Protection:
       - 1; mode=block
       X-Served-By:
-      - 88531cdcf1929112ec480e1806d44a33
+      - cee4c0729c8e9147e7abcb45b9d69689
       X-Github-Request-Id:
-      - AD1C2EC5:2356:A98F251:57E46FE9
+      - AD1C2EC5:2356:AA331F5:57E47AEC
     body:
       encoding: UTF-8
-      string: '{"url":"https://api.github.com/repos/basho-bin/tester/issues/comments/249061849","html_url":"https://github.com/basho-bin/tester/pull/27#issuecomment-249061849","issue_url":"https://api.github.com/repos/basho-bin/tester/issues/27","id":249061849,"user":{"login":"davidpuddy1","id":20779719,"avatar_url":"https://avatars.githubusercontent.com/u/20779719?v=3","gravatar_id":"","url":"https://api.github.com/users/davidpuddy1","html_url":"https://github.com/davidpuddy1","followers_url":"https://api.github.com/users/davidpuddy1/followers","following_url":"https://api.github.com/users/davidpuddy1/following{/other_user}","gists_url":"https://api.github.com/users/davidpuddy1/gists{/gist_id}","starred_url":"https://api.github.com/users/davidpuddy1/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/davidpuddy1/subscriptions","organizations_url":"https://api.github.com/users/davidpuddy1/orgs","repos_url":"https://api.github.com/users/davidpuddy1/repos","events_url":"https://api.github.com/users/davidpuddy1/events{/privacy}","received_events_url":"https://api.github.com/users/davidpuddy1/received_events","type":"User","site_admin":false},"created_at":"2016-09-22T23:57:29Z","updated_at":"2016-09-22T23:57:29Z","body":"This
+      string: '{"url":"https://api.github.com/repos/basho-bin/tester/issues/comments/249069814","html_url":"https://github.com/basho-bin/tester/pull/27#issuecomment-249069814","issue_url":"https://api.github.com/repos/basho-bin/tester/issues/27","id":249069814,"user":{"login":"davidpuddy1","id":20779719,"avatar_url":"https://avatars.githubusercontent.com/u/20779719?v=3","gravatar_id":"","url":"https://api.github.com/users/davidpuddy1","html_url":"https://github.com/davidpuddy1","followers_url":"https://api.github.com/users/davidpuddy1/followers","following_url":"https://api.github.com/users/davidpuddy1/following{/other_user}","gists_url":"https://api.github.com/users/davidpuddy1/gists{/gist_id}","starred_url":"https://api.github.com/users/davidpuddy1/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/davidpuddy1/subscriptions","organizations_url":"https://api.github.com/users/davidpuddy1/orgs","repos_url":"https://api.github.com/users/davidpuddy1/repos","events_url":"https://api.github.com/users/davidpuddy1/events{/privacy}","received_events_url":"https://api.github.com/users/davidpuddy1/received_events","type":"User","site_admin":false},"created_at":"2016-09-23T00:44:28Z","updated_at":"2016-09-23T00:44:28Z","body":"This
         looks great, thank you! +1  (ok to merge)"}'
     http_version: 
-  recorded_at: Thu, 22 Sep 2016 23:57:30 GMT
+  recorded_at: Fri, 23 Sep 2016 00:44:28 GMT
 recorded_with: VCR 3.0.3

@@ -4,4 +4,4 @@ build_steps:
  - env
  - ruby test/test.rb
 org_mode: true
-timeout: 1781
+timeout: 1780

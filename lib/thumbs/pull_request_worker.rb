@@ -427,7 +427,8 @@ module Thumbs
 <p>Build Status: [<%= @pr.head.sha.slice(0,10) %>] <%= @status_title %></p>
 <% @build_status[:steps].each do |step_name, status| %>
 <% if status[:output] %>
-<% gist=client.create_gist( { :files => { step_name.to_s.gsub(/\//,'_') +  ".txt" => { :content => status[:output] }} }) rescue nil  %>
+<% title_file = step_name.to_s.gsub(/\\//,'_') +  ".txt" %>
+<% gist=client.create_gist( { :files => { title_file => { :content => status[:output] } } } )  %>
 <% end %>
 <details>
  <summary><%= result_image(status[:result]) %> <%= step_name.upcase %> </summary>

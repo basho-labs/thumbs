@@ -11,7 +11,14 @@ gem 'octokit'
 gem 'git'
 gem 'unicorn'
 gem 'netrc'
-gem 'vcr'
+gem 'activesupport'
+
+
+group :test, :development do
+  gem 'vcr'
 gem 'webmock'
 gem 'dust'
-gem 'activesupport'
+  gem 'capybara'
+  gem 'rspec-rails'
+end
+

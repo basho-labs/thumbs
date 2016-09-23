@@ -4,4 +4,4 @@ build_steps:
  - env
  - rake test TESTOPTS=-v
 org_mode: true
-timeout: 1799
+timeout: 1798

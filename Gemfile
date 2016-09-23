@@ -1,8 +1,8 @@
 source 'https://rubygems.org'
 
 gem 'test-unit'
-gem 'sinatra', "~> 1.4.7"
-gem 'rack', "~> 1.5"
+gem 'sinatra'
+gem 'rack'
 gem 'rake'
 gem 'rack-test'
 gem 'slack-ruby-client'

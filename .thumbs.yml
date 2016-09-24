@@ -1,6 +1,7 @@
 minimum_reviewers: 2
 merge: true
 build_steps:
- - bundle exec ruby test/test.rb TESTOPTS=-v
+ - env
+ - bundle exec ruby test/test.rb
 org_mode: true
 timeout: 1799

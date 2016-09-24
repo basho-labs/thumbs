@@ -4,14 +4,7 @@ module Sinatra
   module GeneralHelpers
     def debug_message(message)
       log = Log4r::Logger['Thumbs']
-      log.debug message
-    end
-
-    def authenticate_slack
-      Slack.configure do |config|
-        config.token = ENV['SLACK_API_TOKEN']
-        fail 'Missing ENV[SLACK_API_TOKEN]!' unless config.token
-      end
+      ((log && log.respond_to?(:debug)) ? log.debug(message) : nil )
     end
 
     def authenticate_github

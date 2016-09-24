@@ -282,7 +282,6 @@ unit_tests do
     cassette(:load_pr) do
       cassette(:load_comments) do
         prw=Thumbs::PullRequestWorker.new(:repo => TESTREPO, :pr => TESTPR)
-        #remove_comments(TESTREPO, TESTPR)
         prw.try_merge
         assert prw.thumb_config.key?('merge')
         assert prw.thumb_config['merge'] == false
@@ -295,6 +294,10 @@ unit_tests do
             assert prw.aggregate_build_status_result == :ok
             cassette(:get_updated_state) do
               assert_equal false, prw.valid_for_merge?
+              prw.thumb_config['merge'] = true
+
+              assert_equal true, prw.valid_for_merge?
+
             end
           end
         end

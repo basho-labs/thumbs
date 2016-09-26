@@ -240,15 +240,16 @@ unit_tests do
         assert_equal false, prw.valid_for_merge?
         cassette(:create_code_reviews, :record => :all) do
           create_test_code_reviews(TESTREPO, TESTPR)
-            assert prw.review_count >= 1, prw.review_count.to_s
+          assert prw.review_count >= 1, prw.review_count.to_s
           cassette(:get_post_code_review_count, :record => :all) do
 
             assert prw.aggregate_build_status_result == :ok
             cassette(:get_updated_state, :record => :all) do
               assert_equal false, prw.valid_for_merge?
               cassette(:get_valid_for_merge, :record => :all) do
-              prw.thumb_config['merge'] = true
-              assert_equal true, prw.valid_for_merge?
+                prw.thumb_config['merge'] = true
+                prw.thumb_config['minimum_reviewers'] = 0
+                assert_equal true, prw.valid_for_merge?
               end
             end
           end
@@ -257,24 +258,26 @@ unit_tests do
     end
   end
 
-  test "should identify org code reviews" do
-    cassette(:remove_org_comments, :record => :all) do
-      cassette(:load_org_pr) do
-        cassette(:load_org_comments_issues) do
-          prw=Thumbs::PullRequestWorker.new(:repo => ORGTESTREPO, :pr => ORGTESTPR)
-          cassette(:get_comments_issues, :record => :all) do
-            org_member_code_review_count = prw.org_member_code_reviews.length
-            assert_equal false, prw.valid_for_merge?
-            assert prw.respond_to?(:org_member_code_reviews), "doesnt respond to"
-            create_org_member_test_code_reviews(ORGTESTREPO, ORGTESTPR)
-            cassette(:post_add_code_review_update, :record => :all) do
-              assert prw.org_member_code_reviews.length > org_member_code_review_count, org_member_code_review_count.to_s
-            end
-          end
-        end
-      end
+  test "should identify org comments" do
+    default_vcr_state do
+      prw=Thumbs::PullRequestWorker.new(:repo => ORGTESTREPO, :pr => ORGTESTPR)
+      assert prw.respond_to?(:org_member_comments)
+      org=prw.repo.split(/\//).shift
+      org_member_comments = prw.non_author_comments.collect { |comment| comment if prw.client.organization_member?(org, comment[:user][:login]) }.compact
+      assert_equal prw.org_member_comments, org_member_comments
     end
   end
+  test "should identify org code reviews" do
+    default_vcr_state do
+      prw=Thumbs::PullRequestWorker.new(:repo => ORGTESTREPO, :pr => ORGTESTPR)
+      assert prw.respond_to?(:org_member_code_reviews)
+      org=prw.repo.split(/\//).shift
+      org_member_comments = prw.non_author_comments.collect { |comment| comment if prw.client.organization_member?(org, comment[:user][:login]) }.compact
+      org_member_code_reviews=org_member_comments.collect { |comment| comment if prw.contains_plus_one?(comment[:body]) }.compact
+      assert_equal prw.org_member_code_reviews, org_member_code_reviews
+    end
+  end
+
 
   test "can get events for pr" do
     default_vcr_state do

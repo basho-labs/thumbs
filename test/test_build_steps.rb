@@ -1,4 +1,3 @@
-
 unit_tests do
 
   test "can try pr merge" do
@@ -101,7 +100,7 @@ unit_tests do
 
 
   test "pr should not be merged" do
-    cassette(:load_pr) do
+    default_vcr_state do
       prw=Thumbs::PullRequestWorker.new(:repo => TESTREPO, :pr => TESTPR)
       assert prw.minimum_reviewers==2
       assert prw.respond_to?(:reviews)
@@ -115,23 +114,16 @@ unit_tests do
   end
 
   test "can verify valid for merge" do
-    cassette(:load_pr) do
-      cassette(:load_comments) do
-        cassette(:issue_comments, :record => :new_episodes) do
-          prw=Thumbs::PullRequestWorker.new(:repo => TESTREPO, :pr => TESTPR)
-          prw.build_steps=["make test"]
-          cassette(:validate_comments) do
-            prw.try_merge
-            prw.run_build_steps
-            cassette(:get_state) do
-              assert_equal false, prw.valid_for_merge?
-            end
-          end
-        end
+    default_vcr_state do
+      prw=Thumbs::PullRequestWorker.new(:repo => TESTREPO, :pr => TESTPR)
+      prw.build_steps=["make test"]
+      prw.try_merge
+      prw.run_build_steps
+      cassette(:get_state) do
+        assert_equal false, prw.valid_for_merge?
       end
     end
   end
-
 
   test "unmergable with failing build steps" do
     cassette(:load_pr) do
@@ -177,12 +169,14 @@ unit_tests do
     cassette(:load_pr) do
       prw=Thumbs::PullRequestWorker.new(:repo => TESTREPO, :pr => TESTPR)
       cassette(:get_comments) do
-        comment_length = prw.comments.length
-        cassette(:add_comment_test) do
-          assert prw.respond_to?(:add_comment)
-          comment = prw.add_comment("test")
-          assert comment.to_h.key?(:created_at), comment.to_h.to_yaml
-          assert comment.to_h.key?(:id), comment.to_h.to_yaml
+        cassette(:get_events) do
+          comment_length = prw.comments.length
+          cassette(:add_comment_test) do
+            assert prw.respond_to?(:add_comment)
+            comment = prw.add_comment("test")
+            assert comment.to_h.key?(:created_at), comment.to_h.to_yaml
+            assert comment.to_h.key?(:id), comment.to_h.to_yaml
+          end
         end
       end
     end
@@ -219,85 +213,44 @@ unit_tests do
   end
 
   test "code reviews from random users are not counted" do
-
     cassette(:load_pr) do
       cassette(:load_comments) do
         prw=Thumbs::PullRequestWorker.new(:repo => ORGTESTREPO, :pr => ORGTESTPR)
         cassette(:load_comments_update, :record => :all) do
           cassette(:get_state, :record => :new_episodes) do
             assert_equal false, prw.valid_for_merge?
-
             cassette(:update_reviews, :record => :all) do
               assert prw.review_count => 2
               prw.run_build_steps
               assert_equal false, prw.valid_for_merge?, prw.build_status
             end
-
           end
-
-
         end
       end
-
     end
   end
-
-  # test "ensure code reviews are from org members" do
-  #   cassette(:load_pull_request, :record => :new_episodes) do
-  #     cassette(:load_comments, :record => :new_episodes) do
-  #       prw=Thumbs::PullRequestWorker.new(:repo => ORGTESTREPO, :pr => ORGTESTPR)
-  #
-  #       remove_comments(ORGTESTREPO, ORGTESTPR)
-  #       assert prw.review_count == 0
-  #       cassette(:get_state) do
-  #
-  #         assert_equal false, prw.valid_for_merge?
-  #
-  #         cassette(:issue_comments_update) do
-  #
-  #
-  #           assert prw.review_count == 0
-  #           create_org_member_test_code_reviews(ORGTESTREPO, ORGTESTPR)
-  #           assert prw.review_count == 2, prw.review_count.to_s
-  #           assert prw.review_count >= prw.minimum_reviewers
-  #           assert prw.aggregate_build_status_result == :ok
-  #
-  #           prw.try_merge
-  #           prw.run_build_steps
-  #           cassette(:get_state_updated_false) do
-  #             assert_equal false, prw.valid_for_merge?
-  #             cassette(:get_state_updated_true) do
-  #               prw.thumb_config['merge']=true
-  #               assert_equal true, prw.valid_for_merge?
-  #             end
-  #           end
-  #         end
-  #       end
-  #     end
-  #   end
-  # end
-
 
   test "should not merge if merge false in thumbs." do
-    cassette(:load_pr) do
-      cassette(:load_comments) do
-        prw=Thumbs::PullRequestWorker.new(:repo => TESTREPO, :pr => TESTPR)
-        prw.try_merge
-        assert prw.thumb_config.key?('merge')
-        assert prw.thumb_config['merge'] == false
-
-        cassette(:get_state) do
-          assert_equal false, prw.valid_for_merge?
+    default_vcr_state do
+      prw=Thumbs::PullRequestWorker.new(:repo => TESTREPO, :pr => TESTPR)
+      prw.try_merge
+      assert prw.thumb_config.key?('merge')
+      assert prw.thumb_config['merge'] == false
+      cassette(:get_state, :record => :all) do
+        assert_equal false, prw.valid_for_merge?
+        cassette(:create_code_reviews, :record => :all) do
           create_test_code_reviews(TESTREPO, TESTPR)
-          cassette(:get_post_code_review_count) do
-            assert prw.review_count >= 2, prw.review_count.to_s
+          assert prw.review_count >= 1, prw.review_count.to_s
+          cassette(:get_post_code_review_count, :record => :all) do
+
             assert prw.aggregate_build_status_result == :ok
-            cassette(:get_updated_state) do
+            cassette(:get_updated_state, :record => :all) do
               assert_equal false, prw.valid_for_merge?
-              prw.thumb_config['merge'] = true
-
-              assert_equal true, prw.valid_for_merge?
-
+              cassette(:get_valid_for_merge, :record => :all) do
+                prw.thumb_config['merge'] = true
+                prw.thumb_config['minimum_reviewers'] = 0
+                assert_equal true, prw.valid_for_merge?
+              end
             end
           end
         end
@@ -305,27 +258,45 @@ unit_tests do
     end
   end
 
+  test "should identify org comments" do
+    default_vcr_state do
+      prw=Thumbs::PullRequestWorker.new(:repo => ORGTESTREPO, :pr => ORGTESTPR)
+      assert prw.respond_to?(:org_member_comments)
+      org=prw.repo.split(/\//).shift
+      org_member_comments = prw.non_author_comments.collect { |comment| comment if prw.client.organization_member?(org, comment[:user][:login]) }.compact
+      assert_equal prw.org_member_comments, org_member_comments
+    end
+  end
   test "should identify org code reviews" do
-    cassette(:remove_org_comments, :record => :all) do
-      remove_comments(ORGTESTREPO, ORGTESTPR)
+    default_vcr_state do
+      prw=Thumbs::PullRequestWorker.new(:repo => ORGTESTREPO, :pr => ORGTESTPR)
+      assert prw.respond_to?(:org_member_code_reviews)
+      org=prw.repo.split(/\//).shift
+      org_member_comments = prw.non_author_comments.collect { |comment| comment if prw.client.organization_member?(org, comment[:user][:login]) }.compact
+      org_member_code_reviews=org_member_comments.collect { |comment| comment if prw.contains_plus_one?(comment[:body]) }.compact
+      assert_equal prw.org_member_code_reviews, org_member_code_reviews
+    end
+  end
 
-      cassette(:load_org_pr) do
-        cassette(:load_org_comments_issues) do
-          prw=Thumbs::PullRequestWorker.new(:repo => ORGTESTREPO, :pr => ORGTESTPR)
-          cassette(:get_comments_issues, :record => :all) do
-            org_member_code_review_count = prw.org_member_code_reviews.length
-            assert_equal false, prw.valid_for_merge?
-            assert prw.respond_to?(:org_member_code_reviews), "doesnt respond to"
-            create_org_member_test_code_reviews(ORGTESTREPO, ORGTESTPR)
-            cassette(:post_add_code_review_update, :record => :all) do
 
-              assert prw.org_member_code_reviews.length > org_member_code_review_count, org_member_code_review_count.to_s
-              remove_comments(ORGTESTREPO, ORGTESTPR)
-            end
-          end
-        end
-      end
+  test "can get events for pr" do
+    default_vcr_state do
+      prw=Thumbs::PullRequestWorker.new(:repo => TESTREPO, :pr => TESTPR)
+      assert prw.respond_to?(:events)
+      events = prw.events
+      assert events.kind_of?(Array)
+      assert events.first.kind_of?(Hash)
+      assert events.first.key?(:created_at)
+    end
+  end
 
+  test "can get comments after sha" do
+    default_vcr_state do
+      prw=Thumbs::PullRequestWorker.new(:repo => TESTREPO, :pr => TESTPR)
+      comments = prw.comments
+      sha_time_stamp=prw.push_time_stamp(prw.pr.head.sha)
+      comments_after_sha=prw.client.issue_comments(prw.repo, prw.pr.number).collect { |c| c.to_h if c[:created_at] > sha_time_stamp }.compact
+      assert_equal comments_after_sha, comments
     end
   end
 end

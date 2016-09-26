@@ -478,28 +478,26 @@ module Thumbs
 </details>
 
 <% end %>
-<% status_code= (review_count >= minimum_reviewers ? :ok : :unchecked) %>
-<% org_msg=  thumb_config['org_mode'] ? " from organization #{repo.split(/\//).shift}"  : "." %>
-<details>
- <summary><%= result_image(status_code) %> <%= review_count %> of <%= minimum_reviewers %> Code reviews<%= org_msg %></summary>
-
-<p>
-<% reviews.each do |review| %>
-
-  @<%= review[:user][:login] %>: <%= review[:body] %> 
-
-<% end %>
-</p>
-</details>
+<%= render_reviewers_comment_template %>
       EOS
       add_comment(comment)
     end
 
-    def create_reviewers_comment
+    def render_reviewers_comment_template
       comment = render_template <<-EOS
-<% reviewers=reviews.collect { |r| "*@" + r[:user][:login] + "*" } %>
-Code reviews from: <%= reviewers.uniq.join(", ") %>.
+<% status_code= (review_count >= minimum_reviewers ? :ok : :unchecked) %>
+<% org_msg=  thumb_config['org_mode'] ? " from organization #{repo.split(/\//).shift}"  : "." %>
+<details>
+<summary><%= result_image(status_code) %> <%= review_count %> of <%= minimum_reviewers %> Code reviews<%= org_msg %></summary>
+<% reviews.each do |review| %>
+- @<%= review[:user][:login] %>: <%= review[:body] %> 
+<% end %>
+</details>
       EOS
+    end
+
+    def create_reviewers_comment
+      comment = render_reviewers_comment_template
       add_comment(comment)
     end
 

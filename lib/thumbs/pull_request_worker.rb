@@ -138,8 +138,27 @@ module Thumbs
       end
     end
 
+    def events
+      client.repository_events(@repo).collect{|e| e.to_h }
+    end
+
+    def push_time_stamp(sha)
+      time_stamp=events.collect { |e| e[:created_at] if e[:type] == 'PushEvent' && e[:payload][:head] == sha}.compact.first
+      time_stamp ? time_stamp : pr.created_at
+    end
+
+    def comments_after_head_sha
+      sha_time_stamp=push_time_stamp(pr.head.sha)
+      comments_after_sha=all_comments.compact.collect do |c|
+        c.to_h if c[:created_at] > sha_time_stamp
+      end.compact
+    end
+
+    def all_comments
+      client.issue_comments(repo, pr.number)
+    end
     def comments
-      client.issue_comments(@repo, @pr.number)
+      comments_after_head_sha
     end
 
     def bot_comments
@@ -231,23 +250,23 @@ module Thumbs
       end
       debug_message "all keys and result ok present"
 
-      unless @thumb_config
+      unless thumb_config
         debug_message "config missing"
         return false
       end
-      unless @thumb_config.key?('minimum_reviewers')
+      unless thumb_config.key?('minimum_reviewers')
         debug_message "minimum_reviewers config option missing"
         return false
       end
       debug_message "minimum reviewers: #{thumb_config['minimum_reviewers']}"
       debug_message "review_count: #{review_count} >= #{thumb_config['minimum_reviewers']}"
 
-      unless review_count >= @thumb_config['minimum_reviewers']
-        debug_message " #{review_count} !>= #{@thumb_config['minimum_reviewers']}"
+      unless review_count >= thumb_config['minimum_reviewers']
+        debug_message " #{review_count} !>= #{thumb_config['minimum_reviewers']}"
         return false
       end
 
-      unless @thumb_config['merge'] == true
+      unless thumb_config['merge'] == true
         debug_message "thumb_config['merge'] != 'true' || thumbs config says: merge: #{thumb_config['merge'].inspect}"
         return false
       end
@@ -270,6 +289,7 @@ module Thumbs
       File.open(file, "w") do |f|
         f.syswrite(@build_status.to_yaml)
       end
+      true
     end
 
     def read_build_status(repo, rev)

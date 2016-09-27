@@ -44,8 +44,13 @@ class ThumbsWeb < Sinatra::Base
         return "OK" unless pr_worker.open?
         debug_message("new pull request #{pr_worker.repo}/pulls/#{pr_worker.pr.number} ")
         pr_worker.add_comment("Thanks @#{pr_worker.pr.user.login}!")
-        pr_worker.validate
+        pr_worker.try_merge
+        unless pr_worker.thumb_config && pr_worker.thumb_config.key?('build_steps')
+          debug_message("no .thumbs config found for this repo/PR #{pr_worker.repo}##{pr_worker.pr.number}")
+          return "OK"
+        end
         pr_worker.add_comment " .thumbs.yml config:\n``` #{pr_worker.thumb_config.to_yaml} ```"
+        pr_worker.validate
 
         pr_worker.create_build_status_comment
         return "OK" unless pr_worker.review_count >= pr_worker.minimum_reviewers

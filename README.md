@@ -82,7 +82,7 @@ ask to enable thumbs for your repo.
 ## Local development and testing
 
 ```
-> git clone https://github.com/davidx/thumbs.git
+> git clone https://github.com/basho-labs/thumbs.git
 > cd thumbs
 > bundle exec rackup
 ```
@@ -108,4 +108,5 @@ Forwarding                    http://699f13d5.ngrok.io -> localhost:4567
 
 
 ### Example: https://github.com/basho/riak_ql/pull/140
+
 

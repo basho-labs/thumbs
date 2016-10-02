@@ -29,6 +29,7 @@ ask to enable thumbs for your repo.
 ## 2) Deploy config
 
 - Create a **.thumbs.yml** configuration file in your repo:
+
   ```yaml
   minimum_reviewers: 2  # minimum code reviews required before auto merge
   build_steps: # your custom build steps
@@ -38,7 +39,9 @@ ask to enable thumbs for your repo.
   org_mode: true   # only count code reviews from org members.
   timeout: 1800 
   ```
+  
 - Add config and create pr branch:
+
   ```
   git add .thumbs.yml
   git commit -a -m"add .thumbs.yml"
@@ -105,5 +108,4 @@ Forwarding                    http://699f13d5.ngrok.io -> localhost:4567
 
 
 ### Example: https://github.com/basho/riak_ql/pull/140
-
 

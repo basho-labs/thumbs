@@ -5,7 +5,7 @@ A simplified integration robot.
 ![Logo][logo]
 [logo]: https://ryanbrownhill.github.io/github-collab-pres/img/thumbsup.png
 
-# Thumbs setup and workflow
+# Setup and workflow
 How to setup Thumbs for your repo and how it works.
 
 ## What's this ?

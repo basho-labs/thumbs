@@ -299,4 +299,17 @@ unit_tests do
       assert_equal comments_after_sha, comments
     end
   end
+  test "responds to build_in_progress?" do
+    default_vcr_state do
+      prw=Thumbs::PullRequestWorker.new(:repo => TESTREPO, :pr => TESTPR)
+      assert prw.respond_to?(:build_in_progress?)
+      assert_equal false, prw.build_in_progress?
+      prw.build_steps=["top"]
+      prw.thumb_config['timeout']=2
+      fork do
+        prw.run_build_steps
+      end
+      assert_equal true, prw.build_in_progress?
+    end
+  end
 end

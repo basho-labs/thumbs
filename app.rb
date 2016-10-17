@@ -36,11 +36,13 @@ class ThumbsWeb < Sinatra::Base
   post '/webhook' do
     @octo_client = Octokit::Client.new(:netrc => true)
     payload = JSON.parse(request.body.read)
+    debug_message payload.to_yaml
     case payload_type(payload)
       when :new_pr
         repo, pr = process_payload(payload)
         debug_message "got repo #{repo} and pr #{pr}"
         pr_worker = Thumbs::PullRequestWorker.new(:repo => repo, :pr => pr)
+
         return "OK" unless pr_worker.open?
         debug_message("new pull request #{pr_worker.repo}/pulls/#{pr_worker.pr.number} ")
         pr_worker.add_comment("Thanks @#{pr_worker.pr.user.login}!")
@@ -69,6 +71,7 @@ class ThumbsWeb < Sinatra::Base
         pr_worker = Thumbs::PullRequestWorker.new(:repo => repo, :pr => pr)
         return "OK" unless pr_worker.open?
         debug_message("new comment #{pr_worker.repo}/pulls/#{pr_worker.pr.number} #{payload['comment']['body']}")
+        return "OK" if pr_worker.build_in_progress?
 
         pr_worker.validate
         pr_worker.load_thumbs_config
@@ -78,7 +81,6 @@ class ThumbsWeb < Sinatra::Base
             debug_message " #{pr_worker.review_count} !>= #{pr_worker.thumb_config['minimum_reviewers']}"
            return false
           end
-
 
           debug_message("new comment #{pr_worker.repo}/pulls/#{pr_worker.pr.number} valid_for_merge? OK ")
           pr_worker.create_reviewers_comment

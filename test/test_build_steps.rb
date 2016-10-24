@@ -1,7 +1,7 @@
 unit_tests do
 
   test "can try pr merge" do
-    cassette(:load_pr) do
+    default_vcr_state do
       prw=Thumbs::PullRequestWorker.new(:repo => TESTREPO, :pr => TESTPR)
       status = prw.try_merge
 
@@ -13,7 +13,7 @@ unit_tests do
     end
   end
   test "can try run build step" do
-    cassette(:load_pr) do
+    default_vcr_state do
       prw=Thumbs::PullRequestWorker.new(:repo => TESTREPO, :pr => TESTPR)
       status = prw.try_merge
 
@@ -26,7 +26,7 @@ unit_tests do
       assert status.key?(:result)
       assert status.key?(:message)
       assert status.key?(:command)
-      assert_equal "cd /tmp/thumbs/thumbot_prtester_#{prw.pr.head.sha.slice(0, 8)} && uptime 2>&1", status[:command]
+      assert_equal "cd /tmp/thumbs/thumbot_prtester_#{prw.pr.head.sha.slice(0, 10)} && uptime 2>&1", status[:command]
       assert status.key?(:output)
 
       assert status.key?(:exit_code)
@@ -37,7 +37,7 @@ unit_tests do
 
   end
   test "can try run build step with error" do
-    cassette(:load_pr) do
+    default_vcr_state do
       prw=Thumbs::PullRequestWorker.new(:repo => TESTREPO, :pr => TESTPR)
       status = prw.try_merge
 
@@ -56,7 +56,7 @@ unit_tests do
     end
   end
   test "can try run build step and verify build dir" do
-    cassette(:load_pr) do
+    default_vcr_state do
       prw=Thumbs::PullRequestWorker.new(:repo => TESTREPO, :pr => TESTPR)
       status = prw.try_merge
       status = prw.try_run_build_step("build", "make build")
@@ -71,7 +71,7 @@ unit_tests do
       assert status[:exit_code]==0
       assert status.key?(:result)
       assert status[:result]==:ok
-      build_dir_path="/tmp/thumbs/#{prw.repo.gsub(/\//, '_')}_#{prw.pr.head.sha.slice(0, 8)}"
+      build_dir_path="/tmp/thumbs/#{prw.repo.gsub(/\//, '_')}_#{prw.pr.head.sha.slice(0, 10)}"
       assert_equal "cd #{build_dir_path} && make build 2>&1", status[:command]
 
       assert_equal "BUILD OK\n", status[:output]
@@ -79,7 +79,7 @@ unit_tests do
   end
 
   test "can try run build step make test" do
-    cassette(:load_pr) do
+    default_vcr_state do
       prw=Thumbs::PullRequestWorker.new(:repo => TESTREPO, :pr => TESTPR)
       status = prw.try_merge
       status = prw.try_run_build_step("make_test", "make test")
@@ -126,9 +126,9 @@ unit_tests do
   end
 
   test "unmergable with failing build steps" do
-    cassette(:load_pr) do
-      cassette(:load_comments) do
-        prw=Thumbs::PullRequestWorker.new(:repo => TESTREPO, :pr => TESTPR)
+    default_vcr_state do
+      cassette(:get_events_unmergable) do
+        prw=Thumbs::PullRequestWorker.new(:repo => TESTREPO, :pr => TESTUNMERGABLEPR)
         prw.build_steps = ["make", "make test", "make UNKNOWN_OPTION"]
 
         cassette(:get_open) do
@@ -137,7 +137,7 @@ unit_tests do
           prw.run_build_steps
           assert_equal :error, prw.aggregate_build_status_result, prw.build_status
           step, status = prw.build_status[:steps].collect { |step_name, status| [step_name, status] if status[:result] != :ok }.compact.shift
-          assert_equal step, "make_UNKNOWN_OPTION".to_sym
+          assert_equal :merge, step
 
           assert status[:result]==:error
           assert status[:exit_code]!=0
@@ -146,90 +146,88 @@ unit_tests do
             assert_equal false, prw.valid_for_merge?
           end
         end
+
       end
     end
   end
 
 
   test "can get aggregate build status" do
-    cassette(:load_pr) do
+    default_vcr_state do
       prw=Thumbs::PullRequestWorker.new(:repo => TESTREPO, :pr => TESTPR)
       assert_equal :ok, prw.aggregate_build_status_result
       prw.build_steps=["make", "make test"]
       prw.run_build_steps
       assert_equal :ok, prw.aggregate_build_status_result
+      prw.unpersist_build_status
+      prw.reset_build_status
+      prw.clear_build_progress_comment
       prw.build_steps=["make", "make error"]
       prw.run_build_steps
-
-      assert_equal :error, prw.aggregate_build_status_result, prw.build_status.inspect
+      cassette(:new_agg_result, :record => :new_episodes) do
+        assert_equal :error, prw.aggregate_build_status_result, prw.build_status.inspect
+      end
     end
-
   end
   test "add comment" do
-    cassette(:load_pr) do
+    default_vcr_state do
       prw=Thumbs::PullRequestWorker.new(:repo => TESTREPO, :pr => TESTPR)
-      cassette(:get_comments) do
-        cassette(:get_events) do
-          comment_length = prw.comments.length
-          cassette(:add_comment_test) do
-            assert prw.respond_to?(:add_comment)
-            comment = prw.add_comment("test")
-            assert comment.to_h.key?(:created_at), comment.to_h.to_yaml
-            assert comment.to_h.key?(:id), comment.to_h.to_yaml
-          end
-        end
+      comment_length = prw.comments.length
+      cassette(:add_comment_test) do
+        assert prw.respond_to?(:add_comment)
+        comment = prw.add_comment("test")
+        assert comment.to_h.key?(:created_at), comment.to_h.to_yaml
+        assert comment.to_h.key?(:id), comment.to_h.to_yaml
       end
     end
   end
 
 
   test "uses custom build steps" do
-    cassette(:load_pr) do
-      cassette(:load_comments) do
-        prw=Thumbs::PullRequestWorker.new(:repo => TESTREPO, :pr => TESTPR)
+    default_vcr_state do
 
-        prw.respond_to?(:build_steps)
-        prw.reset_build_status
+      prw=Thumbs::PullRequestWorker.new(:repo => TESTREPO, :pr => TESTPR)
 
-        assert prw.build_steps.sort == ["make", "make test"].sort, prw.build_steps.inspect
-        prw.run_build_steps
-        assert prw.build_steps.sort == ["make", "make test"].sort, prw.build_steps.inspect
+      prw.respond_to?(:build_steps)
+      prw.reset_build_status
+      prw.unpersist_build_status
 
-        assert prw.build_status[:steps].keys.sort == [:make, :make_test].sort, prw.build_status[:steps].inspect
-        prw.reset_build_status
+      assert prw.build_steps.sort == ["make", "make test"].sort, prw.build_steps.inspect
+      prw.run_build_steps
+      assert prw.build_steps.sort == ["make", "make test"].sort, prw.build_steps.inspect
 
-        prw.build_steps = ["make build", "make custom"]
-        assert prw.build_steps.include?("make build")
-        prw.run_build_steps
-        assert prw.build_status[:steps].keys.sort == [:make_build, :make_custom].sort, prw.build_status[:steps].keys.sort.inspect
+      assert prw.build_status[:steps].keys.sort == [:make, :make_test].sort, prw.build_status[:steps].inspect
+      prw.reset_build_status
 
-        prw.reset_build_status
+      prw.build_steps = ["make build", "make custom"]
+      assert prw.build_steps.include?("make build")
+      prw.run_build_steps
+      assert prw.build_status[:steps].keys.sort == [:make_build, :make_custom].sort, prw.build_status[:steps].keys.sort.inspect
 
-        prw.build_steps = ["make -j2 -p -H all", "make custom"]
-        prw.run_build_steps
-        assert prw.build_status[:steps].keys.sort == [:make_custom, :make_j2_p_H_all].sort, prw.build_status[:steps].keys.sort.inspect
-      end
+      prw.reset_build_status
+
+      prw.build_steps = ["make -j2 -p -H all", "make custom"]
+      prw.run_build_steps
+      assert prw.build_status[:steps].keys.sort == [:make_custom, :make_j2_p_H_all].sort, prw.build_status[:steps].keys.sort.inspect
+
     end
   end
 
   test "code reviews from random users are not counted" do
-    cassette(:load_pr) do
-      cassette(:load_comments) do
-        prw=Thumbs::PullRequestWorker.new(:repo => ORGTESTREPO, :pr => ORGTESTPR)
-        cassette(:load_comments_update, :record => :all) do
-          cassette(:get_state, :record => :new_episodes) do
-            assert_equal false, prw.valid_for_merge?
-            cassette(:update_reviews, :record => :all) do
-              assert prw.review_count => 2
-              prw.run_build_steps
-              assert_equal false, prw.valid_for_merge?, prw.build_status
-            end
+    default_vcr_state do
+      prw=Thumbs::PullRequestWorker.new(:repo => ORGTESTREPO, :pr => ORGTESTPR)
+      cassette(:load_comments_update, :record => :all) do
+        cassette(:get_state, :record => :new_episodes) do
+          assert_equal false, prw.valid_for_merge?
+          cassette(:update_reviews, :record => :all) do
+            assert prw.review_count => 2
+            prw.run_build_steps
+            assert_equal false, prw.valid_for_merge?, prw.build_status
           end
         end
       end
     end
   end
-
   test "should not merge if merge false in thumbs." do
     default_vcr_state do
       prw=Thumbs::PullRequestWorker.new(:repo => TESTREPO, :pr => TESTPR)

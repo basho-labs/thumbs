@@ -2,7 +2,7 @@
 unit_tests do
 
   test "should be able to read build status" do
-    # can get build status from build status persistence
+   default_vcr_state do
     cassette(:load_pr) do
       prw=Thumbs::PullRequestWorker.new(:repo=>TESTREPO, :pr=>TESTPR)
       assert prw.build_status.key?(:steps)
@@ -20,11 +20,13 @@ unit_tests do
         assert status[:steps].key?(:make), status[:steps].inspect
         assert status[:steps].key?(:make_test), status[:steps].inspect
 
-        assert prw.build_status[:steps].keys.length == [:merge, :make, :make_test].length
+        assert prw.build_status[:steps].keys.length == [:merge, :make, :make_test].length, prw.build_status[:steps].keys
 
       end
 
     end
+   end
+
   end
 end
 

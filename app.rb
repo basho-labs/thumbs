@@ -36,10 +36,7 @@ class ThumbsWeb < Sinatra::Base
   post '/webhook' do
     @octo_client = Octokit::Client.new(:netrc => true)
     payload = JSON.parse(request.body.read)
-    print "\n\n##############################################PAYLOAD#########\n"
-    print payload.to_yaml
-    print "##############################################PAYLOAD#########\n"
-    print "\n"
+    print payload.to_yaml if ENV.key?('DEBUG')
     case payload_type(payload)
       when :new_pr
         repo, pr = process_payload(payload)

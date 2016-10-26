@@ -118,7 +118,7 @@ module Thumbs
           status[:result] = result
           status[:message] = message
 
-          status[:output] = output
+          status[:output] = sanitize_text(output)
           status[:exit_code] = $?.exitstatus
 
           @build_status[:steps][name.to_sym]=status
@@ -302,14 +302,16 @@ module Thumbs
     def set_build_progress(progress_status)
       update_or_create_build_status(most_recent_sha, progress_status)
     end
-    def compose_build_status_comment_title(sha,status)
+
+    def compose_build_status_comment_title(sha, status)
       "[#{sha.slice(0, 10)}] Build Status: #{ status }"
     end
+
     def set_build_status_comment(sha, status)
       #final check that sha comment doesnt already exist
       comment = get_build_progress_comment
       unless comment.key?(:id)
-        add_comment(compose_build_status_comment_title(sha,status))
+        add_comment(compose_build_status_comment_title(sha, status))
       end
     end
 
@@ -327,27 +329,30 @@ module Thumbs
         comment=get_build_progress_comment
         comment_id = comment[:id]
         debug_message "comment id is #{comment_id}"
-        comment_message=compose_build_status_comment_title(sha,progress_status)
+        comment_message=compose_build_status_comment_title(sha, progress_status)
         debug_message comment_message
         update_pull_request_comment(comment_id, comment_message)
       end
     end
 
     def update_pull_request_comment(comment_id, comment_message)
-      # ensure comment_id exists
-      #Octokit::Client.new(:netrc => true)
       comment = client.issue_comment(repo, comment_id)
       unless comment
-        debug_message "comment doesnt exist ?"
-        exit
+        debug_message "comment doesnt exist"
+        return nil
       end
-
       client.update_comment(repo, comment[:id], comment_message)
     end
+
+    def sanitize_text(text)
+      text.encode('UTF-8', 'UTF-8', :invalid => :replace, :undef => :replace)
+    end
+
     def clear_build_progress_comment
       build_progress_comment = get_build_progress_comment
       build_progress_comment ? client.delete_comment(repo, build_progress_comment[:id]) : true
     end
+
     def get_build_progress_comment
       bot_comments.collect { |c| c if c[:body] =~ /^\[#{most_recent_sha.slice(0, 10)}/ }.compact[0] || {:body => ""}
     end
@@ -362,32 +367,39 @@ module Thumbs
     end
 
     def run_build_steps
-     # unless build_in_progress?
-     #   set_build_progress(:in_progress)
-        build_steps.each do |build_step|
-          build_step_name=build_step.gsub(/\s+/, '_').gsub(/-/, '')
-          try_run_build_step(build_step_name, build_step)
-          persist_build_status
-        end
-    #    set_build_progress(:completed)
-    #    create_build_status_comment
-     # end
+      debug_message "begin run_build_steps"
+      build_steps.each do |build_step|
+        build_step_name=build_step.gsub(/\s+/, '_').gsub(/-/, '')
+        debug_message "run build step #{build_step_name} begin"
+        try_run_build_step(build_step_name, build_step)
+        debug_message "run build step #{build_step_name} end"
+        persist_build_status
+        debug_message "run build step #{build_step_name} persist"
+      end
     end
 
     def persist_build_status
       repo=@repo.gsub(/\//, '_')
       file=File.join('/tmp/thumbs', "#{repo}_#{most_recent_sha}.yml")
       FileUtils.mkdir_p('/tmp/thumbs')
+      build_status[:steps].keys.each do |build_step|
+        next unless build_status[:steps][build_step].key?(:output)
+        output = build_status[:steps][build_step][:output]
+        output.encode!('UTF-8', 'UTF-8', :invalid => :replace, :undef => :replace)
+        build_status[:steps][build_step][:output] = output
+      end
       File.open(file, "w") do |f|
         f.syswrite(build_status.to_yaml)
       end
       true
     end
+
     def unpersist_build_status
       repo=@repo.gsub(/\//, '_')
       file=File.join('/tmp/thumbs', "#{repo}_#{most_recent_sha}.yml")
       File.delete(file) if File.exist?(file)
     end
+
     def read_build_status(repo, rev)
       repo=@repo.gsub(/\//, '_')
       file=File.join('/tmp/thumbs', "#{repo}_#{rev}.yml")
@@ -401,15 +413,15 @@ module Thumbs
     def validate
       build_status = read_build_status(@repo, @pr.head.sha)
 
-        refresh_repo
-        unless build_status.key?(:steps) && build_status[:steps].keys.length > 0
-          debug_message "no build status found, running build steps"
-          try_merge
-          run_build_steps
-        else
-          debug_message "using persisted build status"
-        end
-        true
+      refresh_repo
+      unless build_status.key?(:steps) && build_status[:steps].keys.length > 0
+        debug_message "no build status found, running build steps"
+        try_merge
+        run_build_steps
+      else
+        debug_message "using persisted build status"
+      end
+      true
 
     end
 

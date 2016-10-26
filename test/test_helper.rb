@@ -154,4 +154,14 @@ module Octokit
 end
 
 
+module Test
+  module Unit
+    def assert_nothing_raised(*)
+      yield
+    end
+  end
+end
+
+
+
 

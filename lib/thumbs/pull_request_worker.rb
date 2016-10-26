@@ -11,13 +11,13 @@ module Thumbs
     attr_reader :pr
     attr_accessor :thumb_config
     attr_reader :log
-    attr_reader :client
+    attr_accessor :client
 
     def initialize(options)
       @repo = options[:repo]
       @client = Octokit::Client.new(:netrc => true)
       @pr = @client.pull_request(options[:repo], options[:pr])
-      @build_dir=options[:build_dir] || "/tmp/thumbs/#{@repo.gsub(/\//, '_')}_#{@pr.head.sha.slice(0, 8)}"
+      @build_dir=options[:build_dir] || "/tmp/thumbs/#{@repo.gsub(/\//, '_')}_#{@pr.head.sha.slice(0, 10)}"
       @build_status={:steps => {}}
       @build_steps = []
       prepare_build_dir
@@ -105,7 +105,7 @@ module Thumbs
       status[:command] = command
 
       begin
-        Timeout::timeout(@timeout) do
+        Timeout::timeout(thumb_config['timeout']) do
           output = `#{command}`
           status[:ended_at]=DateTime.now
           unless $? == 0
@@ -139,11 +139,11 @@ module Thumbs
     end
 
     def events
-      client.repository_events(@repo).collect{|e| e.to_h }
+      client.repository_events(@repo).collect { |e| e.to_h }
     end
 
     def push_time_stamp(sha)
-      time_stamp=events.collect { |e| e[:created_at] if e[:type] == 'PushEvent' && e[:payload][:head] == sha}.compact.first
+      time_stamp=events.collect { |e| e[:created_at] if e[:type] == 'PushEvent' && e[:payload][:head] == sha }.compact.first
       time_stamp ? time_stamp : pr.created_at
     end
 
@@ -157,6 +157,7 @@ module Thumbs
     def all_comments
       client.issue_comments(repo, pr.number)
     end
+
     def comments
       comments_after_head_sha
     end
@@ -274,26 +275,121 @@ module Thumbs
       return true
     end
 
-    def run_build_steps
-      build_steps.each do |build_step|
-        build_step_name=build_step.gsub(/\s+/, '_').gsub(/-/, '')
-        try_run_build_step(build_step_name, build_step)
-      end
-      persist_build_status(@repo, @pr.head.sha)
+    def build_in_progress?
+      [:in_progress, :completed].include?(build_progress_status)
     end
 
-    def persist_build_status(repo, rev)
-      repo=repo.gsub(/\//, '_')
-      file=File.join('/tmp/thumbs', "#{repo}_#{rev}.yml")
+    def build_progress_status
+      build_progress_comment = get_build_progress_comment
+      debug_message "got build_progress_comment #{build_progress_comment}"
+      return :unstarted unless build_progress_comment
+      return :unstarted unless build_progress_comment.kind_of?(Hash) && build_progress_comment.key?(:body)
+
+      progress_status_line = build_progress_comment[:body].split(/\n/).shift
+      return :unstarted unless build_progress_comment[:body].length > 0
+      progress_status = progress_status_line.split(/:/).pop
+
+      unless progress_status
+        debug_message "go"
+        return :unstarted
+      end
+
+      progress_status = progress_status.strip.to_sym
+
+      ([:in_progress, :completed].include?(progress_status) ? progress_status : :unstarted)
+    end
+
+    def set_build_progress(progress_status)
+      update_or_create_build_status(most_recent_sha, progress_status)
+    end
+    def compose_build_status_comment_title(sha,status)
+      "[#{sha.slice(0, 10)}] Build Status: #{ status }"
+    end
+    def set_build_status_comment(sha, status)
+      #final check that sha comment doesnt already exist
+      comment = get_build_progress_comment
+      unless comment.key?(:id)
+        add_comment(compose_build_status_comment_title(sha,status))
+      end
+    end
+
+    def comments_after_sha(sha)
+      sha_time_stamp=push_time_stamp(sha)
+      comments_after_sha=all_comments.compact.collect do |c|
+        c.to_h if c[:created_at] > sha_time_stamp
+      end.compact
+    end
+
+    def update_or_create_build_status(sha, progress_status)
+      if build_progress_status == :unstarted
+        set_build_status_comment(sha, progress_status)
+      else
+        comment=get_build_progress_comment
+        comment_id = comment[:id]
+        debug_message "comment id is #{comment_id}"
+        comment_message=compose_build_status_comment_title(sha,progress_status)
+        debug_message comment_message
+        update_pull_request_comment(comment_id, comment_message)
+      end
+    end
+
+    def update_pull_request_comment(comment_id, comment_message)
+      # ensure comment_id exists
+      #Octokit::Client.new(:netrc => true)
+      comment = client.issue_comment(repo, comment_id)
+      unless comment
+        debug_message "comment doesnt exist ?"
+        exit
+      end
+
+      client.update_comment(repo, comment[:id], comment_message)
+    end
+    def clear_build_progress_comment
+      build_progress_comment = get_build_progress_comment
+      build_progress_comment ? client.delete_comment(repo, build_progress_comment[:id]) : true
+    end
+    def get_build_progress_comment
+      bot_comments.collect { |c| c if c[:body] =~ /^\[#{most_recent_sha.slice(0, 10)}/ }.compact[0] || {:body => ""}
+    end
+
+    def pushes
+      events.collect { |e| e if e[:type] == 'PushEvent' }.compact
+    end
+
+    def most_recent_sha
+      return pr.head.sha unless pushes.length > 0
+      pushes.first[:payload][:head]
+    end
+
+    def run_build_steps
+     # unless build_in_progress?
+     #   set_build_progress(:in_progress)
+        build_steps.each do |build_step|
+          build_step_name=build_step.gsub(/\s+/, '_').gsub(/-/, '')
+          try_run_build_step(build_step_name, build_step)
+          persist_build_status
+        end
+    #    set_build_progress(:completed)
+    #    create_build_status_comment
+     # end
+    end
+
+    def persist_build_status
+      repo=@repo.gsub(/\//, '_')
+      file=File.join('/tmp/thumbs', "#{repo}_#{most_recent_sha}.yml")
       FileUtils.mkdir_p('/tmp/thumbs')
       File.open(file, "w") do |f|
-        f.syswrite(@build_status.to_yaml)
+        f.syswrite(build_status.to_yaml)
       end
       true
     end
-
+    def unpersist_build_status
+      repo=@repo.gsub(/\//, '_')
+      file=File.join('/tmp/thumbs', "#{repo}_#{most_recent_sha}.yml")
+      File.delete(file) if File.exist?(file)
+    end
     def read_build_status(repo, rev)
-      repo=repo.gsub(/\//, '_')
+      repo=@repo.gsub(/\//, '_')
       file=File.join('/tmp/thumbs', "#{repo}_#{rev}.yml")
       if File.exist?(file)
         YAML.load(IO.read(file))
@@ -303,16 +399,18 @@ module Thumbs
     end
 
     def validate
-      @build_status = read_build_status(@repo, @pr.head.sha)
-      refresh_repo
-      unless @build_status.key?(:steps) && @build_status[:steps].keys.length > 0
-        debug_message "no build status found, running build steps"
-        try_merge
-        run_build_steps
-      else
-        debug_message "using persisted build status"
-      end
-      true
+      build_status = read_build_status(@repo, @pr.head.sha)
+
+        refresh_repo
+        unless build_status.key?(:steps) && build_status[:steps].keys.length > 0
+          debug_message "no build status found, running build steps"
+          try_merge
+          run_build_steps
+        else
+          debug_message "using persisted build status"
+        end
+        true
+
     end
 
     def merge
@@ -443,8 +541,7 @@ module Thumbs
         @status_title="Looks like there's an issue with build step #{build_status_problem_steps.join(",")} !  :cloud: "
       end
 
-      comment = render_template <<-EOS
-<p>Build Status: [<%= @pr.head.sha.slice(0,10) %>] <%= @status_title %></p>
+      build_comment = render_template <<-EOS
 <% @build_status[:steps].each do |step_name, status| %>
 <% if status[:output] %>
 <% title_file = step_name.to_s.gsub(/\\//,'_') +  ".txt" %>
@@ -480,7 +577,11 @@ module Thumbs
 <% end %>
 <%= render_reviewers_comment_template %>
       EOS
-      add_comment(comment)
+      comment_id = get_build_progress_comment[:id]
+      comment_message = compose_build_status_comment_title(most_recent_sha, :completed)
+      comment_message << "\n#{@status_title}"
+      comment_message << build_comment
+      update_pull_request_comment(comment_id, comment_message)
     end
 
     def render_reviewers_comment_template

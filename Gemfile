@@ -13,7 +13,7 @@ gem 'git'
 gem 'unicorn'
 gem 'netrc'
 gem 'activesupport'
-
+gem 'nokogiri', '1.6.8.1'
 
 group :test, :development do
   gem 'vcr'

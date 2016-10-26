@@ -36,6 +36,7 @@ class ThumbsWeb < Sinatra::Base
   post '/webhook' do
     @octo_client = Octokit::Client.new(:netrc => true)
     payload = JSON.parse(request.body.read)
+    print payload.to_yaml if ENV.key?('DEBUG')
     case payload_type(payload)
       when :new_pr
         repo, pr = process_payload(payload)
@@ -50,9 +51,12 @@ class ThumbsWeb < Sinatra::Base
           return "OK"
         end
         pr_worker.add_comment " .thumbs.yml config:\n``` #{pr_worker.thumb_config.to_yaml} ```"
+        return "OK" if pr_worker.build_in_progress?
+        pr_worker.set_build_progress(:in_progress)
         pr_worker.validate
-
+        pr_worker.set_build_progress(:completed)
         pr_worker.create_build_status_comment
+
         return "OK" unless pr_worker.review_count >= pr_worker.minimum_reviewers
 
         if pr_worker.valid_for_merge?
@@ -69,8 +73,11 @@ class ThumbsWeb < Sinatra::Base
         pr_worker = Thumbs::PullRequestWorker.new(:repo => repo, :pr => pr)
         return "OK" unless pr_worker.open?
         debug_message("new comment #{pr_worker.repo}/pulls/#{pr_worker.pr.number} #{payload['comment']['body']}")
-
+        return "OK" if pr_worker.build_in_progress?
+        pr_worker.set_build_progress(:in_progress)
         pr_worker.validate
+        pr_worker.set_build_progress(:completed)
+
         pr_worker.load_thumbs_config
         if pr_worker.valid_for_merge?
 
@@ -78,7 +85,6 @@ class ThumbsWeb < Sinatra::Base
             debug_message " #{pr_worker.review_count} !>= #{pr_worker.thumb_config['minimum_reviewers']}"
            return false
           end
-
 
           debug_message("new comment #{pr_worker.repo}/pulls/#{pr_worker.pr.number} valid_for_merge? OK ")
           pr_worker.create_reviewers_comment
@@ -94,8 +100,13 @@ class ThumbsWeb < Sinatra::Base
         pr_worker = Thumbs::PullRequestWorker.new(:repo => repo, :pr => pr)
         return "OK" unless pr_worker.open?
         debug_message("new push on pull request #{pr_worker.repo}/pulls/#{pr_worker.pr.number} ")
+        return "OK" if pr_worker.build_in_progress?
+        pr_worker.set_build_progress(:in_progress)
         pr_worker.validate
+        pr_worker.set_build_progress(:completed)
         pr_worker.create_build_status_comment
+
+
 
         if pr_worker.valid_for_merge?
           debug_message("new push #{pr_worker.repo}/pulls/#{pr_worker.pr.number} valid_for_merge? OK ")

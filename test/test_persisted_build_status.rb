@@ -9,18 +9,23 @@ unit_tests do
       assert prw.build_status[:steps].key?(:merge)
       assert prw.build_status[:steps].keys.length == 1
 
-      prw.run_build_steps
-
       cassette(:read_build_status) do
 
-        status = prw.read_build_status(prw.repo, prw.pr.head.sha)
+        prw.run_build_steps
+
+        status = prw.read_build_status(prw.repo, prw.most_recent_sha)
+        repo=prw.repo.gsub(/\//, '_')
+        file=File.join('/tmp/thumbs', "#{repo}_#{prw.most_recent_sha}.yml")
+
+        parsed_file = File.exist?(file) ?  YAML.load(IO.read(file)) : nil
+        assert parsed_file.keys.sort == status.keys.sort
         assert status.kind_of?(Hash)
         assert status.key?(:steps)
         assert status[:steps].key?(:merge)
         assert status[:steps].key?(:make), status[:steps].inspect
         assert status[:steps].key?(:make_test), status[:steps].inspect
 
-        assert prw.build_status[:steps].keys.length == [:merge, :make, :make_test].length, prw.build_status[:steps].keys
+        assert prw.build_status[:steps].keys.length == [:merge, :make, :make_test].length, prw.build_status[:steps].keys.inspect
 
       end
 

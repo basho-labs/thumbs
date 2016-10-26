@@ -358,20 +358,20 @@ module Thumbs
 
     def most_recent_sha
       return pr.head.sha unless pushes.length > 0
-      pushes.last[:payload][:head]
+      pushes.first[:payload][:head]
     end
 
     def run_build_steps
-      unless build_in_progress?
-        set_build_progress(:in_progress)
+     # unless build_in_progress?
+     #   set_build_progress(:in_progress)
         build_steps.each do |build_step|
           build_step_name=build_step.gsub(/\s+/, '_').gsub(/-/, '')
           try_run_build_step(build_step_name, build_step)
+          persist_build_status
         end
-        persist_build_status
-        set_build_progress(:completed)
-        create_build_status_comment
-      end
+    #    set_build_progress(:completed)
+    #    create_build_status_comment
+     # end
     end
 
     def persist_build_status
@@ -379,7 +379,7 @@ module Thumbs
       file=File.join('/tmp/thumbs', "#{repo}_#{most_recent_sha}.yml")
       FileUtils.mkdir_p('/tmp/thumbs')
       File.open(file, "w") do |f|
-        f.syswrite(@build_status.to_yaml)
+        f.syswrite(build_status.to_yaml)
       end
       true
     end
@@ -389,7 +389,7 @@ module Thumbs
       File.delete(file) if File.exist?(file)
     end
     def read_build_status(repo, rev)
-      repo=repo.gsub(/\//, '_')
+      repo=@repo.gsub(/\//, '_')
       file=File.join('/tmp/thumbs', "#{repo}_#{rev}.yml")
       if File.exist?(file)
         YAML.load(IO.read(file))
@@ -399,10 +399,10 @@ module Thumbs
     end
 
     def validate
-      @build_status = read_build_status(@repo, @pr.head.sha)
-      unless build_in_progress?
+      build_status = read_build_status(@repo, @pr.head.sha)
+
         refresh_repo
-        unless @build_status.key?(:steps) && @build_status[:steps].keys.length > 0
+        unless build_status.key?(:steps) && build_status[:steps].keys.length > 0
           debug_message "no build status found, running build steps"
           try_merge
           run_build_steps
@@ -410,7 +410,7 @@ module Thumbs
           debug_message "using persisted build status"
         end
         true
-      end
+
     end
 
     def merge

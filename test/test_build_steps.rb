@@ -191,6 +191,7 @@ unit_tests do
       prw.respond_to?(:build_steps)
       prw.reset_build_status
       prw.unpersist_build_status
+      assert prw.build_status[:steps] == {}, prw.build_status[:steps].inspect
 
       assert prw.build_steps.sort == ["make", "make test"].sort, prw.build_steps.inspect
       prw.run_build_steps
@@ -202,6 +203,7 @@ unit_tests do
       prw.build_steps = ["make build", "make custom"]
       assert prw.build_steps.include?("make build")
       prw.run_build_steps
+
       assert prw.build_status[:steps].keys.sort == [:make_build, :make_custom].sort, prw.build_status[:steps].keys.sort.inspect
 
       prw.reset_build_status

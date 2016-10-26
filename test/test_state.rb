@@ -5,13 +5,8 @@ unit_tests do
       cassette(:clear_build_comment, :allow_playback_repeats => true, :record => :all) do
         prw.clear_build_progress_comment
 
-      assert_equal :unstarted, prw.build_progress_status
-      # reset build status
-      prw.build_steps=["find /tmp"]
-      prw.thumb_config['timeout']=5
-      prw.run_build_steps
-      sleep 2
-      assert_equal :completed, prw.build_progress_status
+        assert_equal :unstarted, prw.build_progress_status
+
       end
 
     end
@@ -53,7 +48,9 @@ unit_tests do
                 assert_equal :unstarted, prw.build_progress_status
                 prw.build_steps=["find /tmp"]
                 prw.thumb_config['timeout']=5
-                prw.run_build_steps
+                prw.set_build_progress(:in_progress)
+                assert_equal :in_progress, prw.build_progress_status
+                prw.set_build_progress(:completed)
                 assert_equal :completed, prw.build_progress_status
 
               end

@@ -385,8 +385,7 @@ module Thumbs
       build_status[:steps].keys.each do |build_step|
         next unless build_status[:steps][build_step].key?(:output)
         output = build_status[:steps][build_step][:output]
-        output.encode!('UTF-8', 'UTF-8', :invalid => :replace, :undef => :replace)
-        build_status[:steps][build_step][:output] = output
+        build_status[:steps][build_step][:output] = sanitize_text(output)
       end
       File.open(file, "w") do |f|
         f.syswrite(build_status.to_yaml)

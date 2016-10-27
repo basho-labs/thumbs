@@ -572,9 +572,9 @@ module Thumbs
 
     def create_build_status_comment
       if aggregate_build_status_result == :ok
-        @status_title="Looks good!  :+1:"
+        @status_title="\n> Looks good!  :+1: |"
       else
-        @status_title="Looks like there's an issue with build step #{build_status_problem_steps.join(",")} !  :cloud: "
+        @status_title="\n> There seems to be an issue with build step **#{build_status_problem_steps.join(",")}** !  :cloud: "
       end
 
       build_comment = render_template <<-EOS

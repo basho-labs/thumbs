@@ -299,19 +299,22 @@ module Thumbs
       ([:in_progress, :completed].include?(progress_status) ? progress_status : :unstarted)
     end
 
+    def build_guid
+      "#{pr.base.ref}_#{most_recent_sha.slice(0,7)}"
+    end
     def set_build_progress(progress_status)
       update_or_create_build_status(most_recent_sha, progress_status)
     end
 
-    def compose_build_status_comment_title(sha, status)
-      "[#{sha.slice(0, 10)}] Build Status: #{ status }"
+    def compose_build_status_comment_title(status)
+      "[ #{build_guid.gsub(/_/,' ')}] Build Status: #{ status }"
     end
 
     def set_build_status_comment(sha, status)
       #final check that sha comment doesnt already exist
       comment = get_build_progress_comment
       unless comment.key?(:id)
-        add_comment(compose_build_status_comment_title(sha, status))
+        add_comment(compose_build_status_comment_title(status))
       end
     end
 
@@ -329,15 +332,20 @@ module Thumbs
         comment=get_build_progress_comment
         comment_id = comment[:id]
         debug_message "comment id is #{comment_id}"
-        comment_message=compose_build_status_comment_title(sha, progress_status)
+        comment_message=compose_build_status_comment_title(progress_status)
         debug_message comment_message
         update_pull_request_comment(comment_id, comment_message)
       end
     end
 
     def update_pull_request_comment(comment_id, comment_message)
-      comment = client.issue_comment(repo, comment_id)
-      unless comment
+      begin
+        comment = client.issue_comment(repo, comment_id)
+        unless comment && comment.key?(:id)
+          debug_message "comment doesnt exist"
+          return nil
+        end
+      rescue Octokit::NotFound => e
         debug_message "comment doesnt exist"
         return nil
       end
@@ -354,7 +362,7 @@ module Thumbs
     end
 
     def get_build_progress_comment
-      bot_comments.collect { |c| c if c[:body] =~ /^\[#{most_recent_sha.slice(0, 10)}/ }.compact[0] || {:body => ""}
+      bot_comments.collect { |c| c if c[:body] =~ /^\[ #{build_guid.gsub(/_/, ' ')}/ }.compact[0] || {:body => ""}
     end
 
     def pushes
@@ -362,8 +370,7 @@ module Thumbs
     end
 
     def most_recent_sha
-      return pr.head.sha unless pushes.length > 0
-      pushes.first[:payload][:head]
+      (pushes.length > 0 && pushes.first[:created_at] > pr.created_at) ? pushes.first[:payload][:head] : pr.head.sha
     end
 
     def run_build_steps
@@ -380,7 +387,7 @@ module Thumbs
 
     def persist_build_status
       repo=@repo.gsub(/\//, '_')
-      file=File.join('/tmp/thumbs', "#{repo}_#{most_recent_sha}.yml")
+      file=File.join('/tmp/thumbs', "#{repo}_#{build_guid}.yml")
       FileUtils.mkdir_p('/tmp/thumbs')
       build_status[:steps].keys.each do |build_step|
         next unless build_status[:steps][build_step].key?(:output)
@@ -395,13 +402,13 @@ module Thumbs
 
     def unpersist_build_status
       repo=@repo.gsub(/\//, '_')
-      file=File.join('/tmp/thumbs', "#{repo}_#{most_recent_sha}.yml")
+      file=File.join('/tmp/thumbs', "#{repo}_#{build_guid}.yml")
       File.delete(file) if File.exist?(file)
     end
 
-    def read_build_status(repo, rev)
+    def read_build_status
       repo=@repo.gsub(/\//, '_')
-      file=File.join('/tmp/thumbs', "#{repo}_#{rev}.yml")
+      file=File.join('/tmp/thumbs', "#{repo}_#{build_guid}.yml")
       if File.exist?(file)
         YAML.load(IO.read(file))
       else
@@ -410,7 +417,7 @@ module Thumbs
     end
 
     def validate
-      build_status = read_build_status(@repo, @pr.head.sha)
+      build_status = read_build_status
 
       refresh_repo
       unless build_status.key?(:steps) && build_status[:steps].keys.length > 0
@@ -589,7 +596,7 @@ module Thumbs
 <%= render_reviewers_comment_template %>
       EOS
       comment_id = get_build_progress_comment[:id]
-      comment_message = compose_build_status_comment_title(most_recent_sha, :completed)
+      comment_message = compose_build_status_comment_title(:completed)
       comment_message << "\n#{@status_title}"
       comment_message << build_comment
       update_pull_request_comment(comment_id, comment_message)

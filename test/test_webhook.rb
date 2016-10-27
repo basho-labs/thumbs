@@ -1,4 +1,3 @@
-
 class WebhookTest < Test::Unit::TestCase
   include Rack::Test::Methods
   include Thumbs
@@ -42,17 +41,56 @@ class WebhookTest < Test::Unit::TestCase
       assert status_hash.key?(:rate_limit)
     end
   end
+
   def test_new_push_hook
 
   end
+
+  def test_new_base_hook
+    default_vcr_state do
+      prw = Thumbs::PullRequestWorker.new(:repo => TESTREPO, :pr => TESTPR)
+
+      new_base_payload = {
+          'action' => 'edited',
+          'changes' => {
+              'base' => {
+                  'ref' => {
+                      'from' => 'master'
+                  },
+                  'sha' => {
+                      'from' => 'afadb0afefe87362ca819a4a78b5bc89dede3133'
+                  }
+              }
+          },
+          'repository' => {'full_name' => prw.repo },
+          'pull_request' => {'number' => prw.pr.number, 'body' => prw.pr.body }
+      }
+      cassette(:get_comments, :record => :all) do
+        cassette(:get_issue_comments, :record => :new_episodes) do
+
+          cassette(:post_webhook_new_base, :record => :new_episodes) do
+
+            post '/webhook', new_base_payload.to_json do
+              assert last_response.body.include?("OK"), last_response.body
+
+            end
+          end
+        end
+      end
+
+
+    end
+  end
+
   def test_new_comment_hook
 
   end
+
   def test_new_pr_hook
     cassette(:load_pr, :record => :new_episodes) do
       prw = Thumbs::PullRequestWorker.new(:repo => 'thumbot/prtester', :pr => TESTPR)
 
-      build_dir="/tmp/thumbs/#{prw.repo.gsub(/\//, '_')}_#{prw.pr.head.sha.slice(0, 8)}"
+      build_dir="/tmp/thumbs/#{prw.repo.gsub(/\//, '_')}_#{prw.pr.head.sha.slice(0, 10)}"
       FileUtils.rm_rf(build_dir)
       assert_equal false, File.exist?(build_dir)
 
@@ -72,14 +110,6 @@ class WebhookTest < Test::Unit::TestCase
 
             post '/webhook', new_pr_webhook_payload.to_json do
               assert last_response.body.include?("OK"), last_response.body
-
-              cassette(:get_pullrequest_update, :record => :all) do
-                cassette(:get_open, :record => :all) do
-                  assert prw.open?
-                  new_review_count = prw.review_count
-                end
-                assert_equal :completed, prw.build_progress_status
-              end
             end
           end
         end

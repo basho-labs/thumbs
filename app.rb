@@ -41,6 +41,10 @@ class ThumbsWeb < Sinatra::Base
       when :new_pr
         repo, pr = process_payload(payload)
         debug_message "got repo #{repo} and pr #{pr}"
+
+        sleep 1 # facepalm eventual consistent
+        # todo queue and retry logic
+
         pr_worker = Thumbs::PullRequestWorker.new(:repo => repo, :pr => pr)
         return "OK" unless pr_worker.open?
         debug_message("new pull request #{pr_worker.repo}/pulls/#{pr_worker.pr.number} ")
@@ -83,7 +87,7 @@ class ThumbsWeb < Sinatra::Base
 
           unless pr_worker.review_count >= pr_worker.thumb_config['minimum_reviewers']
             debug_message " #{pr_worker.review_count} !>= #{pr_worker.thumb_config['minimum_reviewers']}"
-           return false
+            return false
           end
 
           debug_message("new comment #{pr_worker.repo}/pulls/#{pr_worker.pr.number} valid_for_merge? OK ")
@@ -106,6 +110,25 @@ class ThumbsWeb < Sinatra::Base
         pr_worker.set_build_progress(:completed)
         pr_worker.create_build_status_comment
 
+
+        if pr_worker.valid_for_merge?
+          debug_message("new push #{pr_worker.repo}/pulls/#{pr_worker.pr.number} valid_for_merge? OK ")
+          pr_worker.merge
+        else
+          debug_message("new push #{pr_worker.repo}/pulls/#{pr_worker.pr.number} valid_for_merge? returned False")
+        end
+      when :new_base
+        debug_message "This is a new base"
+        repo, pr = process_payload(payload)
+        debug_message "got repo #{repo} and pr #{pr}"
+        pr_worker = Thumbs::PullRequestWorker.new(:repo => repo, :pr => pr)
+        return "OK" unless pr_worker.open?
+        debug_message("new base on pull request #{pr_worker.repo}/pulls/#{pr_worker.pr.number} ")
+        return "OK" if pr_worker.build_in_progress?
+        pr_worker.set_build_progress(:in_progress)
+        pr_worker.validate
+        pr_worker.set_build_progress(:completed)
+        pr_worker.create_build_status_comment
 
 
         if pr_worker.valid_for_merge?

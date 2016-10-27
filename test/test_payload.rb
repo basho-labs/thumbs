@@ -49,4 +49,21 @@ unit_tests do
 
   end
 
+  test "can detect new base payload type" do
+    new_base_payload = {
+        'action' => 'edited',
+        'changes' => {
+            'base' => {
+                'ref' => {
+                  'from' => 'master'
+                },
+                'sha' => {
+                  'from' => 'afadb0afefe87362ca819a4a78b5bc89dede3133'
+                }
+            }
+        }
+    }
+
+    assert payload_type(new_base_payload) == :new_base, payload_type(new_base_payload).to_s
+  end
 end

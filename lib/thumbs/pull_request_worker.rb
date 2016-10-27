@@ -284,13 +284,13 @@ module Thumbs
       debug_message "got build_progress_comment #{build_progress_comment}"
       return :unstarted unless build_progress_comment
       return :unstarted unless build_progress_comment.kind_of?(Hash) && build_progress_comment.key?(:body)
-
-      progress_status_line = build_progress_comment[:body].split(/\n/).shift
       return :unstarted unless build_progress_comment[:body].length > 0
-      progress_status = progress_status_line.split(/:/).pop
+
+      progress_status_line = build_progress_comment[:body].lines[2]
+      progress_status = progress_status_line.split(/\|/).pop.split(/\s+/).pop
 
       unless progress_status
-        debug_message "go"
+        debug_message "invalid"
         return :unstarted
       end
 
@@ -306,8 +306,12 @@ module Thumbs
       update_or_create_build_status(most_recent_sha, progress_status)
     end
 
-    def compose_build_status_comment_title(status)
-      "[ #{build_guid.gsub(/:/,' ')}] Build Status: #{ status }"
+    def compose_build_status_comment_title(progress_status)
+      status_emoji=(progress_status==:completed ? result_image(aggregate_build_status_result) : result_image(progress_status))
+      comment_title="|||||\n"
+      comment_title<<"------------ | -------------|------------ | ------------- | -------------\n"
+      comment_title<<"#{pr.head.ref} #{most_recent_sha.slice(0,7)} | :arrow_right: | #{pr.base.ref} #{pr.base.sha.slice(0,7)} | #{status_emoji} #{progress_status}"
+      comment_title
     end
 
     def set_build_status_comment(sha, status)
@@ -316,6 +320,15 @@ module Thumbs
       unless comment.key?(:id)
         add_comment(compose_build_status_comment_title(status))
       end
+    end
+
+    def get_build_progress_comment
+      bot_comments.collect do |c|
+        next unless c[:body].lines.length > 1
+        status_line = c[:body].lines[2]
+        next unless status_line =~ /^#{pr.head.ref} #{most_recent_sha.slice(0,7)} \| :arrow_right: \| #{pr.base.ref} #{pr.base.sha.slice(0,7)}/
+        c
+      end.compact[0] || {:body => ""}
     end
 
     def comments_after_sha(sha)
@@ -361,9 +374,7 @@ module Thumbs
       build_progress_comment ? client.delete_comment(repo, build_progress_comment[:id]) : true
     end
 
-    def get_build_progress_comment
-      bot_comments.collect { |c| c if c[:body] =~ /^\[ #{build_guid.gsub(/:/, ' ')}/ }.compact[0] || {:body => ""}
-    end
+
 
     def pushes
       events.collect { |e| e if e[:type] == 'PushEvent' }.compact
@@ -662,6 +673,8 @@ module Thumbs
 
     def result_image(result)
       case result
+        when :in_progress
+           ":clock1:"
         when :ok
           ":white_check_mark:"
         when :warning

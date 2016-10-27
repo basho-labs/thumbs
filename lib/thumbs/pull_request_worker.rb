@@ -572,7 +572,7 @@ module Thumbs
 
     def create_build_status_comment
       if aggregate_build_status_result == :ok
-        @status_title="\n<details><Summary>**Looks good!**  :+1: </Summary>"
+        @status_title="\n<details><Summary>Looks good!  :+1: </Summary>"
       else
         @status_title="\n<details><Summary>There seems to be an issue with build step **#{build_status_problem_steps.join(",")}** !  :cloud: </Summary>"
       end

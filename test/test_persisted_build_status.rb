@@ -14,7 +14,7 @@ unit_tests do
 
         prw.run_build_steps
 
-        status = prw.read_build_status(prw.repo, prw.most_recent_sha)
+        status = prw.read_build_status
         repo=prw.repo.gsub(/\//, '_')
         file=File.join('/tmp/thumbs', "#{repo}_#{prw.most_recent_sha}.yml")
 
@@ -36,15 +36,19 @@ unit_tests do
     default_vcr_state do
       cassette(:load_pr) do
         prw=Thumbs::PullRequestWorker.new(:repo=>TESTREPO, :pr=>TESTPR)
-        prw.run_build_steps
+        cassette(:get_events_reload, :record => :new_episodes) do
+
+          prw.run_build_steps
         test_content=IO.read(File.join(File.dirname(__FILE__), "/data/test_utf8_build_status.txt"))
         prw.build_status[:steps][:make][:output] = test_content
         prw.persist_build_status
-        status = prw.read_build_status(prw.repo, prw.most_recent_sha)
+        status = prw.read_build_status
         assert_equal prw.build_status[:steps][:make], status[:steps][:make]
       end
     end
+    end
   end
+
   def sanitize_text(text)
     text.encode('UTF-8', 'UTF-8', :invalid => :replace, :undef => :replace)
   end
@@ -59,12 +63,14 @@ unit_tests do
     default_vcr_state do
       cassette(:load_pr) do
         prw=Thumbs::PullRequestWorker.new(:repo=>TESTREPO, :pr=>TESTPR)
-        prw.run_build_steps
-        prw.build_status[:steps][:make][:output]=bad_test_string
+        cassette(:get_events_reload, :record => :new_episodes) do
+          prw.run_build_steps
+          prw.build_status[:steps][:make][:output]=bad_test_string
 
-        prw.persist_build_status
-        fixed_persisted_bad_test_string = prw.read_build_status(prw.repo, prw.most_recent_sha)[:steps][:make][:output]
-        assert_equal "hi �", fixed_persisted_bad_test_string
+          prw.persist_build_status
+          fixed_persisted_bad_test_string = prw.read_build_status[:steps][:make][:output]
+          assert_equal "hi �", fixed_persisted_bad_test_string
+        end
       end
     end
 

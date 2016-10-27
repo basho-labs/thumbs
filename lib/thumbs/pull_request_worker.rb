@@ -17,7 +17,7 @@ module Thumbs
       @repo = options[:repo]
       @client = Octokit::Client.new(:netrc => true)
       @pr = @client.pull_request(options[:repo], options[:pr])
-      @build_dir=options[:build_dir] || "/tmp/thumbs/#{@repo.gsub(/\//, '_')}_#{@pr.head.sha.slice(0, 10)}"
+      @build_dir=options[:build_dir] || "/tmp/thumbs/#{build_guid}"
       @build_status={:steps => {}}
       @build_steps = []
       prepare_build_dir
@@ -284,13 +284,13 @@ module Thumbs
       debug_message "got build_progress_comment #{build_progress_comment}"
       return :unstarted unless build_progress_comment
       return :unstarted unless build_progress_comment.kind_of?(Hash) && build_progress_comment.key?(:body)
-
-      progress_status_line = build_progress_comment[:body].split(/\n/).shift
       return :unstarted unless build_progress_comment[:body].length > 0
-      progress_status = progress_status_line.split(/:/).pop
+
+      progress_status_line = build_progress_comment[:body].lines[2]
+      progress_status = progress_status_line.split(/\|/).pop.split(/\s+/).pop
 
       unless progress_status
-        debug_message "go"
+        debug_message "invalid"
         return :unstarted
       end
 
@@ -299,20 +299,36 @@ module Thumbs
       ([:in_progress, :completed].include?(progress_status) ? progress_status : :unstarted)
     end
 
+    def build_guid
+      "#{pr.base.ref}:#{pr.base.sha.slice(0,7)}:#{pr.head.ref}:#{most_recent_sha.slice(0,7)}"
+    end
     def set_build_progress(progress_status)
       update_or_create_build_status(most_recent_sha, progress_status)
     end
 
-    def compose_build_status_comment_title(sha, status)
-      "[#{sha.slice(0, 10)}] Build Status: #{ status }"
+    def compose_build_status_comment_title(progress_status)
+      status_emoji=(progress_status==:completed ? result_image(aggregate_build_status_result) : result_image(progress_status))
+      comment_title="|||||\n"
+      comment_title<<"------------ | -------------|------------ | ------------- | -------------\n"
+      comment_title<<"#{pr.head.ref} #{most_recent_sha.slice(0,7)} | :arrow_right: | #{pr.base.ref} #{pr.base.sha.slice(0,7)} | #{status_emoji} #{progress_status}"
+      comment_title
     end
 
     def set_build_status_comment(sha, status)
       #final check that sha comment doesnt already exist
       comment = get_build_progress_comment
       unless comment.key?(:id)
-        add_comment(compose_build_status_comment_title(sha, status))
+        add_comment(compose_build_status_comment_title(status))
       end
+    end
+
+    def get_build_progress_comment
+      bot_comments.collect do |c|
+        next unless c[:body].lines.length > 1
+        status_line = c[:body].lines[2]
+        next unless status_line =~ /^#{pr.head.ref} #{most_recent_sha.slice(0,7)} \| :arrow_right: \| #{pr.base.ref} #{pr.base.sha.slice(0,7)}/
+        c
+      end.compact[0] || {:body => ""}
     end
 
     def comments_after_sha(sha)
@@ -329,15 +345,20 @@ module Thumbs
         comment=get_build_progress_comment
         comment_id = comment[:id]
         debug_message "comment id is #{comment_id}"
-        comment_message=compose_build_status_comment_title(sha, progress_status)
+        comment_message=compose_build_status_comment_title(progress_status)
         debug_message comment_message
         update_pull_request_comment(comment_id, comment_message)
       end
     end
 
     def update_pull_request_comment(comment_id, comment_message)
-      comment = client.issue_comment(repo, comment_id)
-      unless comment
+      begin
+        comment = client.issue_comment(repo, comment_id)
+        unless comment && comment.key?(:id)
+          debug_message "comment doesnt exist"
+          return nil
+        end
+      rescue Octokit::NotFound => e
         debug_message "comment doesnt exist"
         return nil
       end
@@ -353,17 +374,14 @@ module Thumbs
       build_progress_comment ? client.delete_comment(repo, build_progress_comment[:id]) : true
     end
 
-    def get_build_progress_comment
-      bot_comments.collect { |c| c if c[:body] =~ /^\[#{most_recent_sha.slice(0, 10)}/ }.compact[0] || {:body => ""}
-    end
+
 
     def pushes
       events.collect { |e| e if e[:type] == 'PushEvent' }.compact
     end
 
     def most_recent_sha
-      return pr.head.sha unless pushes.length > 0
-      pushes.first[:payload][:head]
+      (pushes.length > 0 && pushes.first[:created_at] > pr.created_at) ? pushes.first[:payload][:head] : pr.head.sha
     end
 
     def run_build_steps
@@ -380,7 +398,7 @@ module Thumbs
 
     def persist_build_status
       repo=@repo.gsub(/\//, '_')
-      file=File.join('/tmp/thumbs', "#{repo}_#{most_recent_sha}.yml")
+      file=File.join('/tmp/thumbs', "#{repo}_#{build_guid}.yml")
       FileUtils.mkdir_p('/tmp/thumbs')
       build_status[:steps].keys.each do |build_step|
         next unless build_status[:steps][build_step].key?(:output)
@@ -395,13 +413,13 @@ module Thumbs
 
     def unpersist_build_status
       repo=@repo.gsub(/\//, '_')
-      file=File.join('/tmp/thumbs', "#{repo}_#{most_recent_sha}.yml")
+      file=File.join('/tmp/thumbs', "#{repo}_#{build_guid}.yml")
       File.delete(file) if File.exist?(file)
     end
 
-    def read_build_status(repo, rev)
+    def read_build_status
       repo=@repo.gsub(/\//, '_')
-      file=File.join('/tmp/thumbs', "#{repo}_#{rev}.yml")
+      file=File.join('/tmp/thumbs', "#{repo}_#{build_guid}.yml")
       if File.exist?(file)
         YAML.load(IO.read(file))
       else
@@ -410,7 +428,7 @@ module Thumbs
     end
 
     def validate
-      build_status = read_build_status(@repo, @pr.head.sha)
+      build_status = read_build_status
 
       refresh_repo
       unless build_status.key?(:steps) && build_status[:steps].keys.length > 0
@@ -533,10 +551,17 @@ module Thumbs
       client.close_pull_request(@repo, @pr.number)
     end
 
+    def open_pull_requests
+      client.pull_requests(@repo, :state => 'open')
+    end
+
+    def pull_requests_for_base_branch(branch)
+      open_pull_requests.collect{|pr| pr if pr.base.ref == branch }
+    end
+
     def build_status_problem_steps
       @build_status[:steps].collect { |step_name, status| step_name if status[:result] != :ok }.compact
     end
-
 
     def aggregate_build_status_result
       build_status[:steps].each do |step_name, status|
@@ -547,9 +572,9 @@ module Thumbs
 
     def create_build_status_comment
       if aggregate_build_status_result == :ok
-        @status_title="Looks good!  :+1:"
+        @status_title="\n<details><Summary>Looks good!  :+1: </Summary>"
       else
-        @status_title="Looks like there's an issue with build step #{build_status_problem_steps.join(",")} !  :cloud: "
+        @status_title="\n<details><Summary>There seems to be an issue with build step **#{build_status_problem_steps.join(",")}** !  :cloud: </Summary>"
       end
 
       build_comment = render_template <<-EOS
@@ -587,9 +612,11 @@ module Thumbs
 
 <% end %>
 <%= render_reviewers_comment_template %>
+
+</details>
       EOS
       comment_id = get_build_progress_comment[:id]
-      comment_message = compose_build_status_comment_title(most_recent_sha, :completed)
+      comment_message = compose_build_status_comment_title(:completed)
       comment_message << "\n#{@status_title}"
       comment_message << build_comment
       update_pull_request_comment(comment_id, comment_message)
@@ -648,6 +675,8 @@ module Thumbs
 
     def result_image(result)
       case result
+        when :in_progress
+           ":clock1:"
         when :ok
           ":white_check_mark:"
         when :warning

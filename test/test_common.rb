@@ -6,7 +6,7 @@ unit_tests do
     default_vcr_state do
       prw = Thumbs::PullRequestWorker.new(:repo => TESTREPO, :pr => TESTPR)
       assert prw.respond_to?(:build_guid)
-      assert_equal "#{prw.repo.split(/\//).pop}:#{prw.pr.base.ref}:#{prw.pr.base.sha.slice(0,7)}:#{prw.pr.head.ref}:#{prw.most_recent_sha.slice(0,7)}", prw.build_guid
+      assert_equal "#{prw.pr.base.ref}:#{prw.pr.base.sha.slice(0,7)}:#{prw.pr.head.ref}:#{prw.most_recent_sha.slice(0,7)}", prw.build_guid
     end
   end
 

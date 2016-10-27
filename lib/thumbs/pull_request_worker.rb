@@ -17,7 +17,7 @@ module Thumbs
       @repo = options[:repo]
       @client = Octokit::Client.new(:netrc => true)
       @pr = @client.pull_request(options[:repo], options[:pr])
-      @build_dir=options[:build_dir] || "/tmp/thumbs/#{@repo.gsub(/\//, '_')}_#{@pr.head.sha.slice(0, 10)}"
+      @build_dir=options[:build_dir] || "/tmp/thumbs/#{build_guid}"
       @build_status={:steps => {}}
       @build_steps = []
       prepare_build_dir
@@ -300,14 +300,14 @@ module Thumbs
     end
 
     def build_guid
-      "#{pr.base.ref}_#{most_recent_sha.slice(0,7)}"
+      "#{repo.split(/\//).pop}:#{pr.base.ref}:#{pr.base.sha.slice(0,7)}:#{pr.head.ref}:#{most_recent_sha.slice(0,7)}"
     end
     def set_build_progress(progress_status)
       update_or_create_build_status(most_recent_sha, progress_status)
     end
 
     def compose_build_status_comment_title(status)
-      "[ #{build_guid.gsub(/_/,' ')}] Build Status: #{ status }"
+      "[ #{build_guid.gsub(/:/,' ')}] Build Status: #{ status }"
     end
 
     def set_build_status_comment(sha, status)
@@ -362,7 +362,7 @@ module Thumbs
     end
 
     def get_build_progress_comment
-      bot_comments.collect { |c| c if c[:body] =~ /^\[ #{build_guid.gsub(/_/, ' ')}/ }.compact[0] || {:body => ""}
+      bot_comments.collect { |c| c if c[:body] =~ /^\[ #{build_guid.gsub(/:/, ' ')}/ }.compact[0] || {:body => ""}
     end
 
     def pushes
@@ -540,10 +540,17 @@ module Thumbs
       client.close_pull_request(@repo, @pr.number)
     end
 
+    def open_pull_requests
+      client.pull_requests(@repo, :state => 'open')
+    end
+
+    def pull_requests_for_base_branch(branch)
+      open_pull_requests.collect{|pr| pr if pr.base.ref == branch }
+    end
+
     def build_status_problem_steps
       @build_status[:steps].collect { |step_name, status| step_name if status[:result] != :ok }.compact
     end
-
 
     def aggregate_build_status_result
       build_status[:steps].each do |step_name, status|

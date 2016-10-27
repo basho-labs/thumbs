@@ -26,7 +26,7 @@ unit_tests do
       assert status.key?(:result)
       assert status.key?(:message)
       assert status.key?(:command)
-      assert_equal "cd /tmp/thumbs/thumbot_prtester_#{prw.pr.head.sha.slice(0, 10)} && uptime 2>&1", status[:command]
+      assert_equal "cd /tmp/thumbs/#{prw.build_guid} && uptime 2>&1", status[:command]
       assert status.key?(:output)
 
       assert status.key?(:exit_code)
@@ -71,7 +71,7 @@ unit_tests do
       assert status[:exit_code]==0
       assert status.key?(:result)
       assert status[:result]==:ok
-      build_dir_path="/tmp/thumbs/#{prw.repo.gsub(/\//, '_')}_#{prw.pr.head.sha.slice(0, 10)}"
+      build_dir_path="/tmp/thumbs/#{prw.build_guid}"
       assert_equal "cd #{build_dir_path} && make build 2>&1", status[:command]
 
       assert_equal "BUILD OK\n", status[:output]

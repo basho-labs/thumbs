@@ -90,10 +90,6 @@ class WebhookTest < Test::Unit::TestCase
     cassette(:load_pr, :record => :new_episodes) do
       prw = Thumbs::PullRequestWorker.new(:repo => 'thumbot/prtester', :pr => TESTPR)
 
-      build_dir="/tmp/thumbs/#{prw.repo.gsub(/\//, '_')}_#{prw.pr.head.sha.slice(0, 10)}"
-      FileUtils.rm_rf(build_dir)
-      assert_equal false, File.exist?(build_dir)
-
       new_pr_webhook_payload = {
           'repository' => {'full_name' => prw.repo},
           'number' => prw.pr.number,
@@ -104,7 +100,6 @@ class WebhookTest < Test::Unit::TestCase
       remove_comments(prw.repo, prw.pr.number)
       cassette(:get_comments, :record => :all) do
         cassette(:get_issue_comments, :record => :all) do
-          original_comments_length=prw.comments.length
 
           cassette(:post_webhook_new_pr, :record => :all) do
 
@@ -173,3 +168,11 @@ end
 
 
 # end
+
+
+#
+# 2.3.0 :015 >   prw.client.pull_requests(prw.repo, :state => 'open').collect{|pr| pr if pr.base.ref == 'master'}.length
+
+
+
+# prw.client.pull_requests(prw.repo, :state => 'open')

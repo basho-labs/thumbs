@@ -66,4 +66,5 @@ unit_tests do
 
     assert payload_type(new_base_payload) == :new_base, payload_type(new_base_payload).to_s
   end
+
 end

@@ -75,25 +75,26 @@ module Thumbs
         git.checkout(most_recent_head_sha)
         git.checkout(@pr.base.ref)
         git.branch(pr_branch).checkout
-        debug_message "Trying merge #{@repo}:PR##{@pr.number} \" #{@pr.title}\" #{most_recent_head_sha} onto #{@pr.base.ref}"
+        debug_message "Trying merge #{@repo}:PR##{@pr.number} \" #{@pr.title}\" #{most_recent_head_sha} onto #{@pr.base.ref} #{most_recent_base_sha}"
         merge_result = git.merge("#{most_recent_head_sha}")
         load_thumbs_config
         status[:ended_at]=DateTime.now
         status[:result]=:ok
-        status[:message]="Merge Success: #{most_recent_head_sha} onto target branch: #{@pr.base.ref}"
+        status[:message]="Merge Success: #{@pr.head.ref} #{most_recent_head_sha} onto target branch: #{@pr.base.ref} #{most_recent_base_sha}"
         status[:output]=merge_result
       rescue => e
-        debug_message "Merge Failed"
+        debug_message "Merge Failed: #{@pr.head.ref} #{most_recent_head_sha} onto target branch: #{@pr.base.ref} #{most_recent_base_sha}"
         debug_message "PR ##{@pr[:number]} END"
 
         status[:result]=:error
-        status[:message]="Merge test failed"
+        status[:message]="Merge Failed: #{@pr.head.ref} #{most_recent_head_sha} onto target branch: #{@pr.base.ref} #{most_recent_base_sha}"
         status[:output]=e.inspect
       end
 
       @build_status[:steps][:merge]=status
       status
     end
+
 
     def try_run_build_step(name, command)
       status={}

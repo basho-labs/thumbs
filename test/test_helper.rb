@@ -9,6 +9,7 @@ require './lib/thumbs'
 require 'vcr'
 require 'log4r'
 
+TESTBRANCH='feature_1474522484'
 TESTREPO='thumbot/prtester'
 TEST_PRW=Thumbs::PullRequestWorker.new(:repo => TESTREPO, :pr => 453)
 TESTPR=453

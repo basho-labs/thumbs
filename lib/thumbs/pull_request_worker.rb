@@ -300,17 +300,18 @@ module Thumbs
     end
 
     def build_guid
-      "#{pr.base.ref}:#{pr.base.sha.slice(0,7)}:#{pr.head.ref}:#{most_recent_sha.slice(0,7)}"
+      "#{pr.base.ref}:#{most_recent_base_sha.slice(0,7)}:#{pr.head.ref}:#{most_recent_head_sha.slice(0,7)}"
     end
     def set_build_progress(progress_status)
       update_or_create_build_status(most_recent_sha, progress_status)
     end
 
     def compose_build_status_comment_title(progress_status)
+      pr = client.pull_request(repo, @pr.number)
       status_emoji=(progress_status==:completed ? result_image(aggregate_build_status_result) : result_image(progress_status))
       comment_title="|||||\n"
       comment_title<<"------------ | -------------|------------ | ------------- | -------------\n"
-      comment_title<<"#{pr.head.ref} #{most_recent_sha.slice(0,7)} | :arrow_right: | #{pr.base.ref} #{pr.base.sha.slice(0,7)} | #{status_emoji} #{progress_status}"
+      comment_title<<"#{pr.head.ref} #{most_recent_head_sha.slice(0,7)} | :arrow_right: | #{pr.base.ref} #{most_recent_base_sha.slice(0,7)} | #{status_emoji} #{progress_status}"
       comment_title
     end
 
@@ -326,7 +327,8 @@ module Thumbs
       bot_comments.collect do |c|
         next unless c[:body].lines.length > 1
         status_line = c[:body].lines[2]
-        next unless status_line =~ /^#{pr.head.ref} #{most_recent_sha.slice(0,7)} \| :arrow_right: \| #{pr.base.ref} #{pr.base.sha.slice(0,7)}/
+        pr = client.pull_request(repo, @pr.number)
+        next unless status_line =~ /^#{pr.head.ref} #{most_recent_head_sha.slice(0,7)} \| :arrow_right: \| #{pr.base.ref} #{most_recent_base_sha.slice(0,7)}/
         c
       end.compact[0] || {:body => ""}
     end
@@ -555,6 +557,15 @@ module Thumbs
       client.pull_requests(@repo, :state => 'open')
     end
 
+    def commits
+      client.commits(@repo, pr.head.ref)
+    end
+    def most_recent_head_sha
+      commits.first[:sha]
+    end
+    def most_recent_base_sha
+      client.commits(@repo, pr.base.ref).first[:sha]
+    end
     def pull_requests_for_base_branch(branch)
       open_pull_requests.collect{|pr| pr if pr.base.ref == branch }
     end

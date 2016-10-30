@@ -85,6 +85,33 @@ class WebhookTest < Test::Unit::TestCase
   def test_new_comment_hook
 
   end
+  def test_merged_pr_hook
+      default_vcr_state do
+        prw = Thumbs::PullRequestWorker.new(:repo => TESTREPO, :pr => TESTPR)
+
+        merged_pr_payload = {
+
+            'refs' => 'refs/heads/master',
+            'before' => 'e65bc8ef21630b917ca9ecc62adb3b17c1cbe2ef',
+            'after' => '34ae62fe74815d254b78c5b1c57979dd8b9e4de5',
+            'commits' => [],
+            'head_commit' => {},
+            'pusher' => { 'name' => 'thumbot',
+                          'email' => 'git.thumbs@gmail.com'},
+            'repository' => {'full_name' => prw.repo }
+        }
+        cassette(:get_comments, :record => :all) do
+          cassette(:get_issue_comments, :record => :new_episodes) do
+            cassette(:post_webhook_merged_pr, :record => :new_episodes) do
+              post '/webhook', merged_pr_payload.to_json do
+                assert last_response.body.include?("OK"), last_response.body
+              end
+            end
+          end
+        end
+      end
+    end
+
 
   def test_new_pr_hook
     cassette(:load_pr, :record => :new_episodes) do
@@ -112,67 +139,3 @@ class WebhookTest < Test::Unit::TestCase
     end
   end
 end
-
-
-# def test_webhook_mergeable_pr_test
-#   VCR.use_cassette(:create_pr) do
-#
-#     prw = create_test_pr("thumbot/prtester")
-#
-#
-#   assert prw.comments.length == 0
-#   assert prw.review_count == 0
-#   assert prw.bot_comments.length == 0
-#
-#   new_pr_webhook_payload = {
-#       'repository' => {'full_name' => prw.repo},
-#       'number' => prw.pr.number,
-#       'pull_request' => {'number' => prw.pr.number, 'body' => prw.pr.body}
-#   }
-#
-#   post '/webhook', new_pr_webhook_payload.to_json
-#
-#   assert_true last_response.body.include?("OK"), last_response.body
-#
-#   assert_true prw.open?
-#   assert prw.review_count == 0
-#
-#   assert prw.comments.length == 1
-#   assert prw.bot_comments.length == 1
-#   assert_true prw.open?
-#
-#   assert prw.comments.first['body'] =~ /Build Status/
-#
-#   create_test_code_reviews(prw.repo, prw.pr.number)
-#
-#   assert prw.review_count >= 2
-#
-#   new_comment_payload = {
-#       'repository' => {'full_name' => prw.repo},
-#       'issue' => {'number' => prw.pr.number,
-#                   'pull_request' => {}
-#       },
-#       'comment' => {'body' => "looks good"}
-#   }
-#
-#   assert payload_type(new_comment_payload) == :new_comment, payload_type(new_comment_payload).to_s
-#
-#   post "/webhook", new_comment_payload.to_json
-#
-#   assert last_response.body.include?("OK"), last_response.body
-#
-#   assert_false prw.open?
-#   prw.close
-#
-# end
-
-
-# end
-
-
-#
-# 2.3.0 :015 >   prw.client.pull_requests(prw.repo, :state => 'open').collect{|pr| pr if pr.base.ref == 'master'}.length
-
-
-
-# prw.client.pull_requests(prw.repo, :state => 'open')

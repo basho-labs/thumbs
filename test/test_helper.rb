@@ -15,6 +15,7 @@ TESTPR=453
 ORGTESTREPO='basho-bin/tester'
 ORGTEST_PRW=Thumbs::PullRequestWorker.new(:repo => TESTREPO, :pr => 27)
 ORGTESTPR=27
+TESTUNMERGABLEPR=452
 Thumbs.start_logger if ENV.key?('DEBUG')
 
 def debug_message(message)
@@ -35,9 +36,11 @@ def default_vcr_state(&block)
   cassette(:load_pull_request, :allow_playback_repeats => true) do
     cassette(:load_comments, :record => :new_episodes, :allow_playback_repeats => true) do
       cassette(:get_comments_issues, :record => :new_episodes, :allow_playback_repeats => true) do
-        cassette(:get_events, :record => :all, :allow_playback_repeats => true) do
-          cassette(:get_pull_events, :record => :all, :allow_playback_repeats => true) do
+        cassette(:get_events_other, :allow_playback_repeats => true) do
+          cassette(:get_events, :allow_playback_repeats => true, :record => :new_episodes) do
+            cassette(:get_pull_events, :record => :all, :allow_playback_repeats => true) do
             block.call
+            end
           end
         end
       end
@@ -149,4 +152,16 @@ module Octokit
     end
   end
 end
+
+
+module Test
+  module Unit
+    def assert_nothing_raised(*)
+      yield
+    end
+  end
+end
+
+
+
 

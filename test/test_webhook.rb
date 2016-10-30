@@ -78,6 +78,7 @@ class WebhookTest < Test::Unit::TestCase
                   assert prw.open?
                   new_review_count = prw.review_count
                 end
+                assert_equal :completed, prw.build_progress_status
               end
             end
           end

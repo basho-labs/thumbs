@@ -63,12 +63,10 @@ GEM
     multipart-post (2.0.0)
     mustermann (1.0.0.beta2)
     netrc (0.11.0)
-    nokogiri (1.6.8)
+    nokogiri (1.6.8.1)
       mini_portile2 (~> 2.1.0)
-      pkg-config (~> 1.1.7)
     octokit (4.3.0)
       sawyer (~> 0.7.0, >= 0.5.3)
-    pkg-config (1.1.7)
     power_assert (0.3.1)
     rack (2.0.1)
     rack-protection (2.0.0.beta2)
@@ -146,6 +144,7 @@ DEPENDENCIES
   http
   log4r
   netrc
+  nokogiri (= 1.6.8.1)
   octokit
   rack
   rack-test
@@ -158,4 +157,4 @@ DEPENDENCIES
   webmock
 
 BUNDLED WITH
-   1.12.5
+   1.13.6

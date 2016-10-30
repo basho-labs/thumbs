@@ -49,37 +49,37 @@ unit_tests do
 
   end
 
-  # test "can detect new base payload type" do
-  #   new_base_payload = {
-  #       'action' => 'edited',
-  #       'changes' => {
-  #           'base' => {
-  #               'ref' => {
-  #                 'from' => 'master'
-  #               },
-  #               'sha' => {
-  #                 'from' => 'afadb0afefe87362ca819a4a78b5bc89dede3133'
-  #               }
-  #           }
-  #       }
-  #   }
-  #
-  #   assert payload_type(new_base_payload) == :new_base, payload_type(new_base_payload).to_s
-  # end
-  #
-  # test "can detect merged base payload type" do
-  #   merged_base_payload = {
-  #
-  #       'ref' => 'refs/heads/master',
-  #       'before' => 'e65bc8ef21630b917ca9ecc62adb3b17c1cbe2ef',
-  #       'after' => '34ae62fe74815d254b78c5b1c57979dd8b9e4de5',
-  #       'commits' => [],
-  #       'head_commit' => {},
-  #       'pusher' => { 'name' => 'thumbot',
-  #                     'email' => 'git.thumbs@gmail.com'},
-  #       'repository' => {'full_name' => 'org/user' }
-  #   }
-  #
-  #   assert payload_type(merged_base_payload) == :merged_base, payload_type(merged_base_payload).to_s
-  # end
+  test "can detect new base payload type" do
+    new_base_payload = {
+        'action' => 'edited',
+        'changes' => {
+            'base' => {
+                'ref' => {
+                  'from' => 'master'
+                },
+                'sha' => {
+                  'from' => 'afadb0afefe87362ca819a4a78b5bc89dede3133'
+                }
+            }
+        }
+    }
+
+    assert payload_type(new_base_payload) == :new_base, payload_type(new_base_payload).to_s
+  end
+
+  test "can detect merged base payload type" do
+    merged_base_payload = {
+
+        'ref' => 'refs/heads/master',
+        'before' => 'e65bc8ef21630b917ca9ecc62adb3b17c1cbe2ef',
+        'after' => '34ae62fe74815d254b78c5b1c57979dd8b9e4de5',
+        'commits' => [],
+        'head_commit' => {},
+        'pusher' => { 'name' => 'thumbot',
+                      'email' => 'git.thumbs@gmail.com'},
+        'repository' => {'full_name' => 'org/user' }
+    }
+
+    assert payload_type(merged_base_payload) == :merged_base, payload_type(merged_base_payload).to_s
+  end
 end

@@ -145,31 +145,27 @@ class ThumbsWeb < Sinatra::Base
         debug_message "got repo #{repo} and base_ref #{base_ref}"
         pull_requests_for_base_branch = @octo_client.pull_requests(repo, :state => 'open').collect{|pr| pr if pr.base.ref == base_ref }.compact
         pull_requests_for_base_branch.each do |pr|
-          debug_message "Rebuilding PR: #{pr.number} with new Base #{base_ref}"
-          debug_message "Unimplemented"
-            # sleep 5
-            # pr_worker=Thumbs::PullRequestWorker.new(:repo => repo, :pr => pr.number)
-            #
-            # if pr_worker.build_in_progress?
-            #   debug_message "PR: #{pr.number} build_in_progress : next"
-            #   return "OK"
-            # end
-            # pr_worker.set_build_progress(:in_progress)
-            # pr_worker.validate
-            # pr_worker.set_build_progress(:completed)
-            # pr_worker.create_build_status_comment
-            #
-            #
-            # if pr_worker.valid_for_merge?
-            #   debug_message("merged base #{pr_worker.repo}/pulls/#{pr_worker.pr.number} valid_for_merge? OK ")
-            #   pr_worker.merge
-            # else
-            #   debug_message("merged base #{pr_worker.repo}/pulls/#{pr_worker.pr.number} valid_for_merge? returned False")
-            # end
-            #
+          debug_message "Forking Rebuild of PR: #{pr.number} with new Base ref #{base_ref}"
+          Process.detach( fork do
+            pr_worker=Thumbs::PullRequestWorker.new(:repo => repo, :pr => pr.number)
+
+            if pr_worker.build_in_progress?
+              debug_message "PR: #{pr.number} build_in_progress : next"
+              return "OK"
+            end
+            pr_worker.set_build_progress(:in_progress)
+            pr_worker.validate
+            pr_worker.set_build_progress(:completed)
+            pr_worker.create_build_status_comment
+
+            if pr_worker.valid_for_merge?
+              debug_message("merged base #{pr_worker.repo}/pulls/#{pr_worker.pr.number} valid_for_merge? OK ")
+              pr_worker.merge
+            else
+              debug_message("merged base #{pr_worker.repo}/pulls/#{pr_worker.pr.number} valid_for_merge? returned False")
+            end
+          end)
         end
-
-
       when :unregistered
         debug_message "This is not an event I recognize,: ignoring"
         debug_message payload_type(payload)

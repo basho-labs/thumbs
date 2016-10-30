@@ -1,0 +1,398 @@
+action: edited
+number: 252
+pull_request:
+  url: https://api.github.com/repos/davidx/prtester/pulls/252
+  id: 90691454
+  html_url: https://github.com/davidx/prtester/pull/252
+  diff_url: https://github.com/davidx/prtester/pull/252.diff
+  patch_url: https://github.com/davidx/prtester/pull/252.patch
+  issue_url: https://api.github.com/repos/davidx/prtester/issues/252
+  number: 252
+  state: open
+  locked: false
+  title: whaat
+  user:
+    login: davidx
+    id: 17162
+    avatar_url: https://avatars.githubusercontent.com/u/17162?v=3
+    gravatar_id: ''
+    url: https://api.github.com/users/davidx
+    html_url: https://github.com/davidx
+    followers_url: https://api.github.com/users/davidx/followers
+    following_url: https://api.github.com/users/davidx/following{/other_user}
+    gists_url: https://api.github.com/users/davidx/gists{/gist_id}
+    starred_url: https://api.github.com/users/davidx/starred{/owner}{/repo}
+    subscriptions_url: https://api.github.com/users/davidx/subscriptions
+    organizations_url: https://api.github.com/users/davidx/orgs
+    repos_url: https://api.github.com/users/davidx/repos
+    events_url: https://api.github.com/users/davidx/events{/privacy}
+    received_events_url: https://api.github.com/users/davidx/received_events
+    type: User
+    site_admin: false
+  body: ''
+  created_at: '2016-10-24T20:58:24Z'
+  updated_at: '2016-10-24T21:12:48Z'
+  closed_at:
+  merged_at:
+  merge_commit_sha: 364e7b541c895bc53faa671054e4a66915bb1a82
+  assignee:
+  assignees: []
+  milestone:
+  commits_url: https://api.github.com/repos/davidx/prtester/pulls/252/commits
+  review_comments_url: https://api.github.com/repos/davidx/prtester/pulls/252/comments
+  review_comment_url: https://api.github.com/repos/davidx/prtester/pulls/comments{/number}
+  comments_url: https://api.github.com/repos/davidx/prtester/issues/252/comments
+  statuses_url: https://api.github.com/repos/davidx/prtester/statuses/eec6cb8debc99a877938517527c232d607bed39b
+  head:
+    label: davidx:1477342513
+    ref: '1477342513'
+    sha: eec6cb8debc99a877938517527c232d607bed39b
+    user:
+      login: davidx
+      id: 17162
+      avatar_url: https://avatars.githubusercontent.com/u/17162?v=3
+      gravatar_id: ''
+      url: https://api.github.com/users/davidx
+      html_url: https://github.com/davidx
+      followers_url: https://api.github.com/users/davidx/followers
+      following_url: https://api.github.com/users/davidx/following{/other_user}
+      gists_url: https://api.github.com/users/davidx/gists{/gist_id}
+      starred_url: https://api.github.com/users/davidx/starred{/owner}{/repo}
+      subscriptions_url: https://api.github.com/users/davidx/subscriptions
+      organizations_url: https://api.github.com/users/davidx/orgs
+      repos_url: https://api.github.com/users/davidx/repos
+      events_url: https://api.github.com/users/davidx/events{/privacy}
+      received_events_url: https://api.github.com/users/davidx/received_events
+      type: User
+      site_admin: false
+    repo:
+      id: 64998050
+      name: prtester
+      full_name: davidx/prtester
+      owner:
+        login: davidx
+        id: 17162
+        avatar_url: https://avatars.githubusercontent.com/u/17162?v=3
+        gravatar_id: ''
+        url: https://api.github.com/users/davidx
+        html_url: https://github.com/davidx
+        followers_url: https://api.github.com/users/davidx/followers
+        following_url: https://api.github.com/users/davidx/following{/other_user}
+        gists_url: https://api.github.com/users/davidx/gists{/gist_id}
+        starred_url: https://api.github.com/users/davidx/starred{/owner}{/repo}
+        subscriptions_url: https://api.github.com/users/davidx/subscriptions
+        organizations_url: https://api.github.com/users/davidx/orgs
+        repos_url: https://api.github.com/users/davidx/repos
+        events_url: https://api.github.com/users/davidx/events{/privacy}
+        received_events_url: https://api.github.com/users/davidx/received_events
+        type: User
+        site_admin: false
+      private: false
+      html_url: https://github.com/davidx/prtester
+      description: testing pr
+      fork: false
+      url: https://api.github.com/repos/davidx/prtester
+      forks_url: https://api.github.com/repos/davidx/prtester/forks
+      keys_url: https://api.github.com/repos/davidx/prtester/keys{/key_id}
+      collaborators_url: https://api.github.com/repos/davidx/prtester/collaborators{/collaborator}
+      teams_url: https://api.github.com/repos/davidx/prtester/teams
+      hooks_url: https://api.github.com/repos/davidx/prtester/hooks
+      issue_events_url: https://api.github.com/repos/davidx/prtester/issues/events{/number}
+      events_url: https://api.github.com/repos/davidx/prtester/events
+      assignees_url: https://api.github.com/repos/davidx/prtester/assignees{/user}
+      branches_url: https://api.github.com/repos/davidx/prtester/branches{/branch}
+      tags_url: https://api.github.com/repos/davidx/prtester/tags
+      blobs_url: https://api.github.com/repos/davidx/prtester/git/blobs{/sha}
+      git_tags_url: https://api.github.com/repos/davidx/prtester/git/tags{/sha}
+      git_refs_url: https://api.github.com/repos/davidx/prtester/git/refs{/sha}
+      trees_url: https://api.github.com/repos/davidx/prtester/git/trees{/sha}
+      statuses_url: https://api.github.com/repos/davidx/prtester/statuses/{sha}
+      languages_url: https://api.github.com/repos/davidx/prtester/languages
+      stargazers_url: https://api.github.com/repos/davidx/prtester/stargazers
+      contributors_url: https://api.github.com/repos/davidx/prtester/contributors
+      subscribers_url: https://api.github.com/repos/davidx/prtester/subscribers
+      subscription_url: https://api.github.com/repos/davidx/prtester/subscription
+      commits_url: https://api.github.com/repos/davidx/prtester/commits{/sha}
+      git_commits_url: https://api.github.com/repos/davidx/prtester/git/commits{/sha}
+      comments_url: https://api.github.com/repos/davidx/prtester/comments{/number}
+      issue_comment_url: https://api.github.com/repos/davidx/prtester/issues/comments{/number}
+      contents_url: https://api.github.com/repos/davidx/prtester/contents/{+path}
+      compare_url: https://api.github.com/repos/davidx/prtester/compare/{base}...{head}
+      merges_url: https://api.github.com/repos/davidx/prtester/merges
+      archive_url: https://api.github.com/repos/davidx/prtester/{archive_format}{/ref}
+      downloads_url: https://api.github.com/repos/davidx/prtester/downloads
+      issues_url: https://api.github.com/repos/davidx/prtester/issues{/number}
+      pulls_url: https://api.github.com/repos/davidx/prtester/pulls{/number}
+      milestones_url: https://api.github.com/repos/davidx/prtester/milestones{/number}
+      notifications_url: https://api.github.com/repos/davidx/prtester/notifications{?since,all,participating}
+      labels_url: https://api.github.com/repos/davidx/prtester/labels{/name}
+      releases_url: https://api.github.com/repos/davidx/prtester/releases{/id}
+      deployments_url: https://api.github.com/repos/davidx/prtester/deployments
+      created_at: '2016-08-05T07:21:52Z'
+      updated_at: '2016-08-05T07:29:52Z'
+      pushed_at: '2016-10-24T21:09:01Z'
+      git_url: git://github.com/davidx/prtester.git
+      ssh_url: git@github.com:davidx/prtester.git
+      clone_url: https://github.com/davidx/prtester.git
+      svn_url: https://github.com/davidx/prtester
+      homepage:
+      size: 216
+      stargazers_count: 0
+      watchers_count: 0
+      language: Makefile
+      has_issues: true
+      has_downloads: true
+      has_wiki: true
+      has_pages: false
+      forks_count: 2
+      mirror_url:
+      open_issues_count: 9
+      forks: 2
+      open_issues: 9
+      watchers: 0
+      default_branch: master
+  base:
+    label: davidx:1473975779
+    ref: '1473975779'
+    sha: 22b8e6034d603fa6ed700487c5ed20886ebfe5ef
+    user:
+      login: davidx
+      id: 17162
+      avatar_url: https://avatars.githubusercontent.com/u/17162?v=3
+      gravatar_id: ''
+      url: https://api.github.com/users/davidx
+      html_url: https://github.com/davidx
+      followers_url: https://api.github.com/users/davidx/followers
+      following_url: https://api.github.com/users/davidx/following{/other_user}
+      gists_url: https://api.github.com/users/davidx/gists{/gist_id}
+      starred_url: https://api.github.com/users/davidx/starred{/owner}{/repo}
+      subscriptions_url: https://api.github.com/users/davidx/subscriptions
+      organizations_url: https://api.github.com/users/davidx/orgs
+      repos_url: https://api.github.com/users/davidx/repos
+      events_url: https://api.github.com/users/davidx/events{/privacy}
+      received_events_url: https://api.github.com/users/davidx/received_events
+      type: User
+      site_admin: false
+    repo:
+      id: 64998050
+      name: prtester
+      full_name: davidx/prtester
+      owner:
+        login: davidx
+        id: 17162
+        avatar_url: https://avatars.githubusercontent.com/u/17162?v=3
+        gravatar_id: ''
+        url: https://api.github.com/users/davidx
+        html_url: https://github.com/davidx
+        followers_url: https://api.github.com/users/davidx/followers
+        following_url: https://api.github.com/users/davidx/following{/other_user}
+        gists_url: https://api.github.com/users/davidx/gists{/gist_id}
+        starred_url: https://api.github.com/users/davidx/starred{/owner}{/repo}
+        subscriptions_url: https://api.github.com/users/davidx/subscriptions
+        organizations_url: https://api.github.com/users/davidx/orgs
+        repos_url: https://api.github.com/users/davidx/repos
+        events_url: https://api.github.com/users/davidx/events{/privacy}
+        received_events_url: https://api.github.com/users/davidx/received_events
+        type: User
+        site_admin: false
+      private: false
+      html_url: https://github.com/davidx/prtester
+      description: testing pr
+      fork: false
+      url: https://api.github.com/repos/davidx/prtester
+      forks_url: https://api.github.com/repos/davidx/prtester/forks
+      keys_url: https://api.github.com/repos/davidx/prtester/keys{/key_id}
+      collaborators_url: https://api.github.com/repos/davidx/prtester/collaborators{/collaborator}
+      teams_url: https://api.github.com/repos/davidx/prtester/teams
+      hooks_url: https://api.github.com/repos/davidx/prtester/hooks
+      issue_events_url: https://api.github.com/repos/davidx/prtester/issues/events{/number}
+      events_url: https://api.github.com/repos/davidx/prtester/events
+      assignees_url: https://api.github.com/repos/davidx/prtester/assignees{/user}
+      branches_url: https://api.github.com/repos/davidx/prtester/branches{/branch}
+      tags_url: https://api.github.com/repos/davidx/prtester/tags
+      blobs_url: https://api.github.com/repos/davidx/prtester/git/blobs{/sha}
+      git_tags_url: https://api.github.com/repos/davidx/prtester/git/tags{/sha}
+      git_refs_url: https://api.github.com/repos/davidx/prtester/git/refs{/sha}
+      trees_url: https://api.github.com/repos/davidx/prtester/git/trees{/sha}
+      statuses_url: https://api.github.com/repos/davidx/prtester/statuses/{sha}
+      languages_url: https://api.github.com/repos/davidx/prtester/languages
+      stargazers_url: https://api.github.com/repos/davidx/prtester/stargazers
+      contributors_url: https://api.github.com/repos/davidx/prtester/contributors
+      subscribers_url: https://api.github.com/repos/davidx/prtester/subscribers
+      subscription_url: https://api.github.com/repos/davidx/prtester/subscription
+      commits_url: https://api.github.com/repos/davidx/prtester/commits{/sha}
+      git_commits_url: https://api.github.com/repos/davidx/prtester/git/commits{/sha}
+      comments_url: https://api.github.com/repos/davidx/prtester/comments{/number}
+      issue_comment_url: https://api.github.com/repos/davidx/prtester/issues/comments{/number}
+      contents_url: https://api.github.com/repos/davidx/prtester/contents/{+path}
+      compare_url: https://api.github.com/repos/davidx/prtester/compare/{base}...{head}
+      merges_url: https://api.github.com/repos/davidx/prtester/merges
+      archive_url: https://api.github.com/repos/davidx/prtester/{archive_format}{/ref}
+      downloads_url: https://api.github.com/repos/davidx/prtester/downloads
+      issues_url: https://api.github.com/repos/davidx/prtester/issues{/number}
+      pulls_url: https://api.github.com/repos/davidx/prtester/pulls{/number}
+      milestones_url: https://api.github.com/repos/davidx/prtester/milestones{/number}
+      notifications_url: https://api.github.com/repos/davidx/prtester/notifications{?since,all,participating}
+      labels_url: https://api.github.com/repos/davidx/prtester/labels{/name}
+      releases_url: https://api.github.com/repos/davidx/prtester/releases{/id}
+      deployments_url: https://api.github.com/repos/davidx/prtester/deployments
+      created_at: '2016-08-05T07:21:52Z'
+      updated_at: '2016-08-05T07:29:52Z'
+      pushed_at: '2016-10-24T21:09:01Z'
+      git_url: git://github.com/davidx/prtester.git
+      ssh_url: git@github.com:davidx/prtester.git
+      clone_url: https://github.com/davidx/prtester.git
+      svn_url: https://github.com/davidx/prtester
+      homepage:
+      size: 216
+      stargazers_count: 0
+      watchers_count: 0
+      language: Makefile
+      has_issues: true
+      has_downloads: true
+      has_wiki: true
+      has_pages: false
+      forks_count: 2
+      mirror_url:
+      open_issues_count: 9
+      forks: 2
+      open_issues: 9
+      watchers: 0
+      default_branch: master
+  _links:
+    self:
+      href: https://api.github.com/repos/davidx/prtester/pulls/252
+    html:
+      href: https://github.com/davidx/prtester/pull/252
+    issue:
+      href: https://api.github.com/repos/davidx/prtester/issues/252
+    comments:
+      href: https://api.github.com/repos/davidx/prtester/issues/252/comments
+    review_comments:
+      href: https://api.github.com/repos/davidx/prtester/pulls/252/comments
+    review_comment:
+      href: https://api.github.com/repos/davidx/prtester/pulls/comments{/number}
+    commits:
+      href: https://api.github.com/repos/davidx/prtester/pulls/252/commits
+    statuses:
+      href: https://api.github.com/repos/davidx/prtester/statuses/eec6cb8debc99a877938517527c232d607bed39b
+  merged: false
+  mergeable:
+  mergeable_state: unknown
+  merged_by:
+  comments: 3
+  review_comments: 0
+  commits: 72
+  additions: 15
+  deletions: 6
+  changed_files: 3
+changes:
+  base:
+    ref:
+      from: master
+    sha:
+      from: afadb0afefe87362ca819a4a78b5bc89dede3133
+repository:
+  id: 64998050
+  name: prtester
+  full_name: davidx/prtester
+  owner:
+    login: davidx
+    id: 17162
+    avatar_url: https://avatars.githubusercontent.com/u/17162?v=3
+    gravatar_id: ''
+    url: https://api.github.com/users/davidx
+    html_url: https://github.com/davidx
+    followers_url: https://api.github.com/users/davidx/followers
+    following_url: https://api.github.com/users/davidx/following{/other_user}
+    gists_url: https://api.github.com/users/davidx/gists{/gist_id}
+    starred_url: https://api.github.com/users/davidx/starred{/owner}{/repo}
+    subscriptions_url: https://api.github.com/users/davidx/subscriptions
+    organizations_url: https://api.github.com/users/davidx/orgs
+    repos_url: https://api.github.com/users/davidx/repos
+    events_url: https://api.github.com/users/davidx/events{/privacy}
+    received_events_url: https://api.github.com/users/davidx/received_events
+    type: User
+    site_admin: false
+  private: false
+  html_url: https://github.com/davidx/prtester
+  description: testing pr
+  fork: false
+  url: https://api.github.com/repos/davidx/prtester
+  forks_url: https://api.github.com/repos/davidx/prtester/forks
+  keys_url: https://api.github.com/repos/davidx/prtester/keys{/key_id}
+  collaborators_url: https://api.github.com/repos/davidx/prtester/collaborators{/collaborator}
+  teams_url: https://api.github.com/repos/davidx/prtester/teams
+  hooks_url: https://api.github.com/repos/davidx/prtester/hooks
+  issue_events_url: https://api.github.com/repos/davidx/prtester/issues/events{/number}
+  events_url: https://api.github.com/repos/davidx/prtester/events
+  assignees_url: https://api.github.com/repos/davidx/prtester/assignees{/user}
+  branches_url: https://api.github.com/repos/davidx/prtester/branches{/branch}
+  tags_url: https://api.github.com/repos/davidx/prtester/tags
+  blobs_url: https://api.github.com/repos/davidx/prtester/git/blobs{/sha}
+  git_tags_url: https://api.github.com/repos/davidx/prtester/git/tags{/sha}
+  git_refs_url: https://api.github.com/repos/davidx/prtester/git/refs{/sha}
+  trees_url: https://api.github.com/repos/davidx/prtester/git/trees{/sha}
+  statuses_url: https://api.github.com/repos/davidx/prtester/statuses/{sha}
+  languages_url: https://api.github.com/repos/davidx/prtester/languages
+  stargazers_url: https://api.github.com/repos/davidx/prtester/stargazers
+  contributors_url: https://api.github.com/repos/davidx/prtester/contributors
+  subscribers_url: https://api.github.com/repos/davidx/prtester/subscribers
+  subscription_url: https://api.github.com/repos/davidx/prtester/subscription
+  commits_url: https://api.github.com/repos/davidx/prtester/commits{/sha}
+  git_commits_url: https://api.github.com/repos/davidx/prtester/git/commits{/sha}
+  comments_url: https://api.github.com/repos/davidx/prtester/comments{/number}
+  issue_comment_url: https://api.github.com/repos/davidx/prtester/issues/comments{/number}
+  contents_url: https://api.github.com/repos/davidx/prtester/contents/{+path}
+  compare_url: https://api.github.com/repos/davidx/prtester/compare/{base}...{head}
+  merges_url: https://api.github.com/repos/davidx/prtester/merges
+  archive_url: https://api.github.com/repos/davidx/prtester/{archive_format}{/ref}
+  downloads_url: https://api.github.com/repos/davidx/prtester/downloads
+  issues_url: https://api.github.com/repos/davidx/prtester/issues{/number}
+  pulls_url: https://api.github.com/repos/davidx/prtester/pulls{/number}
+  milestones_url: https://api.github.com/repos/davidx/prtester/milestones{/number}
+  notifications_url: https://api.github.com/repos/davidx/prtester/notifications{?since,all,participating}
+  labels_url: https://api.github.com/repos/davidx/prtester/labels{/name}
+  releases_url: https://api.github.com/repos/davidx/prtester/releases{/id}
+  deployments_url: https://api.github.com/repos/davidx/prtester/deployments
+  created_at: '2016-08-05T07:21:52Z'
+  updated_at: '2016-08-05T07:29:52Z'
+  pushed_at: '2016-10-24T21:09:01Z'
+  git_url: git://github.com/davidx/prtester.git
+  ssh_url: git@github.com:davidx/prtester.git
+  clone_url: https://github.com/davidx/prtester.git
+  svn_url: https://github.com/davidx/prtester
+  homepage:
+  size: 216
+  stargazers_count: 0
+  watchers_count: 0
+  language: Makefile
+  has_issues: true
+  has_downloads: true
+  has_wiki: true
+  has_pages: false
+  forks_count: 2
+  mirror_url:
+  open_issues_count: 9
+  forks: 2
+  open_issues: 9
+  watchers: 0
+  default_branch: master
+sender:
+  login: davidx
+  id: 17162
+  avatar_url: https://avatars.githubusercontent.com/u/17162?v=3
+  gravatar_id: ''
+  url: https://api.github.com/users/davidx
+  html_url: https://github.com/davidx
+  followers_url: https://api.github.com/users/davidx/followers
+  following_url: https://api.github.com/users/davidx/following{/other_user}
+  gists_url: https://api.github.com/users/davidx/gists{/gist_id}
+  starred_url: https://api.github.com/users/davidx/starred{/owner}{/repo}
+  subscriptions_url: https://api.github.com/users/davidx/subscriptions
+  organizations_url: https://api.github.com/users/davidx/orgs
+  repos_url: https://api.github.com/users/davidx/repos
+  events_url: https://api.github.com/users/davidx/events{/privacy}
+  received_events_url: https://api.github.com/users/davidx/received_events
+  type: User
+  site_admin: false

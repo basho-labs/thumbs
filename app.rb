@@ -41,18 +41,24 @@ class ThumbsWeb < Sinatra::Base
       when :new_pr
         repo, pr = process_payload(payload)
         debug_message "got repo #{repo} and pr #{pr}"
+
+        sleep 1 # facepalm eventual consistent
+        # todo: queue and retry logic
+
         pr_worker = Thumbs::PullRequestWorker.new(:repo => repo, :pr => pr)
         return "OK" unless pr_worker.open?
+        return "OK" if pr_worker.build_in_progress?
         debug_message("new pull request #{pr_worker.repo}/pulls/#{pr_worker.pr.number} ")
         pr_worker.add_comment("Thanks @#{pr_worker.pr.user.login}!")
+        pr_worker.add_comment " .thumbs.yml config:\n``` #{pr_worker.thumb_config.to_yaml} ```"
+        pr_worker.set_build_progress(:in_progress)
+
         pr_worker.try_merge
         unless pr_worker.thumb_config && pr_worker.thumb_config.key?('build_steps')
           debug_message("no .thumbs config found for this repo/PR #{pr_worker.repo}##{pr_worker.pr.number}")
           return "OK"
         end
-        pr_worker.add_comment " .thumbs.yml config:\n``` #{pr_worker.thumb_config.to_yaml} ```"
-        return "OK" if pr_worker.build_in_progress?
-        pr_worker.set_build_progress(:in_progress)
+
         pr_worker.validate
         pr_worker.set_build_progress(:completed)
         pr_worker.create_build_status_comment
@@ -73,17 +79,13 @@ class ThumbsWeb < Sinatra::Base
         pr_worker = Thumbs::PullRequestWorker.new(:repo => repo, :pr => pr)
         return "OK" unless pr_worker.open?
         debug_message("new comment #{pr_worker.repo}/pulls/#{pr_worker.pr.number} #{payload['comment']['body']}")
-        return "OK" if pr_worker.build_in_progress?
-        pr_worker.set_build_progress(:in_progress)
         pr_worker.validate
-        pr_worker.set_build_progress(:completed)
 
-        pr_worker.load_thumbs_config
         if pr_worker.valid_for_merge?
-
           unless pr_worker.review_count >= pr_worker.thumb_config['minimum_reviewers']
             debug_message " #{pr_worker.review_count} !>= #{pr_worker.thumb_config['minimum_reviewers']}"
-           return false
+            debug_message " reviewer rule not met "
+            return false
           end
 
           debug_message("new comment #{pr_worker.repo}/pulls/#{pr_worker.pr.number} valid_for_merge? OK ")
@@ -94,7 +96,7 @@ class ThumbsWeb < Sinatra::Base
           debug_message("new comment #{pr_worker.repo}/pulls/#{pr_worker.pr.number} valid_for_merge? returned False")
         end
       when :new_push
-        debug_message "This is a new push"
+        debug_message "This is a #{payload_type(payload).to_s}"
         repo, pr = process_payload(payload)
         debug_message "got repo #{repo} and pr #{pr}"
         pr_worker = Thumbs::PullRequestWorker.new(:repo => repo, :pr => pr)
@@ -107,12 +109,58 @@ class ThumbsWeb < Sinatra::Base
         pr_worker.create_build_status_comment
 
 
+        if pr_worker.valid_for_merge?
+          debug_message("new push #{pr_worker.repo}/pulls/#{pr_worker.pr.number} valid_for_merge? OK ")
+          pr_worker.merge
+        else
+          debug_message("new push #{pr_worker.repo}/pulls/#{pr_worker.pr.number} valid_for_merge? returned False")
+        end
+      when :new_base
+        debug_message "This is a #{payload_type(payload).to_s}"
+        repo, pr = process_payload(payload)
+        debug_message "got repo #{repo} and pr #{pr}"
+        pr_worker = Thumbs::PullRequestWorker.new(:repo => repo, :pr => pr)
+
+        debug_message("#{payload_type(payload).to_s} on repo #{repo}")
+        return "OK" if pr_worker.build_in_progress?
+        pr_worker.set_build_progress(:in_progress)
+        pr_worker.validate
+        pr_worker.set_build_progress(:completed)
+        pr_worker.create_build_status_comment
+
 
         if pr_worker.valid_for_merge?
           debug_message("new push #{pr_worker.repo}/pulls/#{pr_worker.pr.number} valid_for_merge? OK ")
           pr_worker.merge
         else
           debug_message("new push #{pr_worker.repo}/pulls/#{pr_worker.pr.number} valid_for_merge? returned False")
+        end
+      when :merged_base
+        debug_message "This is a #{payload_type(payload).to_s}"
+        repo, base_ref = process_payload(payload)
+        debug_message "got repo #{repo} and base_ref #{base_ref}"
+        pull_requests_for_base_branch = @octo_client.pull_requests(repo, :state => 'open').collect { |pr| pr if pr.base.ref == base_ref }.compact
+        pull_requests_for_base_branch.each do |pr|
+          debug_message "Forking Rebuild of PR: #{pr.number} with new Base ref #{base_ref}"
+          Process.detach(fork do
+            pr_worker=Thumbs::PullRequestWorker.new(:repo => repo, :pr => pr.number)
+
+            if pr_worker.build_in_progress?
+              debug_message "PR: #{pr.number} build_in_progress : next"
+              return "OK"
+            end
+            pr_worker.set_build_progress(:in_progress)
+            pr_worker.validate
+            pr_worker.set_build_progress(:completed)
+            pr_worker.create_build_status_comment
+
+            if pr_worker.valid_for_merge?
+              debug_message("merged base #{pr_worker.repo}/pulls/#{pr_worker.pr.number} valid_for_merge? OK ")
+              pr_worker.merge
+            else
+              debug_message("merged base #{pr_worker.repo}/pulls/#{pr_worker.pr.number} valid_for_merge? returned False")
+            end
+          end)
         end
       when :unregistered
         debug_message "This is not an event I recognize,: ignoring"

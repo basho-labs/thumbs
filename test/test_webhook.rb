@@ -122,7 +122,8 @@ class WebhookTest < Test::Unit::TestCase
           'number' => prw.pr.number,
           'pull_request' => {'number' => prw.pr.number, 'body' => prw.pr.body}
       }
-      assert prw.build_status[:steps].keys.length == 1
+      prw.unpersist_build_status
+      assert prw.build_status[:steps].keys.length == 1 ,prw.build_status[:steps].inspect
       assert prw.build_status[:steps].key?(:merge)
       remove_comments(prw.repo, prw.pr.number)
       cassette(:get_comments, :record => :all) do

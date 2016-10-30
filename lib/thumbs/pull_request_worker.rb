@@ -72,15 +72,15 @@ module Thumbs
       cleanup_build_dir
       begin
         git = clone(@build_dir)
-        git.checkout(@pr.head.sha)
+        git.checkout(most_recent_head_sha)
         git.checkout(@pr.base.ref)
         git.branch(pr_branch).checkout
-        debug_message "Trying merge #{@repo}:PR##{@pr.number} \" #{@pr.title}\" #{@pr.head.sha} onto #{@pr.base.ref}"
-        merge_result = git.merge("#{@pr.head.sha}")
+        debug_message "Trying merge #{@repo}:PR##{@pr.number} \" #{@pr.title}\" #{most_recent_head_sha} onto #{@pr.base.ref}"
+        merge_result = git.merge("#{most_recent_head_sha}")
         load_thumbs_config
         status[:ended_at]=DateTime.now
         status[:result]=:ok
-        status[:message]="Merge Success: #{@pr.head.sha} onto target branch: #{@pr.base.ref}"
+        status[:message]="Merge Success: #{most_recent_head_sha} onto target branch: #{@pr.base.ref}"
         status[:output]=merge_result
       rescue => e
         debug_message "Merge Failed"
@@ -148,7 +148,7 @@ module Thumbs
     end
 
     def comments_after_head_sha
-      sha_time_stamp=push_time_stamp(pr.head.sha)
+      sha_time_stamp=push_time_stamp(most_recent_head_sha)
       comments_after_sha=all_comments.compact.collect do |c|
         c.to_h if c[:created_at] > sha_time_stamp
       end.compact
@@ -383,7 +383,7 @@ module Thumbs
     end
 
     def most_recent_sha
-      (pushes.length > 0 && pushes.first[:created_at] > pr.created_at) ? pushes.first[:payload][:head] : pr.head.sha
+      most_recent_head_sha
     end
 
     def run_build_steps
@@ -506,7 +506,7 @@ module Thumbs
         commit_message = 'Thumbs Git Robot Merge. '
 
         merge_response = client.merge_pull_request(@repo, @pr.number, commit_message, options = {})
-        merge_comment="Successfully merged *#{@repo}/pulls/#{@pr.number}* (*#{@pr.head.sha}* on to *#{@pr.base.ref}*)\n\n"
+        merge_comment="Successfully merged *#{@repo}/pulls/#{@pr.number}* (*#{most_recent_head_sha}* on to *#{@pr.base.ref}*)\n\n"
         merge_comment << " ```yaml    \n#{merge_response.to_hash.to_yaml}\n ``` \n"
 
         add_comment merge_comment
@@ -558,14 +558,17 @@ module Thumbs
     end
 
     def commits
-      client.commits(@repo, pr.head.ref)
+      client.commits(repo, pr.head.ref)
     end
+    
     def most_recent_head_sha
-      commits.first[:sha]
+      client.commits(repo, pr.head.ref).first[:sha]
     end
+
     def most_recent_base_sha
-      client.commits(@repo, pr.base.ref).first[:sha]
+      client.commits(repo, pr.base.ref).first[:sha]
     end
+
     def pull_requests_for_base_branch(branch)
       open_pull_requests.collect{|pr| pr if pr.base.ref == branch }
     end

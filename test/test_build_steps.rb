@@ -107,7 +107,9 @@ unit_tests do
       cassette(:comments) do
         assert prw.respond_to?(:valid_for_merge?)
         cassette(:get_state) do
-          assert_equal false, prw.valid_for_merge?
+          cassette(:get_commits) do
+            assert_equal false, prw.valid_for_merge?
+          end
         end
       end
     end
@@ -120,7 +122,9 @@ unit_tests do
       prw.try_merge
       prw.run_build_steps
       cassette(:get_state) do
-        assert_equal false, prw.valid_for_merge?
+        cassette(:get_commits) do
+          assert_equal false, prw.valid_for_merge?
+        end
       end
     end
   end

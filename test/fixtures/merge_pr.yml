@@ -1,0 +1,185 @@
+---
+ref: refs/heads/master
+before: e65bc8ef21630b917ca9ecc62adb3b17c1cbe2ef
+after: 34ae62fe74815d254b78c5b1c57979dd8b9e4de5
+created: false
+deleted: false
+forced: false
+base_ref:
+compare: https://github.com/davidx/prtester/compare/e65bc8ef2163...34ae62fe7481
+commits:
+- id: 6ef8e11b10cc93b070f9fe7bd832a969defc06b0
+  tree_id: fdd7bc647635b96320b45290f0235e62235384d9
+  distinct: false
+  message: add
+  timestamp: '2016-10-26T20:55:04-07:00'
+  url: https://github.com/davidx/prtester/commit/6ef8e11b10cc93b070f9fe7bd832a969defc06b0
+  author:
+    name: David Andersen
+    email: davidx@gmail.com
+    username: davidx
+  committer:
+    name: David Andersen
+    email: davidx@gmail.com
+    username: davidx
+  added:
+  - testfile2
+  removed: []
+  modified: []
+- id: ac852eb7b23ac76f91d0836bbd3146da19411a52
+  tree_id: 8b3d3e88365610d4d4ec7bb4af4e108925aef026
+  distinct: false
+  message: test
+  timestamp: '2016-10-27T09:20:48-07:00'
+  url: https://github.com/davidx/prtester/commit/ac852eb7b23ac76f91d0836bbd3146da19411a52
+  author:
+    name: David Andersen
+    email: davidx@gmail.com
+    username: davidx
+  committer:
+    name: David Andersen
+    email: davidx@gmail.com
+    username: davidx
+  added: []
+  removed: []
+  modified:
+  - ".thumbs.yml"
+- id: 34ae62fe74815d254b78c5b1c57979dd8b9e4de5
+  tree_id: 3b3185022c9089b4e5613183970fd8bf86dd247d
+  distinct: true
+  message: |-
+    Merge pull request #268 from davidx/mergable_diff
+
+    Thumbs Git Robot Merge.
+  timestamp: '2016-10-27T09:21:56-07:00'
+  url: https://github.com/davidx/prtester/commit/34ae62fe74815d254b78c5b1c57979dd8b9e4de5
+  author:
+    name: Thumbs
+    email: git.thumbs@gmail.com
+    username: thumbot
+  committer:
+    name: GitHub
+    email: noreply@github.com
+    username: web-flow
+  added:
+  - testfile2
+  removed: []
+  modified:
+  - ".thumbs.yml"
+head_commit:
+  id: 34ae62fe74815d254b78c5b1c57979dd8b9e4de5
+  tree_id: 3b3185022c9089b4e5613183970fd8bf86dd247d
+  distinct: true
+  message: |-
+    Merge pull request #268 from davidx/mergable_diff
+
+    Thumbs Git Robot Merge.
+  timestamp: '2016-10-27T09:21:56-07:00'
+  url: https://github.com/davidx/prtester/commit/34ae62fe74815d254b78c5b1c57979dd8b9e4de5
+  author:
+    name: Thumbs
+    email: git.thumbs@gmail.com
+    username: thumbot
+  committer:
+    name: GitHub
+    email: noreply@github.com
+    username: web-flow
+  added:
+  - testfile2
+  removed: []
+  modified:
+  - ".thumbs.yml"
+repository:
+  id: 64998050
+  name: prtester
+  full_name: davidx/prtester
+  owner:
+    name: davidx
+    email: davidx@gmail.com
+  private: false
+  html_url: https://github.com/davidx/prtester
+  description: testing pr
+  fork: false
+  url: https://github.com/davidx/prtester
+  forks_url: https://api.github.com/repos/davidx/prtester/forks
+  keys_url: https://api.github.com/repos/davidx/prtester/keys{/key_id}
+  collaborators_url: https://api.github.com/repos/davidx/prtester/collaborators{/collaborator}
+  teams_url: https://api.github.com/repos/davidx/prtester/teams
+  hooks_url: https://api.github.com/repos/davidx/prtester/hooks
+  issue_events_url: https://api.github.com/repos/davidx/prtester/issues/events{/number}
+  events_url: https://api.github.com/repos/davidx/prtester/events
+  assignees_url: https://api.github.com/repos/davidx/prtester/assignees{/user}
+  branches_url: https://api.github.com/repos/davidx/prtester/branches{/branch}
+  tags_url: https://api.github.com/repos/davidx/prtester/tags
+  blobs_url: https://api.github.com/repos/davidx/prtester/git/blobs{/sha}
+  git_tags_url: https://api.github.com/repos/davidx/prtester/git/tags{/sha}
+  git_refs_url: https://api.github.com/repos/davidx/prtester/git/refs{/sha}
+  trees_url: https://api.github.com/repos/davidx/prtester/git/trees{/sha}
+  statuses_url: https://api.github.com/repos/davidx/prtester/statuses/{sha}
+  languages_url: https://api.github.com/repos/davidx/prtester/languages
+  stargazers_url: https://api.github.com/repos/davidx/prtester/stargazers
+  contributors_url: https://api.github.com/repos/davidx/prtester/contributors
+  subscribers_url: https://api.github.com/repos/davidx/prtester/subscribers
+  subscription_url: https://api.github.com/repos/davidx/prtester/subscription
+  commits_url: https://api.github.com/repos/davidx/prtester/commits{/sha}
+  git_commits_url: https://api.github.com/repos/davidx/prtester/git/commits{/sha}
+  comments_url: https://api.github.com/repos/davidx/prtester/comments{/number}
+  issue_comment_url: https://api.github.com/repos/davidx/prtester/issues/comments{/number}
+  contents_url: https://api.github.com/repos/davidx/prtester/contents/{+path}
+  compare_url: https://api.github.com/repos/davidx/prtester/compare/{base}...{head}
+  merges_url: https://api.github.com/repos/davidx/prtester/merges
+  archive_url: https://api.github.com/repos/davidx/prtester/{archive_format}{/ref}
+  downloads_url: https://api.github.com/repos/davidx/prtester/downloads
+  issues_url: https://api.github.com/repos/davidx/prtester/issues{/number}
+  pulls_url: https://api.github.com/repos/davidx/prtester/pulls{/number}
+  milestones_url: https://api.github.com/repos/davidx/prtester/milestones{/number}
+  notifications_url: https://api.github.com/repos/davidx/prtester/notifications{?since,all,participating}
+  labels_url: https://api.github.com/repos/davidx/prtester/labels{/name}
+  releases_url: https://api.github.com/repos/davidx/prtester/releases{/id}
+  deployments_url: https://api.github.com/repos/davidx/prtester/deployments
+  created_at: 1470381712
+  updated_at: '2016-08-05T07:29:52Z'
+  pushed_at: 1477585316
+  git_url: git://github.com/davidx/prtester.git
+  ssh_url: git@github.com:davidx/prtester.git
+  clone_url: https://github.com/davidx/prtester.git
+  svn_url: https://github.com/davidx/prtester
+  homepage:
+  size: 273
+  stargazers_count: 0
+  watchers_count: 0
+  language: Makefile
+  has_issues: true
+  has_downloads: true
+  has_wiki: true
+  has_pages: false
+  forks_count: 2
+  mirror_url:
+  open_issues_count: 6
+  forks: 2
+  open_issues: 6
+  watchers: 0
+  default_branch: master
+  stargazers: 0
+  master_branch: master
+pusher:
+  name: thumbot
+  email: git.thumbs@gmail.com
+sender:
+  login: thumbot
+  id: 20921557
+  avatar_url: https://avatars.githubusercontent.com/u/20921557?v=3
+  gravatar_id: ''
+  url: https://api.github.com/users/thumbot
+  html_url: https://github.com/thumbot
+  followers_url: https://api.github.com/users/thumbot/followers
+  following_url: https://api.github.com/users/thumbot/following{/other_user}
+  gists_url: https://api.github.com/users/thumbot/gists{/gist_id}
+  starred_url: https://api.github.com/users/thumbot/starred{/owner}{/repo}
+  subscriptions_url: https://api.github.com/users/thumbot/subscriptions
+  organizations_url: https://api.github.com/users/thumbot/orgs
+  repos_url: https://api.github.com/users/thumbot/repos
+  events_url: https://api.github.com/users/thumbot/events{/privacy}
+  received_events_url: https://api.github.com/users/thumbot/received_events
+  type: User
+  site_admin: false

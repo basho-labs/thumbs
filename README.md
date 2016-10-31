@@ -58,7 +58,9 @@ ask to enable thumbs for your repo.
 1) Post parsed **.thumbs.yml** as comment.
 ![Alt text](http://i.imgur.com/QMGnL7i.png)
 2) Try to merge PR branch onto target branch
+
 3) Try to run build steps defined in **.thumbs.yml**
+
 4) Report build status in PR comment.
 ![Alt text](http://i.imgur.com/zFrr7aR.png) 
 

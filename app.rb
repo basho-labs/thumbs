@@ -49,10 +49,18 @@ class ThumbsWeb < Sinatra::Base
         return "OK" unless pr_worker.open?
         return "OK" if pr_worker.build_in_progress?
         debug_message("new pull request #{pr_worker.repo}/pulls/#{pr_worker.pr.number} ")
-        pr_worker.add_comment("Thanks @#{pr_worker.pr.user.login}!")
-        pr_worker.add_comment " .thumbs.yml config:\n``` #{pr_worker.thumb_config.to_yaml} ```"
-        pr_worker.set_build_progress(:in_progress)
+        intro_text=<<-EOS
+Thanks @#{pr_worker.pr.user.login}!
+<details><Summary>Settings</Summary>
 
+```yaml 
+#{pr_worker.thumb_config.to_yaml} ```
+
+</details>
+        
+        EOS
+        pr_worker.add_comment(intro_text)
+        pr_worker.set_build_progress(:in_progress)
         pr_worker.try_merge
         unless pr_worker.thumb_config && pr_worker.thumb_config.key?('build_steps')
           debug_message("no .thumbs config found for this repo/PR #{pr_worker.repo}##{pr_worker.pr.number}")

@@ -17,7 +17,7 @@ Thumbs was created to help validate and merge pull requests. It was initially cr
 - Go to https://github.com/basho/YOUR-REPO/settings
 - Click [Webhooks]
 - Click [Add Webhook]
-- Set Payload URL to: http://thumbs.cloud1.basho.com
+- Set Payload URL to: http://thumbs.cloud1.basho.com/webhook
 - [checkbox] Send me everything
 
 ![Alt text](http://i.imgur.com/hyarJuX.png)

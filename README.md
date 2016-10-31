@@ -67,6 +67,7 @@ ask to enable thumbs for your repo.
 ##  A new comment
 ##### Thumbs will :
 1) Count the number of comments containing +1 by org members other than the PR author. 
+
 2) If minimum reviewers is met and build is valid, it will report reviewers count and attempt to merge.
 ![Alt text](http://i.imgur.com/4mj2SL7.png)
 

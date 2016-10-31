@@ -52,7 +52,7 @@ ask to enable thumbs for your repo.
  
 ##  Scenarios:
 ##  A new pull request
-![Alt text](http://i.imgur.com/zCOwNgL.png)
+![Alt text](http://i.imgur.com/QrvXPoi.png)
 ##### Thumbs will :
 
 1) Post parsed **.thumbs.yml** as comment.

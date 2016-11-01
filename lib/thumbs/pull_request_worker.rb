@@ -148,9 +148,6 @@ module Thumbs
       time_stamp ? time_stamp : pr.created_at
     end
 
-    def approvals_after_head_sha
-
-    end
     def comments_after_head_sha
       sha_time_stamp=push_time_stamp(most_recent_head_sha)
       comments_after_sha=all_comments.compact.collect do |c|

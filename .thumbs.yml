@@ -1,11 +1,10 @@
 minimum_reviewers: 2
 merge: false
 build_steps:
- - env
- - gem env
-# - gem install graphql-client
- - /usr/local/bin/gem list |grep graph
- - gem list
+ - bundle install
+ - bundle install --gemfile=Gemfile
+ - /usr/local/bin/bundle install --gemfile=Gemfile
+ - /usr/local/bin/gem install graphql-client
  - bundle exec ruby test/test.rb
 org_mode: true
 timeout: 1803

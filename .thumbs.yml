@@ -6,6 +6,7 @@ build_steps:
  - which bundle
  - which gem
  - bundle install
+ - /usr/local/bin/gem list |grep graph
  - gem list
  - bundle exec ruby test/test.rb
 org_mode: true

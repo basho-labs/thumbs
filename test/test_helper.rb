@@ -1,4 +1,8 @@
 $:.unshift(File.join(File.dirname(__FILE__), '/../'))
+require 'rubygems'
+require 'bundler/setup'
+require 'bundler'
+Bundler.require
 
 require 'rubygems'
 require 'test/unit'

@@ -184,8 +184,7 @@ module Thumbs
     end
 
     def org_member_code_reviews
-      org_member_code_review_comments=org_member_comments.collect { |comment| comment if contains_plus_one?(comment[:body]) }.compact
-      org_member_code_review_comments.collect { |r| r[:user][:login] }.uniq.length
+      org_member_comments.collect { |comment| comment if contains_plus_one?(comment[:body]) }.compact
     end
 
     def code_reviews

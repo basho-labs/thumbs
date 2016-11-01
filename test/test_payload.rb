@@ -83,9 +83,43 @@ unit_tests do
     assert payload_type(merged_base_payload) == :merged_base, payload_type(merged_base_payload).to_s
   end
 
-  test "can detect new approal  payload type" do
-    new_approval_base_payload = { 'approval' => 'yes'}
+  test "can detect code approval payload type" do
+    default_payload_contents = {
+      'repository' => {'full_name' => "org/user"},
+      'issue' => {'number' => 1,
+                  'pull_request' => {'number' => 1}
+      },
+    }
+    code_approval_payload = {'action' => 'submitted', 'review' => { 'state' => 'approved'}}
 
-    assert payload_type(merged_base_payload) == :merged_base, payload_type(merged_base_payload).to_s
+    payload = default_payload_contents.merge( code_approval_payload )
+
+    assert payload_type(payload) == :code_approval, payload_type(payload).to_s
+  end
+  test "can detect code comment payload type" do
+    default_payload_contents = {
+        'repository' => {'full_name' => "org/user"},
+        'issue' => {'number' => 1,
+                    'pull_request' => {'number' => 1}
+        },
+    }
+    code_comment_payload = {'action' => 'submitted', 'review' => { 'state' => 'commented'}}
+
+    payload = default_payload_contents.merge( code_comment_payload )
+
+    assert payload_type(payload) == :code_comment, payload_type(payload).to_s
+  end
+  test "can detect code change requested payload type" do
+    default_payload_contents = {
+        'repository' => {'full_name' => "org/user"},
+        'issue' => {'number' => 1,
+                    'pull_request' => {'number' => 1}
+        },
+    }
+    code_change_payload = {'action' => 'submitted', 'review' => { 'state' => 'changes_requested'}}
+
+    payload = default_payload_contents.merge( code_change_payload )
+
+    assert payload_type(payload) == :code_change_requested, payload_type(payload).to_s
   end
 end

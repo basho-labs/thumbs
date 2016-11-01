@@ -26,7 +26,7 @@ module Sinatra
           payload.key?('review') &&
           payload['review'].key?('state') &&
           payload['review']['state'] == 'commented'
-      return :code_change_request if payload['action'] == 'submitted' &&
+      return :code_change_requested if payload['action'] == 'submitted' &&
           payload.key?('review') &&
           payload['review'].key?('state') &&
           payload['review']['state'] == 'changes_requested'
@@ -35,7 +35,7 @@ module Sinatra
 
     def process_payload(payload)
       case payload_type(payload)
-        when :code_change_request
+        when :code_change_requested
           debug_message "code change payload"
           [payload['repository']['full_name'], payload['pull_request']['number']]
         when :code_comment

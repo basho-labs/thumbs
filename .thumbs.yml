@@ -4,6 +4,8 @@ build_steps:
  - env
  - gem env
  - which bundle
+ - which gem
+ - bundle install
  - gem list
  - bundle exec ruby test/test.rb
 org_mode: true

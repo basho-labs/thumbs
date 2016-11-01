@@ -4,7 +4,6 @@ require 'bundler/setup'
 require 'bundler'
 Bundler.require
 
-require 'rubygems'
 require 'test/unit'
 require 'app'
 require 'dust'

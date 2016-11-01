@@ -1,9 +1,6 @@
 minimum_reviewers: 2
 merge: false
 build_steps:
- - gem install bundler
- - bundle install --gemfile=Gemfile
- - /usr/local/bin/bundle install --gemfile=Gemfile
  - bundle exec ruby test/test.rb
 org_mode: true
 timeout: 1803

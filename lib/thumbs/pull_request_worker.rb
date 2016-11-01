@@ -739,7 +739,7 @@ module Thumbs
       get_approvals(get_pull_request_id).collect { |approval| approval if @client.organization_member?(org, approval["author"]["login"]) }.compact
     end
     def approvals
-      if thumb_config.key?('org_mode') && thumb_config['org_mode']
+      if @thumb_config.key?('org_mode') && @thumb_config['org_mode']
         debug_message "returning org_member_code_approvals"
         return org_member_approvals
       end

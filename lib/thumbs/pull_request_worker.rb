@@ -731,7 +731,7 @@ module Thumbs
       most_recent_timestamp=commit[:commit][:committer][:date].to_s
       approval_entries=get_reviews_by_pr_id(id).collect{|r| r if r['state'] == 'APPROVED'}.compact
 
-      approval_entries.collect do |a|
+      approval_entries=approval_entries.collect do |a|
         approval_timestamp_int=DateTime.parse(a['submittedAt'])
         most_recent_timestamp_int=DateTime.parse(most_recent_timestamp)
         a if approval_timestamp_int > most_recent_timestamp_int

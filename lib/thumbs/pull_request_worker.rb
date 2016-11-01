@@ -700,6 +700,11 @@ module Thumbs
     def get_pull_request_id
       prs_for_repo_query=get_open_pull_requests_for_repo
       pr_list=run_graph_query( prs_for_repo_query ).data.to_h
+      unless pr_list.key?('repositoryOwner') && pr_list['repositoryOwner'].key?('repository')
+        debug_message("pr_list does not contain repositoryOwner and repository key: #{pr_list}")
+        return nil
+      end
+
       graph_repo=pr_list['repositoryOwner']['repository']
       my_pull_request_id=graph_repo['pullRequests']['edges'].collect do |n|
         next unless n.key?('node')

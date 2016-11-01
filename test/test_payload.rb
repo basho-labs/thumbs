@@ -82,4 +82,10 @@ unit_tests do
 
     assert payload_type(merged_base_payload) == :merged_base, payload_type(merged_base_payload).to_s
   end
+
+  test "can detect new approal  payload type" do
+    new_approval_base_payload = { 'approval' => 'yes'}
+
+    assert payload_type(merged_base_payload) == :merged_base, payload_type(merged_base_payload).to_s
+  end
 end

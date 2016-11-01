@@ -14,6 +14,7 @@ gem 'unicorn'
 gem 'netrc'
 gem 'activesupport'
 gem 'nokogiri', '1.6.8.1'
+gem 'graphql-client'
 
 group :test, :development do
   gem 'vcr'

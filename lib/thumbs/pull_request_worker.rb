@@ -258,11 +258,12 @@ module Thumbs
         debug_message "minimum_reviewers config option missing"
         return false
       end
+      review_count_value=review_count
       debug_message "minimum reviewers: #{thumb_config['minimum_reviewers']}"
-      debug_message "review_count: #{review_count} >= #{thumb_config['minimum_reviewers']}"
+      debug_message "review_count: #{review_count_value} >= #{thumb_config['minimum_reviewers']}"
 
-      unless review_count >= thumb_config['minimum_reviewers']
-        debug_message " #{review_count} !>= #{thumb_config['minimum_reviewers']}"
+      unless review_count_value >= thumb_config['minimum_reviewers']
+        debug_message " #{review_count_value} !>= #{thumb_config['minimum_reviewers']}"
         return false
       end
 

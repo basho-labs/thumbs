@@ -3,4 +3,4 @@ merge: true
 build_steps:
  - bundle exec ruby test/test.rb
 org_mode: true
-timeout: 1799
+timeout: 1800

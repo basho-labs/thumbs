@@ -145,7 +145,7 @@ DEPENDENCIES
   capybara
   dust
   git
-  graphql-client (~> 0.2.3)
+  graphql-client (= 0.2.3)
   http
   log4r
   netrc

@@ -11,12 +11,14 @@ module Thumbs
     attr_reader :log
     attr_reader :org
     attr_accessor :client
+    attr_reader :pull_request_id
 
     def initialize(options)
       @repo = options[:repo]
       @org = repo.split('/').first
       @client = Octokit::Client.new(:netrc => true)
       @pr = @client.pull_request(options[:repo], options[:pr])
+      @pull_request_id=get_pull_request_id
       @build_dir=options[:build_dir] || "/tmp/thumbs/#{build_guid}"
       @build_status={:steps => {}}
       @build_steps = []
@@ -148,10 +150,10 @@ module Thumbs
       time_stamp ? time_stamp : pr.created_at
     end
 
-    def comments_after_head_sha
-      sha_time_stamp=push_time_stamp(most_recent_head_sha)
+    def comments_after_most_recent_commit
       comments_after_sha=all_comments.compact.collect do |c|
-        c.to_h if c[:created_at] > sha_time_stamp
+        comment_timestamp=DateTime.parse(c[:created_at].to_s)
+        c.to_h if comment_timestamp > most_recent_commit_timestamp
       end.compact
     end
 
@@ -160,7 +162,7 @@ module Thumbs
     end
 
     def comments
-      comments_after_head_sha
+      comments_after_most_recent_commit
     end
 
     def bot_comments
@@ -189,7 +191,10 @@ module Thumbs
     end
 
     def review_count
-      approvals.collect{|a| a["author"]["login"] }.uniq.length + comment_code_approvals.collect { |r| r[:user][:login] }.uniq.length
+      approval_logins=approvals.collect{|a| a["author"]["login"] }.uniq
+      comment_code_approval_logins=comment_code_approvals.collect { |r| r[:user][:login] }.uniq
+      countable_reviews = (approval_logins + comment_code_approval_logins).uniq
+      countable_reviews.length
     end
 
     def reviews
@@ -297,7 +302,7 @@ module Thumbs
       "#{pr.base.ref}:#{most_recent_base_sha.slice(0,7)}:#{pr.head.ref}:#{most_recent_head_sha.slice(0,7)}"
     end
     def set_build_progress(progress_status)
-      update_or_create_build_status(most_recent_sha, progress_status)
+      update_or_create_build_status(most_recent_head_sha, progress_status)
     end
 
     def compose_build_status_comment_title(progress_status)
@@ -677,7 +682,7 @@ module Thumbs
         query {
           repositoryOwner(login: "#{org}"){
             repository(name: "#{repo_name}") {
-              pullRequests(states:OPEN, last: 20) {
+              pullRequests(states:OPEN, last: 2) {
                 edges {
                   node{
                     id
@@ -692,8 +697,17 @@ module Thumbs
     end
 
     def get_pull_request_id
-      pr_list=run_graph_query( get_open_pull_requests_for_repo ).data.to_h
-      pr_list['repositoryOwner']['repository']['pullRequests']['edges'].collect{|n| n['node']['id'] if n['node']['number'] == pr.number }.compact.first
+      prs_for_repo_query=get_open_pull_requests_for_repo
+      pr_list=run_graph_query( prs_for_repo_query ).data.to_h
+      graph_repo=pr_list['repositoryOwner']['repository']
+      my_pull_request_id=graph_repo['pullRequests']['edges'].collect do |n|
+        next unless n.key?('node')
+        next unless n['node'].key?('id')
+        next unless n['node']['number'].to_i == @pr.number.to_i
+        n['node']['id']
+      end.compact.first
+      debug_message "my pull request id: #{my_pull_request_id}"
+      my_pull_request_id
     end
     def get_pull_request_by_id(id)
       GitHub::Client.parse <<-GRAPHQL
@@ -702,7 +716,7 @@ module Thumbs
       ... on PullRequest {
           id
           number
-          reviews(last:30) {
+          reviews(last:10) {
             edges {
               node {
                 author {
@@ -722,28 +736,31 @@ module Thumbs
       GRAPHQL
     end
 
+    def most_recent_commit_timestamp
+      head_commits=client.commits(repo, pr.head.ref)
+      base_commits=client.commits(repo, pr.base.ref)
+      head_commit_timestamp = DateTime.parse(head_commits.first[:commit][:committer][:date].to_s)
+      base_commit_timestamp = DateTime.parse(base_commits.first[:commit][:committer][:date].to_s)
+      head_commit_timestamp > base_commit_timestamp ? head_commit_timestamp : base_commit_timestamp
+    end
 
     def get_approvals(id)
-      commit=client.commit(repo, most_recent_head_sha).to_h
-      most_recent_timestamp=commit[:commit][:committer][:date].to_s
       approval_entries=get_reviews_by_pr_id(id).collect{|r| r if r['state'] == 'APPROVED'}.compact
-
       approval_entries=approval_entries.collect do |a|
         approval_timestamp_int=DateTime.parse(a['submittedAt'])
-        most_recent_timestamp_int=DateTime.parse(most_recent_timestamp)
-        a if approval_timestamp_int > most_recent_timestamp_int
+        a if approval_timestamp_int > most_recent_commit_timestamp
       end
       approval_entries.compact
     end
     def org_member_approvals
-      get_approvals(get_pull_request_id).collect { |approval| approval if @client.organization_member?(org, approval["author"]["login"]) }.compact
+      get_approvals(pull_request_id).collect { |approval| approval if @client.organization_member?(org, approval["author"]["login"]) }.compact
     end
     def approvals
       if @thumb_config.key?('org_mode') && @thumb_config['org_mode']
         debug_message "returning org_member_code_approvals"
         return org_member_approvals
       end
-      get_approvals(get_pull_request_id)
+      get_approvals(pull_request_id)
     end
     def approval_count
       approvals.collect{|a| a["author"]["login"] }.uniq.length
@@ -758,7 +775,10 @@ module Thumbs
     end
 
     def run_graph_query(query)
-      GitHub::Client.query query
+      debug_message "running graph query #{query}"
+      result=GitHub::Client.query query
+      debug_message "graph query result #{result}"
+      result
     end
     def comment_code_approvals
       if @thumb_config['org_mode']

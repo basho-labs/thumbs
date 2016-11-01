@@ -18,16 +18,13 @@ class WebhookTest < Test::Unit::TestCase
   end
 
   def test_can_get_pr
-
-    cassette(:get_basic_pr) do
-      prw = Thumbs::PullRequestWorker.new(:repo => TESTREPO, :pr => TESTPR)
-      assert !prw.nil?
-      assert prw.kind_of?(Thumbs::PullRequestWorker)
-      assert_equal "thumbot/prtester", prw.pr.base.repo.full_name
-      assert_equal "thumbot/prtester", prw.repo
-      assert_equal TESTPR, prw.pr.number
+    cassette(:graphql) do
+      cassette(:get_basic_pr) do
+        assert_equal "thumbot/prtester", PRW.pr.base.repo.full_name
+        assert_equal "thumbot/prtester", PRW.repo
+        assert_equal TESTPR, PRW.pr.number
+      end
     end
-
   end
 
   def test_can_get_status
@@ -48,7 +45,6 @@ class WebhookTest < Test::Unit::TestCase
 
   def test_new_base_hook
     default_vcr_state do
-      prw = Thumbs::PullRequestWorker.new(:repo => TESTREPO, :pr => TESTPR)
 
       new_base_payload = {
           'action' => 'edited',
@@ -62,22 +58,23 @@ class WebhookTest < Test::Unit::TestCase
                   }
               }
           },
-          'repository' => {'full_name' => prw.repo },
-          'pull_request' => {'number' => prw.pr.number, 'body' => prw.pr.body }
+          'repository' => {'full_name' => PRW.repo},
+          'pull_request' => {'number' => PRW.pr.number, 'body' => PRW.pr.body}
       }
       cassette(:get_comments, :record => :all) do
         cassette(:get_issue_comments, :record => :new_episodes) do
 
           cassette(:post_webhook_new_base, :record => :new_episodes) do
+            cassette(:graphql, :record => :new_episodes) do
 
-            post '/webhook', new_base_payload.to_json do
-              assert last_response.body.include?("OK"), last_response.body
+              post '/webhook', new_base_payload.to_json do
+                assert last_response.body.include?("OK"), last_response.body
 
+              end
             end
           end
         end
       end
-
 
     end
   end
@@ -85,47 +82,50 @@ class WebhookTest < Test::Unit::TestCase
   def test_new_comment_hook
 
   end
+
   def test_merged_pr_hook
-      default_vcr_state do
-        prw = Thumbs::PullRequestWorker.new(:repo => TESTREPO, :pr => TESTPR)
+    default_vcr_state do
 
-        merged_pr_payload = {
+      merged_pr_payload = {
 
-            'refs' => 'refs/heads/master',
-            'before' => 'e65bc8ef21630b917ca9ecc62adb3b17c1cbe2ef',
-            'after' => '34ae62fe74815d254b78c5b1c57979dd8b9e4de5',
-            'commits' => [],
-            'head_commit' => {},
-            'pusher' => { 'name' => 'thumbot',
-                          'email' => 'git.thumbs@gmail.com'},
-            'repository' => {'full_name' => prw.repo }
-        }
-        cassette(:get_comments, :record => :all) do
-          cassette(:get_issue_comments, :record => :new_episodes) do
-            cassette(:post_webhook_merged_pr, :record => :new_episodes) do
-              post '/webhook', merged_pr_payload.to_json do
-                assert last_response.body.include?("OK"), last_response.body
-              end
+          'refs' => 'refs/heads/master',
+          'before' => 'e65bc8ef21630b917ca9ecc62adb3b17c1cbe2ef',
+          'after' => '34ae62fe74815d254b78c5b1c57979dd8b9e4de5',
+          'commits' => [],
+          'head_commit' => {},
+          'pusher' => {'name' => 'thumbot',
+                       'email' => 'git.thumbs@gmail.com'},
+          'repository' => {'full_name' => PRW.repo}
+      }
+      cassette(:get_comments, :record => :all) do
+        cassette(:get_issue_comments, :record => :new_episodes) do
+          cassette(:post_webhook_merged_pr, :record => :new_episodes) do
+            post '/webhook', merged_pr_payload.to_json do
+              assert last_response.body.include?("OK"), last_response.body
             end
           end
         end
       end
     end
+  end
 
 
   def test_new_pr_hook
     cassette(:load_pr, :record => :new_episodes) do
-      prw = Thumbs::PullRequestWorker.new(:repo => 'thumbot/prtester', :pr => TESTPR)
 
       new_pr_webhook_payload = {
-          'repository' => {'full_name' => prw.repo},
-          'number' => prw.pr.number,
-          'pull_request' => {'number' => prw.pr.number, 'body' => prw.pr.body}
+          'repository' => {'full_name' => PRW.repo},
+          'number' => PRW.pr.number,
+          'pull_request' => {'number' => PRW.pr.number, 'body' => PRW.pr.body}
       }
-      prw.unpersist_build_status
-      assert prw.build_status[:steps].keys.length == 1 ,prw.build_status[:steps].inspect
-      assert prw.build_status[:steps].key?(:merge)
-      remove_comments(prw.repo, prw.pr.number)
+      PRW.unpersist_build_status
+      PRW.reset_build_status
+      PRW.unpersist_build_status
+      PRW.build_steps=["make", "make test"]
+      PRW.try_merge
+      assert PRW.build_status[:steps].keys.length == 1, PRW.build_status[:steps].inspect
+      assert PRW.build_status[:steps].key?(:merge)
+      remove_comments(PRW.repo, PRW.pr.number)
       cassette(:get_comments, :record => :all) do
         cassette(:get_issue_comments, :record => :all) do
 
@@ -139,18 +139,18 @@ class WebhookTest < Test::Unit::TestCase
       end
     end
   end
+
   def test_new_approval_hook
     cassette(:load_pr, :record => :new_episodes) do
-      prw = Thumbs::PullRequestWorker.new(:repo => 'thumbot/prtester', :pr => TESTPR)
 
       new_approval_webhook_payload = {
-          'repository' => {'full_name' => prw.repo},
-          'number' => prw.pr.number,
-          'pull_request' => {'number' => prw.pr.number, 'body' => prw.pr.body}
+          'repository' => {'full_name' => PRW.repo},
+          'number' => PRW.pr.number,
+          'pull_request' => {'number' => PRW.pr.number, 'body' => PRW.pr.body}
       }
-      prw.unpersist_build_status
+      PRW.unpersist_build_status
 
-      remove_comments(prw.repo, prw.pr.number)
+      remove_comments(PRW.repo, PRW.pr.number)
       cassette(:get_comments, :record => :all) do
         cassette(:get_issue_comments, :record => :all) do
 

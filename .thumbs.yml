@@ -4,4 +4,4 @@ build_steps:
  - env
  - bundle exec ruby test/test.rb
 org_mode: true
-timeout: 1802
+timeout: 1803

@@ -103,6 +103,28 @@ Thanks @#{pr_worker.pr.user.login}!
         else
           debug_message("new comment #{pr_worker.repo}/pulls/#{pr_worker.pr.number} valid_for_merge? returned False")
         end
+      when :code_approval
+        repo, pr = process_payload(payload)
+        debug_message "got repo #{repo} and pr #{pr}"
+        pr_worker = Thumbs::PullRequestWorker.new(:repo => repo, :pr => pr)
+        return "OK" unless pr_worker.open?
+        debug_message("new approval")
+        pr_worker.validate
+
+        if pr_worker.valid_for_merge?
+          unless pr_worker.review_count >= pr_worker.thumb_config['minimum_reviewers']
+            debug_message " #{pr_worker.review_count} !>= #{pr_worker.thumb_config['minimum_reviewers']}"
+            debug_message " reviewer rule not met "
+            return false
+          end
+
+          debug_message("code approval #{pr_worker.repo}/pulls/#{pr_worker.pr.number} valid_for_merge? OK ")
+          pr_worker.create_reviewers_comment
+          pr_worker.add_comment "Merging and closing this pr"
+          pr_worker.merge
+        else
+          debug_message("code approval #{pr_worker.repo}/pulls/#{pr_worker.pr.number} valid_for_merge? returned False")
+        end
       when :new_push
         debug_message "This is a #{payload_type(payload).to_s}"
         repo, pr = process_payload(payload)

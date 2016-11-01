@@ -3,6 +3,8 @@ source 'https://rubygems.org'
 gem 'test-unit'
 
 gem 'sinatra', '2.0.0.beta2'
+gem 'graphql-client', '~> 0.2.3'
+gem 'nokogiri', '1.6.8.1'
 gem 'rack'
 gem 'rake'
 gem 'rack-test'
@@ -13,7 +15,6 @@ gem 'git'
 gem 'unicorn'
 gem 'netrc'
 gem 'activesupport'
-gem 'nokogiri', '1.6.8.1'
 
 group :test, :development do
   gem 'vcr'
@@ -22,4 +23,3 @@ group :test, :development do
   gem 'capybara'
   gem 'rspec-rails'
 end
-

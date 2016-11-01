@@ -139,4 +139,29 @@ class WebhookTest < Test::Unit::TestCase
       end
     end
   end
+  def test_new_approval_hook
+    cassette(:load_pr, :record => :new_episodes) do
+      prw = Thumbs::PullRequestWorker.new(:repo => 'thumbot/prtester', :pr => TESTPR)
+
+      new_approval_webhook_payload = {
+          'repository' => {'full_name' => prw.repo},
+          'number' => prw.pr.number,
+          'pull_request' => {'number' => prw.pr.number, 'body' => prw.pr.body}
+      }
+      prw.unpersist_build_status
+
+      remove_comments(prw.repo, prw.pr.number)
+      cassette(:get_comments, :record => :all) do
+        cassette(:get_issue_comments, :record => :all) do
+
+          cassette(:post_webhook_new_approval, :record => :all) do
+
+            post '/webhook', new_approval_webhook_payload.to_json do
+              assert last_response.body.include?("OK"), last_response.body
+            end
+          end
+        end
+      end
+    end
+  end
 end

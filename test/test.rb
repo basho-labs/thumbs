@@ -10,4 +10,4 @@ require 'test/test_persisted_build_status'
 require 'test/test_build_steps'
 require 'test/test_state'
 require 'test/test_common'
-
+require 'test/test_code_approvals'

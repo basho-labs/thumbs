@@ -18,15 +18,34 @@ module Sinatra
         matched_keys=merged_base_keys.collect{|key| key if payload.key?(key) }.compact
         return :merged_base if (matched_keys.length == merged_base_keys.length)
       end
+      return :code_approval if payload['action'] == 'submitted' &&
+          payload.key?('review') &&
+          payload['review'].key?('state') &&
+          payload['review']['state'] == 'approved'
+      return :code_comment if payload['action'] == 'submitted' &&
+          payload.key?('review') &&
+          payload['review'].key?('state') &&
+          payload['review']['state'] == 'commented'
+      return :code_change_requested if payload['action'] == 'submitted' &&
+          payload.key?('review') &&
+          payload['review'].key?('state') &&
+          payload['review']['state'] == 'changes_requested'
       :unregistered
     end
 
     def process_payload(payload)
       case payload_type(payload)
+        when :code_change_requested
+          debug_message "code change payload"
+          [payload['repository']['full_name'], payload['pull_request']['number']]
+        when :code_comment
+          debug_message "code comment payload"
+          [payload['repository']['full_name'], payload['pull_request']['number']]
+        when :code_approval
+          debug_message "code approval payload"
+          [payload['repository']['full_name'], payload['pull_request']['number']]
         when :merged_base
           debug_message "merged_base payload"
-          print payload.to_yaml
-          print "payload"
           base=payload['ref'].split('/').pop
           [payload['repository']['full_name'], base]
         when :new_base

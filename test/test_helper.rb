@@ -40,7 +40,7 @@ def default_vcr_state(&block)
         cassette(:get_events_other, :allow_playback_repeats => true) do
           cassette(:get_events, :allow_playback_repeats => true, :record => :new_episodes) do
             cassette(:get_pull_events, :record => :all, :allow_playback_repeats => true) do
-            block.call
+              block.call
             end
           end
         end

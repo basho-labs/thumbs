@@ -1,5 +1,3 @@
-require 'http'
-require 'etc'
 module Thumbs
   class PullRequestWorker
 
@@ -11,10 +9,12 @@ module Thumbs
     attr_reader :pr
     attr_accessor :thumb_config
     attr_reader :log
+    attr_reader :org
     attr_accessor :client
 
     def initialize(options)
       @repo = options[:repo]
+      @org = repo.split('/').first
       @client = Octokit::Client.new(:netrc => true)
       @pr = @client.pull_request(options[:repo], options[:pr])
       @build_dir=options[:build_dir] || "/tmp/thumbs/#{build_guid}"
@@ -189,18 +189,11 @@ module Thumbs
     end
 
     def review_count
-      debug_message "reviews"
-      debug_message reviews.collect { |r| r[:user][:login] }.uniq
-      reviews.collect { |r| r[:user][:login] }.uniq.length
+      approvals.collect{|a| a["author"]["login"] }.uniq.length + comment_code_approvals.collect { |r| r[:user][:login] }.uniq.length
     end
 
     def reviews
-      if @thumb_config['org_mode']
-        debug_message "returning org_member_code_reviews"
-        return org_member_code_reviews
-      end
-
-      code_reviews
+      (approvals + comment_code_approvals).compact
     end
 
     def debug_message(message)
@@ -376,8 +369,6 @@ module Thumbs
       build_progress_comment = get_build_progress_comment
       build_progress_comment ? client.delete_comment(repo, build_progress_comment[:id]) : true
     end
-
-
 
     def pushes
       events.collect { |e| e if e[:type] == 'PushEvent' }.compact
@@ -644,7 +635,12 @@ module Thumbs
 <details>
 <summary><%= result_image(status_code) %> <%= review_count %> of <%= minimum_reviewers %> Code reviews<%= org_msg %></summary>
 <% reviews.each do |review| %>
-- @<%= review[:user][:login] %>: <%= review[:body] %> 
+  <% if review.key?(:user) && review[:user].key?(:login) %>
+  - @<%= review[:user][:login] %>: <%= review[:body] %> 
+  <% end %>
+  <% if review.key?("author") && review["author"].key?("login") %>
+  - @<%= review["author"]["login"] %>:  <% review["body"] %>
+  <% end %>
 <% end %>
 </details>
       EOS
@@ -675,6 +671,103 @@ module Thumbs
       @thumb_config
     end
 
+    def get_open_pull_requests_for_repo
+      org,repo_name = @repo.split('/')
+      GitHub::Client.parse <<-GRAPHQL
+        query {
+          repositoryOwner(login: "#{org}"){
+            repository(name: "#{repo_name}") {
+              pullRequests(states:OPEN, last: 20) {
+                edges {
+                  node{
+                    id
+                    number
+                  }
+                }
+              }
+            }
+          }
+        }
+      GRAPHQL
+    end
+
+    def get_pull_request_id
+      pr_list=run_graph_query( get_open_pull_requests_for_repo ).data.to_h
+      pr_list['repositoryOwner']['repository']['pullRequests']['edges'].collect{|n| n['node']['id'] if n['node']['number'] == pr.number }.compact.first
+    end
+    def get_pull_request_by_id(id)
+      GitHub::Client.parse <<-GRAPHQL
+   query {
+    node(id: "#{id}") {
+      ... on PullRequest {
+          id
+          number
+          reviews(last:30) {
+            edges {
+              node {
+                author {
+                  id
+                  name
+                  login
+                }
+                body                 
+                state
+                submittedAt
+              }
+            }
+          }
+        }
+      }
+   }
+      GRAPHQL
+    end
+
+
+    def get_approvals(id)
+      commit=client.commit(repo, most_recent_head_sha).to_h
+      most_recent_timestamp=commit[:commit][:committer][:date].to_s
+      approval_entries=get_reviews_by_pr_id(id).collect{|r| r if r['state'] == 'APPROVED'}.compact
+
+      approval_entries=approval_entries.collect do |a|
+        approval_timestamp_int=DateTime.parse(a['submittedAt'])
+        most_recent_timestamp_int=DateTime.parse(most_recent_timestamp)
+        a if approval_timestamp_int > most_recent_timestamp_int
+      end
+      approval_entries.compact
+    end
+    def org_member_approvals
+      get_approvals(get_pull_request_id).collect { |approval| approval if @client.organization_member?(org, approval["author"]["login"]) }.compact
+    end
+    def approvals
+      if @thumb_config.key?('org_mode') && @thumb_config['org_mode']
+        debug_message "returning org_member_code_approvals"
+        return org_member_approvals
+      end
+      get_approvals(get_pull_request_id)
+    end
+    def approval_count
+      approvals.collect{|a| a["author"]["login"] }.uniq.length
+    end
+    def comment_code_approval_count
+      comment_code_approvals.collect { |r| r[:user][:login] }.uniq.length
+    end
+
+    def get_reviews_by_pr_id(id)
+      pr_hash = run_graph_query( get_pull_request_by_id(id) ).data.to_h['node']
+      pr_hash ? (pr_hash.key?('reviews') ? pr_hash['reviews']['edges'].collect{|e| e['node'] } : [] ) : []
+    end
+
+    def run_graph_query(query)
+      GitHub::Client.query query
+    end
+    def comment_code_approvals
+      if @thumb_config['org_mode']
+        debug_message "returning org_member_code_reviews"
+        return org_member_code_reviews
+      end
+
+      code_reviews
+    end
     private
 
     def render_template(template)

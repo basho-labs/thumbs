@@ -66,11 +66,14 @@ class WebhookTest < Test::Unit::TestCase
 
           cassette(:post_webhook_new_base, :record => :new_episodes) do
             cassette(:graphql, :record => :new_episodes) do
+              cassette(:graphql_more, :record => :new_episodes) do
 
-              post '/webhook', new_base_payload.to_json do
-                assert last_response.body.include?("OK"), last_response.body
+                post '/webhook', new_base_payload.to_json do
+                  assert last_response.body.include?("OK"), last_response.body
 
+                end
               end
+
             end
           end
         end

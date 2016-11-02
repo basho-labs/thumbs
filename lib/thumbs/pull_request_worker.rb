@@ -1,5 +1,3 @@
-require 'http'
-require 'etc'
 module Thumbs
   class PullRequestWorker
 
@@ -11,12 +9,16 @@ module Thumbs
     attr_reader :pr
     attr_accessor :thumb_config
     attr_reader :log
+    attr_reader :org
     attr_accessor :client
+    attr_reader :pull_request_id
 
     def initialize(options)
       @repo = options[:repo]
+      @org = repo.split('/').first
       @client = Octokit::Client.new(:netrc => true)
       @pr = @client.pull_request(options[:repo], options[:pr])
+      @pull_request_id=get_pull_request_id
       @build_dir=options[:build_dir] || "/tmp/thumbs/#{build_guid}"
       @build_status={:steps => {}}
       @build_steps = []
@@ -148,10 +150,10 @@ module Thumbs
       time_stamp ? time_stamp : pr.created_at
     end
 
-    def comments_after_head_sha
-      sha_time_stamp=push_time_stamp(most_recent_head_sha)
+    def comments_after_most_recent_commit
       comments_after_sha=all_comments.compact.collect do |c|
-        c.to_h if c[:created_at] > sha_time_stamp
+        comment_timestamp=DateTime.parse(c[:created_at].to_s)
+        c.to_h if comment_timestamp > most_recent_commit_timestamp
       end.compact
     end
 
@@ -160,7 +162,7 @@ module Thumbs
     end
 
     def comments
-      comments_after_head_sha
+      comments_after_most_recent_commit
     end
 
     def bot_comments
@@ -189,18 +191,14 @@ module Thumbs
     end
 
     def review_count
-      debug_message "reviews"
-      debug_message reviews.collect { |r| r[:user][:login] }.uniq
-      reviews.collect { |r| r[:user][:login] }.uniq.length
+      approval_logins=approvals.collect{|a| a["author"]["login"] }.uniq
+      comment_code_approval_logins=comment_code_approvals.collect { |r| r[:user][:login] }.uniq
+      countable_reviews = (approval_logins + comment_code_approval_logins).uniq
+      countable_reviews.length
     end
 
     def reviews
-      if @thumb_config['org_mode']
-        debug_message "returning org_member_code_reviews"
-        return org_member_code_reviews
-      end
-
-      code_reviews
+      (approvals + comment_code_approvals).compact
     end
 
     def debug_message(message)
@@ -260,11 +258,12 @@ module Thumbs
         debug_message "minimum_reviewers config option missing"
         return false
       end
+      review_count_value=review_count
       debug_message "minimum reviewers: #{thumb_config['minimum_reviewers']}"
-      debug_message "review_count: #{review_count} >= #{thumb_config['minimum_reviewers']}"
+      debug_message "review_count: #{review_count_value} >= #{thumb_config['minimum_reviewers']}"
 
-      unless review_count >= thumb_config['minimum_reviewers']
-        debug_message " #{review_count} !>= #{thumb_config['minimum_reviewers']}"
+      unless review_count_value >= thumb_config['minimum_reviewers']
+        debug_message " #{review_count_value} !>= #{thumb_config['minimum_reviewers']}"
         return false
       end
 
@@ -301,10 +300,10 @@ module Thumbs
     end
 
     def build_guid
-      "#{pr.base.ref}:#{most_recent_base_sha.slice(0,7)}:#{pr.head.ref}:#{most_recent_head_sha.slice(0,7)}"
+      "#{pr.base.ref.gsub(/\//,'_')}:#{most_recent_base_sha.slice(0,7)}:#{pr.head.ref.gsub(/\//,'_')}:#{most_recent_head_sha.slice(0,7)}"
     end
     def set_build_progress(progress_status)
-      update_or_create_build_status(most_recent_sha, progress_status)
+      update_or_create_build_status(most_recent_head_sha, progress_status)
     end
 
     def compose_build_status_comment_title(progress_status)
@@ -376,8 +375,6 @@ module Thumbs
       build_progress_comment = get_build_progress_comment
       build_progress_comment ? client.delete_comment(repo, build_progress_comment[:id]) : true
     end
-
-
 
     def pushes
       events.collect { |e| e if e[:type] == 'PushEvent' }.compact
@@ -644,7 +641,12 @@ module Thumbs
 <details>
 <summary><%= result_image(status_code) %> <%= review_count %> of <%= minimum_reviewers %> Code reviews<%= org_msg %></summary>
 <% reviews.each do |review| %>
-- @<%= review[:user][:login] %>: <%= review[:body] %> 
+  <% if review.key?(:user) && review[:user].key?(:login) %>
+  - @<%= review[:user][:login] %>: <%= review[:body] %> 
+  <% end %>
+  <% if review.key?("author") && review["author"].key?("login") %>
+  - @<%= review["author"]["login"] %>:  <% review["body"] %>
+  <% end %>
 <% end %>
 </details>
       EOS
@@ -675,6 +677,123 @@ module Thumbs
       @thumb_config
     end
 
+    def get_open_pull_requests_for_repo
+      org,repo_name = @repo.split('/')
+      GitHub::Client.parse <<-GRAPHQL
+        query {
+          repositoryOwner(login: "#{org}"){
+            repository(name: "#{repo_name}") {
+              pullRequests(states:OPEN, last: 2) {
+                edges {
+                  node{
+                    id
+                    number
+                  }
+                }
+              }
+            }
+          }
+        }
+      GRAPHQL
+    end
+
+    def get_pull_request_id
+      prs_for_repo_query=get_open_pull_requests_for_repo
+      pr_list=run_graph_query( prs_for_repo_query ).data.to_h
+      unless pr_list.key?('repositoryOwner') && pr_list['repositoryOwner'].key?('repository')
+        debug_message("pr_list does not contain repositoryOwner and repository key: #{pr_list}")
+        return nil
+      end
+
+      graph_repo=pr_list['repositoryOwner']['repository']
+      my_pull_request_id=graph_repo['pullRequests']['edges'].collect do |n|
+        next unless n.key?('node')
+        next unless n['node'].key?('id')
+        next unless n['node']['number'].to_i == @pr.number.to_i
+        n['node']['id']
+      end.compact.first
+      debug_message "my pull request id: #{my_pull_request_id}"
+      my_pull_request_id
+    end
+    def get_pull_request_by_id(id)
+      GitHub::Client.parse <<-GRAPHQL
+   query {
+    node(id: "#{id}") {
+      ... on PullRequest {
+          id
+          number
+          reviews(last:10) {
+            edges {
+              node {
+                author {
+                  id
+                  name
+                  login
+                }
+                body                 
+                state
+                submittedAt
+              }
+            }
+          }
+        }
+      }
+   }
+      GRAPHQL
+    end
+
+    def most_recent_commit_timestamp
+      head_commits=client.commits(repo, pr.head.ref)
+      base_commits=client.commits(repo, pr.base.ref)
+      head_commit_timestamp = DateTime.parse(head_commits.first[:commit][:committer][:date].to_s)
+      base_commit_timestamp = DateTime.parse(base_commits.first[:commit][:committer][:date].to_s)
+      head_commit_timestamp > base_commit_timestamp ? head_commit_timestamp : base_commit_timestamp
+    end
+
+    def get_approvals(id)
+      approval_entries=get_reviews_by_pr_id(id).collect{|r| r if r['state'] == 'APPROVED'}.compact
+      approval_entries=approval_entries.collect do |a|
+        approval_timestamp_int=DateTime.parse(a['submittedAt'])
+        a if approval_timestamp_int > most_recent_commit_timestamp
+      end
+      approval_entries.compact
+    end
+    def org_member_approvals
+      get_approvals(pull_request_id).collect { |approval| approval if @client.organization_member?(org, approval["author"]["login"]) }.compact
+    end
+    def approvals
+      if @thumb_config.key?('org_mode') && @thumb_config['org_mode']
+        debug_message "returning org_member_code_approvals"
+        return org_member_approvals
+      end
+      get_approvals(pull_request_id)
+    end
+    def approval_count
+      approvals.collect{|a| a["author"]["login"] }.uniq.length
+    end
+    def comment_code_approval_count
+      comment_code_approvals.collect { |r| r[:user][:login] }.uniq.length
+    end
+
+    def get_reviews_by_pr_id(id)
+      pr_hash = run_graph_query( get_pull_request_by_id(id) ).data.to_h['node']
+      pr_hash ? (pr_hash.key?('reviews') ? pr_hash['reviews']['edges'].collect{|e| e['node'] } : [] ) : []
+    end
+
+    def run_graph_query(query)
+      debug_message "running graph query #{query}"
+      result=GitHub::Client.query query
+      debug_message "graph query result #{result}"
+      result
+    end
+    def comment_code_approvals
+      if @thumb_config['org_mode']
+        debug_message "returning org_member_code_reviews"
+        return org_member_code_reviews
+      end
+
+      code_reviews
+    end
     private
 
     def render_template(template)

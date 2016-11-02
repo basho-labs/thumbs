@@ -1,6 +1,8 @@
+require 'rubygems'
+require 'bundler/setup'
+
 $:.unshift(File.join(File.dirname(__FILE__), '/../'))
 
-require 'rubygems'
 require 'test/unit'
 require 'app'
 require 'dust'
@@ -11,12 +13,13 @@ require 'log4r'
 
 TESTBRANCH='feature_1474522484'
 TESTREPO='thumbot/prtester'
-TEST_PRW=Thumbs::PullRequestWorker.new(:repo => TESTREPO, :pr => 453)
+PRW=Thumbs::PullRequestWorker.new(:repo => TESTREPO, :pr => 453)
 TESTPR=453
 ORGTESTREPO='basho-bin/tester'
-ORGTEST_PRW=Thumbs::PullRequestWorker.new(:repo => TESTREPO, :pr => 27)
+ORGPRW=Thumbs::PullRequestWorker.new(:repo => ORGTESTREPO, :pr => 27)
 ORGTESTPR=27
 TESTUNMERGABLEPR=452
+UNMERGABLEPRW=Thumbs::PullRequestWorker.new(:repo => TESTREPO, :pr => TESTUNMERGABLEPR)
 Thumbs.start_logger if ENV.key?('DEBUG')
 
 def debug_message(message)
@@ -40,7 +43,9 @@ def default_vcr_state(&block)
         cassette(:get_events_other, :allow_playback_repeats => true) do
           cassette(:get_events, :allow_playback_repeats => true, :record => :new_episodes) do
             cassette(:get_pull_events, :record => :all, :allow_playback_repeats => true) do
-            block.call
+            cassette(:get_even_more_commits, :record => :new_episodes, :allow_playback_repeats => true) do
+              block.call
+		end
             end
           end
         end

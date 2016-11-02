@@ -183,9 +183,9 @@ Thanks @#{pr_worker.pr.user.login}!
         repo, base_ref = process_payload(payload)
         debug_message "got repo #{repo} and base_ref #{base_ref}"
         pull_requests_for_base_branch = @octo_client.pull_requests(repo, :state => 'open').collect { |pr| pr if pr.base.ref == base_ref }.compact
-        pull_requests_for_base_branch.each do |pr|
+        Process.detach(fork do
+          pull_requests_for_base_branch.each do |pr|
           debug_message "Forking Rebuild of PR: #{pr.number} with new Base ref #{base_ref}"
-          Process.detach(fork do
             pr_worker=Thumbs::PullRequestWorker.new(:repo => repo, :pr => pr.number)
 
             if pr_worker.build_in_progress?
@@ -203,8 +203,9 @@ Thanks @#{pr_worker.pr.user.login}!
             else
               debug_message("merged base #{pr_worker.repo}/pulls/#{pr_worker.pr.number} valid_for_merge? returned False")
             end
-          end)
-        end
+
+          end
+        end)
       when :unregistered
         debug_message "This is not an event I recognize,: ignoring"
         debug_message payload_type(payload)

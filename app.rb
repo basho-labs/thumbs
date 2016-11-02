@@ -87,11 +87,23 @@ Thanks @#{pr_worker.pr.user.login}!
         pr_worker = Thumbs::PullRequestWorker.new(:repo => repo, :pr => pr)
         return "OK" unless pr_worker.open?
         debug_message("new comment #{pr_worker.repo}/pulls/#{pr_worker.pr.number} #{payload['comment']['body']}")
+        debug_message payload['comment']['body']
+        if payload['comment']['body'] =~ /thumbot retry/
+          debug_message "received retry command"
+
+          pr_worker.unpersist_build_status
+          pr_worker.set_build_progress(:in_progress)
+          pr_worker.validate
+          pr_worker.set_build_progress(:completed)
+          pr_worker.create_build_status_comment
+          return "OK"
+        end
         pr_worker.validate
 
         if pr_worker.valid_for_merge?
-          unless pr_worker.review_count >= pr_worker.thumb_config['minimum_reviewers']
-            debug_message " #{pr_worker.review_count} !>= #{pr_worker.thumb_config['minimum_reviewers']}"
+          review_count=pr_worker.review_count
+          unless review_count >= pr_worker.thumb_config['minimum_reviewers']
+            debug_message " #{review_count} !>= #{pr_worker.thumb_config['minimum_reviewers']}"
             debug_message " reviewer rule not met "
             return false
           end
@@ -112,8 +124,9 @@ Thanks @#{pr_worker.pr.user.login}!
         pr_worker.validate
 
         if pr_worker.valid_for_merge?
-          unless pr_worker.review_count >= pr_worker.thumb_config['minimum_reviewers']
-            debug_message " #{pr_worker.review_count} !>= #{pr_worker.thumb_config['minimum_reviewers']}"
+          review_count=pr_worker.review_count
+          unless review_count >= pr_worker.thumb_config['minimum_reviewers']
+            debug_message " #{review_count} !>= #{pr_worker.thumb_config['minimum_reviewers']}"
             debug_message " reviewer rule not met "
             return false
           end

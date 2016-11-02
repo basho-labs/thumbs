@@ -49,35 +49,51 @@ unit_tests do
     end
   end
 
-    def sanitize_text(text)
-      text.encode('UTF-8', 'UTF-8', :invalid => :replace, :undef => :replace)
-    end
-
-    test "should fix bad utf8 byte sequence" do
-      bad_test_string="hi \255"
-      assert_raise(ArgumentError) do
-        test_split = bad_test_string.split(' ')
-      end
-
-      fixed_bad_test_string=sanitize_text(bad_test_string)
-      test_split = fixed_bad_test_string.split(' ')
-      default_vcr_state do
-        cassette(:load_pr) do
-          cassette(:get_events_reload, :record => :new_episodes) do
+  test "should be able to persist build status with a ref containing slashes" do
+    default_vcr_state do
+      cassette(:load_pr) do
+        cassette(:get_events_reload, :record => :new_episodes) do
+          cassette(:get_events_reload2, :record => :new_episodes) do
             PRW.build_steps=["make"]
             PRW.run_build_steps
-            PRW.build_status[:steps][:make][:output]=bad_test_string
-
             PRW.persist_build_status
-
-            fixed_persisted_bad_test_string = PRW.read_build_status[:steps][:make][:output]
-            assert_equal "hi �", fixed_persisted_bad_test_string
+            status = PRW.read_build_status
+            assert_equal PRW.build_status[:steps][:make], status[:steps][:make]
           end
         end
       end
-
     end
   end
+
+  def sanitize_text(text)
+    text.encode('UTF-8', 'UTF-8', :invalid => :replace, :undef => :replace)
+  end
+
+  test "should fix bad utf8 byte sequence" do
+    bad_test_string="hi \255"
+    assert_raise(ArgumentError) do
+      test_split = bad_test_string.split(' ')
+    end
+
+    fixed_bad_test_string=sanitize_text(bad_test_string)
+    test_split = fixed_bad_test_string.split(' ')
+    default_vcr_state do
+      cassette(:load_pr) do
+        cassette(:get_events_reload, :record => :new_episodes) do
+          PRW.build_steps=["make"]
+          PRW.run_build_steps
+          PRW.build_status[:steps][:make][:output]=bad_test_string
+
+          PRW.persist_build_status
+
+          fixed_persisted_bad_test_string = PRW.read_build_status[:steps][:make][:output]
+          assert_equal "hi �", fixed_persisted_bad_test_string
+        end
+      end
+    end
+
+  end
+end
 
 
 

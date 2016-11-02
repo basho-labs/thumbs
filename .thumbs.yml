@@ -4,4 +4,4 @@ build_steps:
  - BUNDLE_GEMFILE=Gemfile bundle install
  - BUNDLE_GEMFILE=Gemfile bundle exec ruby test/test.rb
 org_mode: true
-timeout: 1806
+timeout: 1805

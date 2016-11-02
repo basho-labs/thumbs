@@ -17,8 +17,6 @@ require 'thumbs/webhook_helpers'
 require 'thumbs/pull_request_worker'
 
 
-
-
 module Thumbs
   module GitHub
     def self.dump(file)
@@ -28,11 +26,7 @@ module Thumbs
     def self.load(file)
       GraphQL::Client.load_schema(file)
     end
-  end
-end
 
-module Thumbs
-  module GitHub
     HTTP = GraphQL::Client::HTTP.new("https://api.github.com/graphql") do
       def headers(context)
         {
@@ -40,7 +34,7 @@ module Thumbs
         }
       end
     end
-    file='schema.json'
+    file=File.join(File.dirname(__FILE__), '..', 'schema.json')
     dump(file) unless File.exists?(file)
 
     Schema = load(file)

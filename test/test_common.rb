@@ -5,7 +5,7 @@ unit_tests do
   test "should be able to generate base and sha specific build guid" do
     default_vcr_state do
       assert PRW.respond_to?(:build_guid)
-      assert_equal "#{PRW.pr.base.ref}:#{PRW.pr.base.sha.slice(0,7)}:#{PRW.pr.head.ref}:#{PRW.pr.head.sha.slice(0,7)}", PRW.build_guid
+      assert_equal "#{PRW.pr.base.ref.gsub(/\//, '_')}:#{PRW.pr.base.sha.slice(0,7)}:#{PRW.pr.head.ref.gsub(/\//, '_')}:#{PRW.pr.head.sha.slice(0,7)}", PRW.build_guid
     end
   end
 
@@ -64,6 +64,7 @@ unit_tests do
 
       end
   end
+
 end
 
 

@@ -17,6 +17,7 @@ class ThumbsWeb < Sinatra::Base
     release_dir=File.expand_path(File.dirname(__FILE__))
     version=release_dir.split(/\//).pop
     deployed_at=File.mtime(__FILE__)
+    ENV.keys.each {|key| ENV.delete(key) if key =~ /(TOKEN|CLIENT_SECRET|PASS)/
     status= {
         status: "OK",
         version: version,
@@ -25,7 +26,7 @@ class ThumbsWeb < Sinatra::Base
         github_user: @octo_client.login,
         authenticated: @octo_client.basic_authenticated?,
         rate_limit: @octo_client.ratelimit.to_h,
-        env: ENV.to_hash.to_yaml,
+        env: cleaned_env.to_hash.to_yaml,
         escript: ` which escript `
     }
     "<pre>#{status.to_yaml}</pre>"

@@ -106,7 +106,13 @@ module Thumbs
 
       status[:started_at]=DateTime.now
       status[:command] = command
+      status[:env]=(thumb_config.key?('env') ? thumb_config['env'] : {})
 
+      status[:env].each do |key,value|
+        ENV[key]=value
+      end
+      status[:shell]=(thumb_config.key?('shell') ? thumb_config['shell'] : "/bin/sh")
+      ENV['SHELL']=status[:shell]
       begin
         Timeout::timeout(thumb_config['timeout']) do
           output = `#{command}`

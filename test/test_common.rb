@@ -65,6 +65,43 @@ unit_tests do
       end
   end
 
+  test "can add environment variable to config and session" do
+    default_vcr_state do
+      PRW.thumb_config.delete('env')
+      PRW.build_steps=['echo $TEST_ENV']
+      PRW.run_build_steps
+      status=PRW.build_status[:steps]
+      assert status.kind_of?(Hash), status.inspect
+      assert status[:"echo_$TEST_ENV"][:output] !=~ /testvalue/
+
+      PRW.thumb_config['env'] = {"TEST_ENV"=>"testvalue"}
+      PRW.run_build_steps
+      assert status[:"echo_$TEST_ENV"][:output] =~ /testvalue/
+
+    end
+
+  end
+  test "can add shell to config and session" do
+    default_vcr_state do
+      PRW.thumb_config.delete('env')
+      PRW.build_steps=['echo $SHELL']
+      PRW.run_build_steps
+      status=PRW.build_status[:steps][:"echo_$SHELL"]
+      print status.to_yaml
+
+      assert status[:output] =~ /\/bin\/sh/
+
+      assert status[:output] !=~ /zsh/
+
+      PRW.thumb_config['shell'] = "/usr/bin/zsh"
+      PRW.run_build_steps
+      status=PRW.build_status[:steps][:"echo_$SHELL"]
+      assert status[:output] =~ /zsh/
+
+    end
+
+  end
+
 end
 
 

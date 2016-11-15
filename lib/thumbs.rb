@@ -12,8 +12,8 @@ require "graphql/client/http"
 require 'net/http'
 require 'active_support'
 $:.unshift(File.join(File.dirname(__FILE__), '/vendor'))
-require 'docker'
-
+require 'docker/docker'
+require 'docker/excon/middlewares/hijack'
 require 'thumbs/general_helpers'
 require 'thumbs/webhook_helpers'
 require 'thumbs/pull_request_worker'

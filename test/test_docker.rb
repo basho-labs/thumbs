@@ -50,7 +50,7 @@ unit_tests do
         PRW.thumb_config['docker']=true
 
         output, exit_code= PRW.run_command(docker_test_command)
-        assert output =~ /systemd\:\/docker\//
+        assert output =~ /systemd\:\/docker\//, output
         assert_equal 0, exit_code
       end
 

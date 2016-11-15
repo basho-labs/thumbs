@@ -98,7 +98,7 @@ module Thumbs
 
     def run_command_in_docker(command)
       image=thumb_config['docker_image']||'ubuntu'
-      docker_command="docker run -v /tmp/thumbs:/tmp/thumbs #{image} #{command} 2>&1"
+      docker_command="sudo docker run -v /tmp/thumbs:/tmp/thumbs #{image} #{command} 2>&1"
       debug_message docker_command
 
       output=`#{docker_command}`

@@ -100,7 +100,7 @@ module Thumbs
       image=thumb_config['docker_image']||'ubuntu'
       shell=thumb_config['shell']||'/bin/bash'
       command = "source /etc/bashrc; #{command}"
-      docker_command="docker run"
+      docker_command="sudo docker run"
       (thumb_config['env']||{}).each do |variable_key,variable_value|
         docker_command << " -e #{variable_key}=#{variable_value}"
       end

@@ -132,7 +132,7 @@ module Thumbs
       status[:env]=(thumb_config.key?('env') ? thumb_config['env'] : {})
 
       status[:env].each do |key, value|
-        ENV[key]=value
+        ENV[key]="#{value}"
       end
       status[:shell]=shell
       ENV['SHELL']=shell
@@ -151,7 +151,7 @@ module Thumbs
           status[:message] = message
 
           status[:output] = sanitize_text(output)
-          status[:exit_code] = $?.to_i
+          status[:exit_code] = exit_code.to_i
 
           @build_status[:steps][name.to_sym]=status
           debug_message "[ #{name.upcase} ] [#{result.upcase}] \"#{command}\""

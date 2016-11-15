@@ -25,7 +25,7 @@ unit_tests do
       assert status.key?(:message)
       assert status.key?(:command)
       build_dir_path="/tmp/thumbs/#{PRW.build_guid}"
-      assert_equal "/bin/bash -c \"cd #{build_dir_path}; uptime\"", status[:command]
+      assert_equal "cd #{build_dir_path}; uptime", status[:command]
       assert status.key?(:output)
 
       assert status.key?(:exit_code)
@@ -47,7 +47,7 @@ unit_tests do
       assert status.key?(:output)
 
       assert status.key?(:exit_code)
-      assert status[:exit_code] != 1, status[:exit_code].inspect
+      assert status[:exit_code] != 0, status[:exit_code].inspect
       assert status.key?(:result)
       assert status[:result]==:error
     end
@@ -69,7 +69,7 @@ unit_tests do
       assert status[:result]==:ok
       build_dir_path="/tmp/thumbs/#{PRW.build_guid}"
 
-      assert_equal "/bin/bash -c \"cd #{build_dir_path}; make build\"", status[:command]
+      assert_equal "cd #{build_dir_path}; make build", status[:command]
 
       assert_equal "BUILD OK\n", status[:output]
     end

@@ -89,7 +89,7 @@ unit_tests do
       PRW.thumb_config['shell'] = "/bin/sh"
       PRW.run_build_steps
       status=PRW.build_status[:steps][:"echo_$SHELL"]
-      assert_equal '/bin/sh', status[:output].strip, status[:output]
+      assert_equal '/bin/bash', status[:output].strip, status[:output]
     end
   end
 end

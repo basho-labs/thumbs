@@ -98,17 +98,33 @@ module Thumbs
 
     def run_command_in_docker(command)
       image=thumb_config['docker_image']||'ubuntu'
-      docker_command="sudo docker run -v /tmp/thumbs:/tmp/thumbs #{image} #{command} 2>&1"
-      debug_message docker_command
+      shell=thumb_config['shell']||'/bin/bash'
+      command = "source /etc/bashrc; #{command}"
+      docker_command="docker run"
+      (thumb_config['env']||{}).each do |variable_key,variable_value|
+        docker_command << " -e #{variable_key}=#{variable_value}"
+      end
+      docker_command << " -v ~/.bashrc:/etc/bashrc -v /tmp/thumbs:/tmp/thumbs"
+      docker_command << " #{image} #{shell} -c '#{command}'"
 
-      output=`#{docker_command}`
-      exit_code = $?.to_i
+      debug_message docker_command
+      output, exit_code = run_command_in_shell(docker_command)
       [output, exit_code]
     end
 
     def run_command_in_shell(command)
-      output = `#{command} 2>&1`
-      exit_code = $?.to_i
+      shell=thumb_config['shell']||'/bin/bash'
+
+      output, exit_code = nil
+
+      Open3.popen2e(ENV, shell) do|stdin, stdout_and_stderr, wait_thr|
+          stdin.puts "source /etc/bashrc"
+          stdin.puts "#{command} 2>&1"
+          stdin.close
+          pid = wait_thr.pid
+          output=stdout_and_stderr.read
+          exit_code = wait_thr.value.exitstatus
+      end
       [output, exit_code]
     end
 
@@ -122,8 +138,8 @@ module Thumbs
 
     def try_run_build_step(name, command)
       status={}
-      shell=thumb_config['shell']||'/bin/bash'
-      command = "#{shell} -i -c \"cd #{@build_dir}; #{command}\""
+
+      command = "cd #{@build_dir}; #{command}"
 
       debug_message "running command #{command}"
 
@@ -134,8 +150,6 @@ module Thumbs
       status[:env].each do |key, value|
         ENV[key]="#{value}"
       end
-      status[:shell]=shell
-      ENV['SHELL']=shell
       begin
         Timeout::timeout(thumb_config['timeout']) do
           output, exit_code = run_command(command)

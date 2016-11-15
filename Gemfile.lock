@@ -150,6 +150,7 @@ DEPENDENCIES
   capybara
   docker-api
   dust
+  excon
   git
   graphql (= 1.1.0)
   graphql-client (= 0.2.3)

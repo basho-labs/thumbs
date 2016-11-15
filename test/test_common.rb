@@ -86,7 +86,7 @@ unit_tests do
       status=PRW.build_status[:steps][:"echo_$SHELL"]
       assert status[:output] =~ /\/bin\/bash/, status[:output].inspect
       assert status[:output] !=~/zsh/
-      PRW.thumb_config['shell'] = "/bin/sh"
+      PRW.thumb_config['shell'] = "/bin/bash"
       PRW.run_build_steps
       status=PRW.build_status[:steps][:"echo_$SHELL"]
       assert_equal '/bin/bash', status[:output].strip, status[:output]

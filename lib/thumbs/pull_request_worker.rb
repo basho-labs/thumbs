@@ -123,7 +123,7 @@ module Thumbs
     def try_run_build_step(name, command)
       status={}
       shell=thumb_config['shell']||'/bin/bash'
-      command = "#{shell} -c \"cd #{@build_dir}; #{command}\""
+      command = "#{shell} -i -c \"cd #{@build_dir}; #{command}\""
 
       debug_message "running command #{command}"
 

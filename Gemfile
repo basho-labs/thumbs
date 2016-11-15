@@ -16,6 +16,7 @@ gem 'git'
 gem 'unicorn'
 gem 'netrc'
 gem 'activesupport'
+gem 'docker-api'
 
 group :test, :development do
   gem 'vcr'

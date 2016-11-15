@@ -1,7 +1,7 @@
 require 'rubygems'
 require 'bundler/setup'
-
-$:.unshift(File.join(File.dirname(__FILE__), '/../'))
+$:.unshift(File.join(File.dirname(__FILE__), '/../vendor'))
+require 'docker/docker'
 
 require 'test/unit'
 require 'app'

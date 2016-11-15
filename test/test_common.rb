@@ -84,12 +84,12 @@ unit_tests do
       PRW.build_steps=['echo $SHELL']
       PRW.run_build_steps
       status=PRW.build_status[:steps][:"echo_$SHELL"]
-      assert status[:output] =~ /\/bin\/sh/
+      assert status[:output] =~ /\/bin\/bash/, status[:output].inspect
       assert status[:output] !=~/zsh/
-      PRW.thumb_config['shell'] = "/usr/bin/zsh"
+      PRW.thumb_config['shell'] = "/bin/sh"
       PRW.run_build_steps
       status=PRW.build_status[:steps][:"echo_$SHELL"]
-      assert status[:output] =~ /zsh/
+      assert_equal '/bin/sh', status[:output].strip, status[:output]
     end
   end
 end

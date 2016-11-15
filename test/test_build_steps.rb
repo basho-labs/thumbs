@@ -24,7 +24,8 @@ unit_tests do
       assert status.key?(:result)
       assert status.key?(:message)
       assert status.key?(:command)
-      assert_equal "cd /tmp/thumbs/#{PRW.build_guid} && uptime 2>&1", status[:command]
+      build_dir_path="/tmp/thumbs/#{PRW.build_guid}"
+      assert_equal "/bin/bash -c \"cd #{build_dir_path}; uptime\"", status[:command]
       assert status.key?(:output)
 
       assert status.key?(:exit_code)
@@ -37,8 +38,7 @@ unit_tests do
   test "can try run build step with error" do
     default_vcr_state do
       status = PRW.try_merge
-
-      status = PRW.try_run_build_step("uptime", "uptime -ewkjfdew 2>&1")
+      status = PRW.try_run_build_step("uptime", "uptime -ewkjfdew")
 
       assert status.key?(:exit_code)
       assert status.key?(:result)
@@ -47,7 +47,7 @@ unit_tests do
       assert status.key?(:output)
 
       assert status.key?(:exit_code)
-      assert status[:exit_code]==1
+      assert status[:exit_code] != 1, status[:exit_code].inspect
       assert status.key?(:result)
       assert status[:result]==:error
     end
@@ -68,7 +68,8 @@ unit_tests do
       assert status.key?(:result)
       assert status[:result]==:ok
       build_dir_path="/tmp/thumbs/#{PRW.build_guid}"
-      assert_equal "cd #{build_dir_path} && make build 2>&1", status[:command]
+
+      assert_equal "/bin/bash -c \"cd #{build_dir_path}; make build\"", status[:command]
 
       assert_equal "BUILD OK\n", status[:output]
     end
@@ -77,6 +78,7 @@ unit_tests do
   test "can try run build step make test" do
     default_vcr_state do
       status = PRW.try_merge
+
       status = PRW.try_run_build_step("make_test", "make test")
 
       assert status.key?(:exit_code)

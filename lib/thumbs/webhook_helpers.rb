@@ -4,10 +4,10 @@ module Sinatra
   module WebhookHelpers
     def payload_type(payload)
       return :unregistered if payload.key?('comment') && ["thumbot"].include?(payload['comment']['user']['login'])
-      return :new_pr if payload['action']=='opened' && payload.key?('pull_request') && payload['pull_request'].key?('number')
-      return :new_comment if payload.key?('comment') && payload.key?('issue') && payload['comment'].key?('body')
-      return :new_push if payload['action']=='synchronize'
-      return :new_base if payload['action']=='edited' &&
+      return :new_pr       if payload['action']=='opened' && payload.key?('pull_request') && payload['pull_request'].key?('number')
+      return :new_comment  if payload['action']=='created' && payload.key?('comment') && payload.key?('issue') && payload['comment'].key?('body')
+      return :new_push     if payload['action']=='synchronize'
+      return :new_base     if payload['action']=='edited' &&
           payload.key?('changes') &&
           payload['changes'].key?('base') &&
           payload['changes']['base'].key?('ref') &&

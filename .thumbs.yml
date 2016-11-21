@@ -1,7 +1,13 @@
+# required
 minimum_reviewers: 2
-merge: false
 build_steps:
  - BUNDLE_GEMFILE=Gemfile bundle install
  - BUNDLE_GEMFILE=Gemfile bundle exec ruby test/test.rb
+# optional
+merge: false
 org_mode: true
 timeout: 1805
+shell: /bin/bash
+env:
+ BUNDLE_GEMFILE: Gemfile
+

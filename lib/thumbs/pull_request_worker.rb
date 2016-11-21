@@ -1,6 +1,5 @@
 module Thumbs
   class PullRequestWorker
-
     attr_reader :build_dir
     attr_reader :build_status
     attr_accessor :build_steps
@@ -97,21 +96,65 @@ module Thumbs
       status
     end
 
+    def run_command_in_docker(command)
+      image=thumb_config['docker_image']||'ubuntu'
+      shell=thumb_config['shell']||'/bin/bash'
+      command = "source /etc/bashrc; #{command}"
+      docker_command="sudo docker run"
+      (thumb_config['env']||{}).each do |variable_key,variable_value|
+        docker_command << " -e #{variable_key}=#{variable_value}"
+      end
+      docker_command << " -v ~/.bashrc:/etc/bashrc -v /tmp/thumbs:/tmp/thumbs"
+      docker_command << " #{image} #{shell} -c '#{command}'"
+
+      debug_message docker_command
+      output, exit_code = run_command_in_shell(docker_command)
+      [output, exit_code]
+    end
+
+    def run_command_in_shell(command)
+      shell=thumb_config['shell']||'/bin/bash'
+
+      output, exit_code = nil
+
+      Open3.popen2e(ENV, shell) do|stdin, stdout_and_stderr, wait_thr|
+          stdin.puts "source /etc/bashrc"
+          stdin.puts "#{command} 2>&1"
+          stdin.close
+          pid = wait_thr.pid
+          output=stdout_and_stderr.read
+          exit_code = wait_thr.value.exitstatus
+      end
+      [output, exit_code]
+    end
+
+    def run_command(command)
+      if thumb_config['docker']
+        run_command_in_docker(command)
+      else
+        run_command_in_shell(command)
+      end
+    end
 
     def try_run_build_step(name, command)
       status={}
-      command = "cd #{@build_dir} && #{command} 2>&1"
+
+      command = "cd #{@build_dir}; #{command}"
 
       debug_message "running command #{command}"
 
       status[:started_at]=DateTime.now
       status[:command] = command
+      status[:env]=(thumb_config.key?('env') ? thumb_config['env'] : {})
 
+      status[:env].each do |key, value|
+        ENV[key]="#{value}"
+      end
       begin
         Timeout::timeout(thumb_config['timeout']) do
-          output = `#{command}`
+          output, exit_code = run_command(command)
           status[:ended_at]=DateTime.now
-          unless $? == 0
+          unless exit_code == 0
             result = :error
             message = "Step #{name} Failed!"
           else
@@ -122,7 +165,7 @@ module Thumbs
           status[:message] = message
 
           status[:output] = sanitize_text(output)
-          status[:exit_code] = $?.exitstatus
+          status[:exit_code] = exit_code.to_i
 
           @build_status[:steps][name.to_sym]=status
           debug_message "[ #{name.upcase} ] [#{result.upcase}] \"#{command}\""
@@ -191,7 +234,7 @@ module Thumbs
     end
 
     def review_count
-      approval_logins=approvals.collect{|a| a["author"]["login"] }.uniq
+      approval_logins=approvals.collect { |a| a["author"]["login"] }.uniq
       comment_code_approval_logins=comment_code_approvals.collect { |r| r[:user][:login] }.uniq
       countable_reviews = (approval_logins + comment_code_approval_logins).uniq
       countable_reviews.length
@@ -300,8 +343,9 @@ module Thumbs
     end
 
     def build_guid
-      "#{pr.base.ref.gsub(/\//,'_')}##{most_recent_base_sha.slice(0,7)}##{pr.head.ref.gsub(/\//,'_')}##{most_recent_head_sha.slice(0,7)}"
+      "#{pr.base.ref.gsub(/\//, '_')}##{most_recent_base_sha.slice(0, 7)}##{pr.head.ref.gsub(/\//, '_')}##{most_recent_head_sha.slice(0, 7)}"
     end
+
     def set_build_progress(progress_status)
       update_or_create_build_status(most_recent_head_sha, progress_status)
     end
@@ -311,7 +355,7 @@ module Thumbs
       status_emoji=(progress_status==:completed ? result_image(aggregate_build_status_result) : result_image(progress_status))
       comment_title="|||||\n"
       comment_title<<"------------ | -------------|------------ | ------------- | -------------\n"
-      comment_title<<"#{pr.head.ref} #{most_recent_head_sha.slice(0,7)} | :arrow_right: | #{pr.base.ref} #{most_recent_base_sha.slice(0,7)} | #{status_emoji} #{progress_status}"
+      comment_title<<"#{pr.head.ref} #{most_recent_head_sha.slice(0, 7)} | :arrow_right: | #{pr.base.ref} #{most_recent_base_sha.slice(0, 7)} | #{status_emoji} #{progress_status}"
       comment_title
     end
 
@@ -328,7 +372,7 @@ module Thumbs
         next unless c[:body].lines.length > 1
         status_line = c[:body].lines[2]
         pr = client.pull_request(repo, @pr.number)
-        next unless status_line =~ /^#{pr.head.ref} #{most_recent_head_sha.slice(0,7)} \| :arrow_right: \| #{pr.base.ref} #{most_recent_base_sha.slice(0,7)}/
+        next unless status_line =~ /^#{pr.head.ref} #{most_recent_head_sha.slice(0, 7)} \| :arrow_right: \| #{pr.base.ref} #{most_recent_base_sha.slice(0, 7)}/
         c
       end.compact[0] || {:body => ""}
     end
@@ -558,7 +602,7 @@ module Thumbs
     def commits
       client.commits(repo, pr.head.ref)
     end
-    
+
     def most_recent_head_sha
       client.commits(repo, pr.head.ref).first[:sha]
     end
@@ -568,7 +612,7 @@ module Thumbs
     end
 
     def pull_requests_for_base_branch(branch)
-      open_pull_requests.collect{|pr| pr if pr.base.ref == branch }
+      open_pull_requests.collect { |pr| pr if pr.base.ref == branch }
     end
 
     def build_status_problem_steps
@@ -678,7 +722,7 @@ module Thumbs
     end
 
     def get_open_pull_requests_for_repo
-      org,repo_name = @repo.split('/')
+      org, repo_name = @repo.split('/')
       GitHub::Client.parse <<-GRAPHQL
         query {
           repositoryOwner(login: "#{org}"){
@@ -699,7 +743,7 @@ module Thumbs
 
     def get_pull_request_id
       prs_for_repo_query=get_open_pull_requests_for_repo
-      pr_list=run_graph_query( prs_for_repo_query ).data.to_h
+      pr_list=run_graph_query(prs_for_repo_query).data.to_h
       unless pr_list.key?('repositoryOwner') && pr_list['repositoryOwner'].key?('repository')
         debug_message("pr_list does not contain repositoryOwner and repository key: #{pr_list}")
         return nil
@@ -715,6 +759,7 @@ module Thumbs
       debug_message "my pull request id: #{my_pull_request_id}"
       my_pull_request_id
     end
+
     def get_pull_request_by_id(id)
       GitHub::Client.parse <<-GRAPHQL
    query {
@@ -751,16 +796,18 @@ module Thumbs
     end
 
     def get_approvals(id)
-      approval_entries=get_reviews_by_pr_id(id).collect{|r| r if r['state'] == 'APPROVED'}.compact
+      approval_entries=get_reviews_by_pr_id(id).collect { |r| r if r['state'] == 'APPROVED' }.compact
       approval_entries=approval_entries.collect do |a|
         approval_timestamp_int=DateTime.parse(a['submittedAt'])
         a if approval_timestamp_int > most_recent_commit_timestamp
       end
       approval_entries.compact
     end
+
     def org_member_approvals
       get_approvals(pull_request_id).collect { |approval| approval if @client.organization_member?(org, approval["author"]["login"]) }.compact
     end
+
     def approvals
       if @thumb_config.key?('org_mode') && @thumb_config['org_mode']
         debug_message "returning org_member_code_approvals"
@@ -768,16 +815,18 @@ module Thumbs
       end
       get_approvals(pull_request_id)
     end
+
     def approval_count
-      approvals.collect{|a| a["author"]["login"] }.uniq.length
+      approvals.collect { |a| a["author"]["login"] }.uniq.length
     end
+
     def comment_code_approval_count
       comment_code_approvals.collect { |r| r[:user][:login] }.uniq.length
     end
 
     def get_reviews_by_pr_id(id)
-      pr_hash = run_graph_query( get_pull_request_by_id(id) ).data.to_h['node']
-      pr_hash ? (pr_hash.key?('reviews') ? pr_hash['reviews']['edges'].collect{|e| e['node'] } : [] ) : []
+      pr_hash = run_graph_query(get_pull_request_by_id(id)).data.to_h['node']
+      pr_hash ? (pr_hash.key?('reviews') ? pr_hash['reviews']['edges'].collect { |e| e['node'] } : []) : []
     end
 
     def run_graph_query(query)
@@ -786,6 +835,7 @@ module Thumbs
       debug_message "graph query result #{result}"
       result
     end
+
     def comment_code_approvals
       if @thumb_config['org_mode']
         debug_message "returning org_member_code_reviews"
@@ -794,6 +844,7 @@ module Thumbs
 
       code_reviews
     end
+
     private
 
     def render_template(template)
@@ -810,7 +861,7 @@ module Thumbs
     def result_image(result)
       case result
         when :in_progress
-           ":clock1:"
+          ":clock1:"
         when :ok
           ":white_check_mark:"
         when :warning

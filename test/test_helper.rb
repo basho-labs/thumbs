@@ -1,8 +1,5 @@
 require 'rubygems'
 require 'bundler/setup'
-
-$:.unshift(File.join(File.dirname(__FILE__), '/../'))
-
 require 'test/unit'
 require 'app'
 require 'dust'

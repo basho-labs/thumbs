@@ -11,6 +11,7 @@ require "graphql/client"
 require "graphql/client/http"
 require 'net/http'
 require 'active_support'
+require 'open3'
 
 require 'thumbs/general_helpers'
 require 'thumbs/webhook_helpers'

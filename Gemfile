@@ -16,6 +16,8 @@ gem 'git'
 gem 'unicorn'
 gem 'netrc'
 gem 'activesupport'
+gem 'excon'
+gem 'hijack'
 
 group :test, :development do
   gem 'vcr'

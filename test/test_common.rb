@@ -1,11 +1,9 @@
-
-
 unit_tests do
 
   test "should be able to generate base and sha specific build guid" do
     default_vcr_state do
       assert PRW.respond_to?(:build_guid)
-      assert_equal "#{PRW.pr.base.ref.gsub(/\//, '_')}##{PRW.pr.base.sha.slice(0,7)}##{PRW.pr.head.ref.gsub(/\//, '_')}##{PRW.pr.head.sha.slice(0,7)}", PRW.build_guid
+      assert_equal "#{PRW.pr.base.ref.gsub(/\//, '_')}##{PRW.pr.base.sha.slice(0, 7)}##{PRW.pr.head.ref.gsub(/\//, '_')}##{PRW.pr.head.sha.slice(0, 7)}", PRW.build_guid
     end
   end
 
@@ -14,15 +12,15 @@ unit_tests do
     default_vcr_state do
       PRW.respond_to?(:open_pull_requests)
       open_pull_requests = PRW.client.pull_requests(PRW.repo, :state => 'open')
-      assert_equal open_pull_requests.collect{|pr| pr[:base][:ref] }, PRW.open_pull_requests.collect{|pr| pr[:base][:ref] }
+      assert_equal open_pull_requests.collect { |pr| pr[:base][:ref] }, PRW.open_pull_requests.collect { |pr| pr[:base][:ref] }
     end
   end
 
   test "can get open pull requests for repo and branch" do
     default_vcr_state do
       PRW.respond_to?(:pull_requests_for_base_branch)
-      matched_base_pull_requests = PRW.open_pull_requests.collect{|pr| pr if pr.base.ref == "master"}
-      assert_equal matched_base_pull_requests.collect{|pr| pr[:base][:ref] }, PRW.pull_requests_for_base_branch("master").collect{|pr| pr[:base][:ref] }
+      matched_base_pull_requests = PRW.open_pull_requests.collect { |pr| pr if pr.base.ref == "master" }
+      assert_equal matched_base_pull_requests.collect { |pr| pr[:base][:ref] }, PRW.pull_requests_for_base_branch("master").collect { |pr| pr[:base][:ref] }
     end
   end
 
@@ -62,9 +60,38 @@ unit_tests do
       assert most_recent_head_commit_timestamp > most_recent_base_commit_timestamp
       assert_equal most_recent_head_commit_timestamp, PRW.most_recent_commit_timestamp
 
-      end
+    end
   end
 
+  test "can add environment variable to config and session" do
+    default_vcr_state do
+      PRW.thumb_config.delete('env')
+      PRW.build_steps=['echo $TEST_ENV']
+      PRW.run_build_steps
+      status=PRW.build_status[:steps]
+      assert status.kind_of?(Hash), status.inspect
+      assert status[:"echo_$TEST_ENV"][:output] !=~/testvalue/
+
+      PRW.thumb_config['env'] = {"TEST_ENV" => "testvalue"}
+      PRW.run_build_steps
+      assert status[:"echo_$TEST_ENV"][:output] =~ /testvalue/
+    end
+  end
+
+  test "can add shell to config and session" do
+    default_vcr_state do
+      PRW.thumb_config.delete('env')
+      PRW.build_steps=['echo $SHELL']
+      PRW.run_build_steps
+      status=PRW.build_status[:steps][:"echo_$SHELL"]
+      assert status[:output] =~ /\/bin\/bash/, status[:output].inspect
+      assert status[:output] !=~/zsh/
+      PRW.thumb_config['shell'] = "/bin/bash"
+      PRW.run_build_steps
+      status=PRW.build_status[:steps][:"echo_$SHELL"]
+      assert_equal '/bin/bash', status[:output].strip, status[:output]
+    end
+  end
 end
 
 

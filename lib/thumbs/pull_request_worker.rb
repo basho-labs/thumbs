@@ -346,7 +346,7 @@ module Thumbs
     end
 
     def build_guid
-      "#{pr.base.ref.gsub(/\//, '_')}##{most_recent_base_sha.slice(0, 7)}##{pr.head.ref.gsub(/\//, '_')}##{most_recent_head_sha.slice(0, 7)}"
+      "#{pr.base.ref.gsub(/\//, '_')}.#{most_recent_base_sha.slice(0, 7)}.#{pr.head.ref.gsub(/\//, '_')}.#{most_recent_head_sha.slice(0, 7)}"
     end
 
     def set_build_progress(progress_status)

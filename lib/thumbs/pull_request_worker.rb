@@ -99,12 +99,12 @@ module Thumbs
     def run_command_in_docker(command)
       image=thumb_config['docker_image']||'ubuntu'
       shell=thumb_config['shell']||'/bin/bash'
-      command = "source /etc/bashrc; #{command}"
-      docker_command="sudo docker run"
+      command = "source /etc/bash.bashrc; #{command}"
+      docker_command="sudo docker run -t"
       (thumb_config['env']||{}).each do |variable_key,variable_value|
         docker_command << " -e #{variable_key}=#{variable_value}"
       end
-      docker_command << " -v ~/.bashrc:/etc/bashrc -v /tmp/thumbs:/tmp/thumbs"
+      docker_command << " -v ~/.bashrc:/etc/bash.bashrc -v /tmp/thumbs:/tmp/thumbs"
       docker_command << " #{image} #{shell} -c '#{command}'"
 
       debug_message docker_command
@@ -118,7 +118,7 @@ module Thumbs
       output, exit_code = nil
 
       Open3.popen2e(ENV, shell) do|stdin, stdout_and_stderr, wait_thr|
-          stdin.puts "source /etc/bashrc"
+          stdin.puts "source ~/.bashrc"
           stdin.puts "#{command} 2>&1"
           stdin.close
           pid = wait_thr.pid
@@ -153,6 +153,9 @@ module Thumbs
       begin
         Timeout::timeout(thumb_config['timeout']) do
           output, exit_code = run_command(command)
+          unless output && output.strip != ""
+            output = "No output"
+          end
           status[:ended_at]=DateTime.now
           unless exit_code == 0
             result = :error
@@ -354,7 +357,7 @@ module Thumbs
       pr = client.pull_request(repo, @pr.number)
       status_emoji=(progress_status==:completed ? result_image(aggregate_build_status_result) : result_image(progress_status))
       comment_title="|||||\n"
-      comment_title<<"------------ | -------------|------------ | ------------- | -------------\n"
+      comment_title<<"------------ | -------------|------------ | ------------- \n"
       comment_title<<"#{pr.head.ref} #{most_recent_head_sha.slice(0, 7)} | :arrow_right: | #{pr.base.ref} #{most_recent_base_sha.slice(0, 7)} | #{status_emoji} #{progress_status}"
       comment_title
     end
@@ -412,7 +415,7 @@ module Thumbs
     end
 
     def sanitize_text(text)
-      text.encode('UTF-8', 'UTF-8', :invalid => :replace, :undef => :replace)
+      text.to_s.encode('UTF-8', 'UTF-8', :invalid => :replace, :undef => :replace)
     end
 
     def clear_build_progress_comment
@@ -625,7 +628,10 @@ module Thumbs
       end
       :ok
     end
-
+    def create_gist_from_status(name, content)
+      file_title="#{name.to_s.gsub(/\//,'_')}.txt"
+      client.create_gist( { :files => { file_title => { :content => content || "no output" } } } )
+    end
     def create_build_status_comment
       if aggregate_build_status_result == :ok
         @status_title="\n<details><Summary>Looks good!  :+1: </Summary>"
@@ -636,12 +642,10 @@ module Thumbs
       build_comment = render_template <<-EOS
 <% @build_status[:steps].each do |step_name, status| %>
 <% if status[:output] %>
-<% title_file = step_name.to_s.gsub(/\\//,'_') +  ".txt" %>
-<% gist=client.create_gist( { :files => { title_file => { :content => status[:output] } } } )  %>
+<% gist=create_gist_from_status(step_name, status[:output]) %>
 <% end %>
 <details>
  <summary><%= result_image(status[:result]) %> <%= step_name.upcase %> </summary>
-
  <p>
 
 > Started at: <%= status[:started_at].strftime("%Y-%m-%d %H:%M") rescue nil%>

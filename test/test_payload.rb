@@ -39,6 +39,7 @@ unit_tests do
   test "can detect new comment payload type" do
     new_comment_payload = {
         'repository' => {'full_name' => "org/user"},
+        'action' => 'created',
         'issue' => {'number' => 1,
                     'pull_request' => {'number' => 1}
         },

@@ -356,9 +356,8 @@ module Thumbs
     def compose_build_status_comment_title(progress_status)
       pr = client.pull_request(repo, @pr.number)
       status_emoji=(progress_status==:completed ? result_image(aggregate_build_status_result) : result_image(progress_status))
-      comment_title="Compare | | Base | Status\n"
-      comment_title<<"------------ | ------------- | ------------- | -------------\n"
       comment_title<<"#{pr.head.ref} #{most_recent_head_sha.slice(0, 7)} | :arrow_right: | #{pr.base.ref} #{most_recent_base_sha.slice(0, 7)} | #{status_emoji} #{progress_status}"
+      comment_title<<"------------ | ------------- | ------------- | -------------\n"
       comment_title
     end
 

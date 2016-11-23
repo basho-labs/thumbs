@@ -4,7 +4,7 @@ build_steps:
  - BUNDLE_GEMFILE=Gemfile bundle install
  - BUNDLE_GEMFILE=Gemfile bundle exec ruby test/test.rb
 # optional
-merge: false
+merge: true
 org_mode: true
 timeout: 1805
 shell: /bin/bash

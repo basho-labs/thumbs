@@ -204,7 +204,7 @@ module Thumbs
     end
 
     def all_comments
-      client.issue_comments(repo, pr.number)
+      client.issue_comments(repo, pr.number, per_page: 100)
     end
 
     def comments

@@ -2,8 +2,8 @@ unit_tests do
   test "can read build progress status" do
     default_vcr_state do
       cassette(:clear_build_comment, :allow_playback_repeats => true, :record => :all) do
-        PRW.clear_build_progress_comment
-        assert_equal :unstarted, PRW.build_progress_status
+        prw=Thumbs::PullRequestWorker.new(repo: 'thumbot/prtester', pr: 446)
+        assert_equal :unstarted, prw.build_progress_status
       end
     end
   end

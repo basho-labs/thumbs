@@ -288,7 +288,7 @@ unit_tests do
     default_vcr_state do
       comments = PRW.comments
       sha_time_stamp=PRW.push_time_stamp(PRW.pr.head.sha)
-      comments_after_sha=PRW.client.issue_comments(PRW.repo, PRW.pr.number).collect { |c| c.to_h if c[:created_at] > sha_time_stamp }.compact
+      comments_after_sha=PRW.client.issue_comments(PRW.repo, PRW.pr.number, per_page: 100).collect { |c| c.to_h if c[:created_at] > sha_time_stamp }.compact
       assert_equal comments_after_sha, comments
     end
   end

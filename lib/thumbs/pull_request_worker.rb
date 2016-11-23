@@ -32,8 +32,7 @@ module Thumbs
     end
 
     def prepare_build_dir
-      cleanup_build_dir
-      clone
+      refresh_repo
       try_merge
     end
 

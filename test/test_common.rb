@@ -92,6 +92,13 @@ unit_tests do
       assert_equal '/bin/bash', status[:output].strip, status[:output]
     end
   end
+  test "can get more than 30 comments" do
+    default_vcr_state do
+      PRW.respond_to?(:all_comments)
+      prw=Thumbs::PullRequestWorker.new(repo: 'davidx/prtester', pr: 318)
+      assert prw.all_comments.length > 30
+    end
+  end
 end
 
 

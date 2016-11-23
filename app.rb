@@ -99,6 +99,7 @@ Thanks @#{pr_worker.pr.user.login}!
           pr_worker.create_build_status_comment
           return "OK"
         end
+        return "OK" if pr_worker.build_in_progress?
         pr_worker.validate
 
         if pr_worker.valid_for_merge?

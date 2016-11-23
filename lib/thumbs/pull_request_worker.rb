@@ -480,9 +480,9 @@ module Thumbs
     def validate
       build_status = read_build_status
 
-      refresh_repo
       unless build_status.key?(:steps) && build_status[:steps].keys.length > 0
         debug_message "no build status found, running build steps"
+        refresh_repo
         try_merge
         run_build_steps
       else

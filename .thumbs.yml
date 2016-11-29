@@ -1,8 +1,8 @@
 # required
 minimum_reviewers: 2
 build_steps:
- - BUNDLE_GEMFILE=Gemfile bundle install
- - BUNDLE_GEMFILE=Gemfile bundle exec ruby test/test.rb
+ - bundle install
+ - bundle exec ruby test/test.rb
 # optional
 merge: true
 org_mode: true

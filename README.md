@@ -71,6 +71,12 @@ ask to enable thumbs for your repo.
 2) If minimum reviewers is met and build is valid, it will report reviewers count and attempt to merge.
 ![Alt text](http://i.imgur.com/4mj2SL7.png)
 
+##  A new comment matching "thumbot retry"
+##### Thumbs will :
+Retry the tasks on the latest commit and rewrite its most recent PR comment to
+reflect the current status.
+![Screenshot of thumbot showing "In progress" above new comment of "thumbot retry"](http://i.imgur.com/20CFrkq.png)
+
 ## A new push
 ##### Thumbs will :
 1) Rerun the build steps, reset the reviewer count and report build status

@@ -187,13 +187,23 @@ Thanks @#{pr_worker.pr.user.login}!
         pull_requests_for_base_branch = @octo_client.pull_requests(repo, :state => 'open').collect { |pr| pr if pr.base.ref == base_ref }.compact
         Process.detach(fork do
           pull_requests_for_base_branch.each do |pr|
-          debug_message "Forking Rebuild of PR: #{pr.number} with new Base ref #{base_ref}"
+            debug_message "Rebuild of PR: #{pr.number} with new Base ref #{base_ref}"
             pr_worker=Thumbs::PullRequestWorker.new(:repo => repo, :pr => pr.number)
+            ignore_after_n_days=90
+            pr_created_at=DateTime.parse(pr_worker.pr.created_at.to_s).strftime("%s").to_i
+            current_datetime=DateTime.now.strftime("%s").to_i
+            horizon_datetime=current_datetime - ( ignore_after_n_days*86400 )
+
+            if pr_created_at < horizon_datetime
+                debug_message "PR: #{pr.number} is too old #{pr_worker.pr.created_at} to be considered. Ignored after #{ignore_after_n_days}+ days."
+                next
+            end
 
             if pr_worker.build_in_progress?
-              debug_message "PR: #{pr.number} build_in_progress : next"
-              return "OK"
+                debug_message "PR: #{pr.number} build_in_progress : next"
+                next
             end
+
             pr_worker.set_build_progress(:in_progress)
             pr_worker.validate
             pr_worker.set_build_progress(:completed)

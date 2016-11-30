@@ -813,7 +813,7 @@ module Thumbs
     end
 
     def approvals
-      if @thumb_config.key?('org_mode') && @thumb_config['org_mode']
+      if thumb_config.key?('org_mode') && thumb_config['org_mode']
         debug_message "returning org_member_code_approvals"
         return org_member_approvals
       end

@@ -38,11 +38,14 @@ module Thumbs
 
 
     def refresh_repo
+      debug_message "refreshing repo"
       if File.exists?(@build_dir) && Git.open(@build_dir).index.readable?
         git = Git.open(@build_dir)
         git.fetch
+        debug_message "fetch"
         git
       else
+        debug_message "clone"
         clone
       end
     end

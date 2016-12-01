@@ -97,9 +97,18 @@ Thanks @#{pr_worker.pr.user.login}!
           pr_worker.validate
           pr_worker.set_build_progress(:completed)
           pr_worker.create_build_status_comment
+          debug_message "finished retry command"
+
           return "OK"
         end
-        return "OK" if pr_worker.build_in_progress?
+
+        debug_message ""
+        unless pr_worker.build_progress_status == :completed
+          debug_message "Build not yet completed, won't do anything else"
+          return "OK"
+        end
+        
+        debug_message "validate"
         pr_worker.validate
 
         if pr_worker.valid_for_merge?
@@ -219,6 +228,7 @@ Thanks @#{pr_worker.pr.user.login}!
           end
         end)
       when :unregistered
+        debug_message "#{payload.to_yaml}"
         debug_message "This is not an event I recognize,: ignoring"
         debug_message payload_type(payload)
     end

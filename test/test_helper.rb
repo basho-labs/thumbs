@@ -10,8 +10,8 @@ require 'log4r'
 
 TESTBRANCH='feature_1474522484'
 TESTREPO='thumbot/prtester'
-PRW=Thumbs::PullRequestWorker.new(:repo => TESTREPO, :pr => 453)
-TESTPR=453
+PRW=Thumbs::PullRequestWorker.new(:repo => TESTREPO, :pr => 463)
+TESTPR=463
 ORGTESTREPO='basho-bin/tester'
 ORGPRW=Thumbs::PullRequestWorker.new(:repo => ORGTESTREPO, :pr => 27)
 ORGTESTPR=27

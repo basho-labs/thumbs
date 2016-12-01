@@ -38,11 +38,14 @@ module Thumbs
 
 
     def refresh_repo
+      debug_message "refreshing repo"
       if File.exists?(@build_dir) && Git.open(@build_dir).index.readable?
         git = Git.open(@build_dir)
         git.fetch
+        debug_message "fetch"
         git
       else
+        debug_message "clone"
         clone
       end
     end
@@ -623,7 +626,7 @@ module Thumbs
     end
 
     def most_recent_head_sha
-      client.commits(pr.head.repo.full_name, pr.head.ref).first[:sha]
+      pr.open? ? client.commits(pr.head.repo.full_name, pr.head.ref).first[:sha] : []
     end
 
     def most_recent_base_sha

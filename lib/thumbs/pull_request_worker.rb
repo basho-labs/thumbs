@@ -82,11 +82,11 @@ module Thumbs
           contributor_repo="git://github.com/#{pr.head.repo.full_name}"
           debug_message("forked branch pr Contributor REPO: #{contributor_repo}")
           remotes=git.remotes.collect{|r| r.name }
-          unless remotes.include?("contributor")
-            git.add_remote("contributor", contributor_repo)
+	        unless remotes.include?(pr.user.login)
+            git.add_remote(pr.user.login, contributor_repo)
           end
-          git.fetch("contributor")
-          merge_result = git.remote("contributor").merge(pr.head.ref)
+          git.fetch(pr.user.login)
+          merge_result = git.remote(pr.user.login).merge(pr.head.ref)
         else
           merge_result = git.merge( pr.head.ref )
         end

@@ -36,13 +36,12 @@ module Thumbs
       try_merge
     end
 
-    def cleanup_build_dir
-      FileUtils.rm_rf(@build_dir)
-    end
 
     def refresh_repo
       if File.exists?(@build_dir) && Git.open(@build_dir).index.readable?
-        `cd #{@build_dir} && git fetch`
+        git = Git.open(@build_dir)
+        git.fetch
+        git
       else
         clone
       end
@@ -52,7 +51,7 @@ module Thumbs
       status={}
       status[:started_at]=DateTime.now
       begin
-        git = Git.clone("git@github.com:#{@repo}", dir)
+        git = Git.clone("git@github.com:#{pr.base.repo.full_name}", dir)
       rescue => e
         status[:ended_at]=DateTime.now
         status[:result]=:error
@@ -69,19 +68,34 @@ module Thumbs
 
       status={}
       status[:started_at]=DateTime.now
-      cleanup_build_dir
+
+
+     debug_message "Trying merge #{pr.base.repo.full_name}:PR##{pr.number} \" #{pr.title}\" #{pr.head.repo.full_name}##{most_recent_head_sha} onto #{@pr.base.ref} #{most_recent_base_sha}"
       begin
-        git = clone(@build_dir)
-        git.checkout(most_recent_head_sha)
-        git.checkout(@pr.base.ref)
+        git = refresh_repo
+        git.reset
+        git.checkout(pr.base.ref)
         git.branch(pr_branch).checkout
         debug_message "Trying merge #{@repo}:PR##{@pr.number} \" #{@pr.title}\" #{most_recent_head_sha} onto #{@pr.base.ref} #{most_recent_base_sha}"
-        merge_result = git.merge("#{most_recent_head_sha}")
+
+        if pr.base.repo != pr.head.repo
+          contributor_repo="git://github.com/#{pr.head.repo.full_name}"
+          debug_message("forked branch pr Contributor REPO: #{contributor_repo}")
+          remotes=git.remotes.collect{|r| r.name }
+          unless remotes.include?("contributor")
+            git.add_remote("contributor", contributor_repo)
+          end
+          git.fetch("contributor")
+          merge_result = git.remote("contributor").merge(pr.head.ref)
+        else
+          merge_result = git.merge( pr.head.ref )
+        end
+
         load_thumbs_config
         status[:ended_at]=DateTime.now
         status[:result]=:ok
         status[:message]="Merge Success: #{@pr.head.ref} #{most_recent_head_sha} onto target branch: #{@pr.base.ref} #{most_recent_base_sha}"
-        status[:output]=merge_result
+        status[:output]= "#{merge_result}"
       rescue => e
         debug_message "Merge Failed: #{@pr.head.ref} #{most_recent_head_sha} onto target branch: #{@pr.base.ref} #{most_recent_base_sha}"
         debug_message "PR ##{@pr[:number]} END"
@@ -605,15 +619,15 @@ module Thumbs
     end
 
     def commits
-      client.commits(repo, pr.head.ref)
+      client.commits(pr.head.repo.full_name, pr.head.ref)
     end
 
     def most_recent_head_sha
-      client.commits(repo, pr.head.ref).first[:sha]
+      client.commits(pr.head.repo.full_name, pr.head.ref).first[:sha]
     end
 
     def most_recent_base_sha
-      client.commits(repo, pr.base.ref).first[:sha]
+      client.commits(pr.base.repo.full_name, pr.base.ref).first[:sha]
     end
 
     def pull_requests_for_base_branch(branch)
@@ -671,7 +685,7 @@ module Thumbs
 </details>
 
 <% end %>
-<%= render_reviewers_comment_template %>
+<%= render_reviewers_comment_template if thumb_config %>
 
 </details>
       EOS
@@ -792,8 +806,8 @@ module Thumbs
     end
 
     def most_recent_commit_timestamp
-      head_commits=client.commits(repo, pr.head.ref)
-      base_commits=client.commits(repo, pr.base.ref)
+      head_commits=client.commits(pr.head.repo.full_name, pr.head.ref)
+      base_commits=client.commits(pr.base.repo.full_name, pr.base.ref)
       head_commit_timestamp = DateTime.parse(head_commits.first[:commit][:committer][:date].to_s)
       base_commit_timestamp = DateTime.parse(base_commits.first[:commit][:committer][:date].to_s)
       head_commit_timestamp > base_commit_timestamp ? head_commit_timestamp : base_commit_timestamp
@@ -808,8 +822,11 @@ module Thumbs
       approval_entries.compact
     end
 
+    def any_member_approvals
+      get_approvals(pull_request_id)
+    end
     def org_member_approvals
-      get_approvals(pull_request_id).collect { |approval| approval if @client.organization_member?(org, approval["author"]["login"]) }.compact
+      any_member_approvals.collect { |approval| approval if @client.organization_member?(org, approval["author"]["login"]) }.compact
     end
 
     def approvals
@@ -817,7 +834,7 @@ module Thumbs
         debug_message "returning org_member_code_approvals"
         return org_member_approvals
       end
-      get_approvals(pull_request_id)
+      any_member_approvals
     end
 
     def approval_count
@@ -853,13 +870,6 @@ module Thumbs
 
     def render_template(template)
       ERB.new(template).result(binding)
-    end
-
-    def authenticate_github
-      Octokit.configure do |c|
-        c.login = ENV['GITHUB_USER']
-        c.password = ENV['GITHUB_PASS']
-      end
     end
 
     def result_image(result)

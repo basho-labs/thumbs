@@ -626,7 +626,7 @@ module Thumbs
     end
 
     def most_recent_head_sha
-      pr.open? ? client.commits(pr.head.repo.full_name, pr.head.ref).first[:sha] : []
+      client.commits(pr.head.repo.full_name, pr.head.ref).first[:sha]
     end
 
     def most_recent_base_sha

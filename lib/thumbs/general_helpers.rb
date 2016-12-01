@@ -6,9 +6,5 @@ module Sinatra
       log = Log4r::Logger['Thumbs']
       ((log && log.respond_to?(:debug)) ? log.debug(message) : nil )
     end
-
-    def authenticate_github
-      Octokit::Client.new(:netrc => true)
-    end
   end
 end

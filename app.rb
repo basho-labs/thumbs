@@ -42,13 +42,11 @@ class ThumbsWeb < Sinatra::Base
       when :new_pr
         repo, pr = process_payload(payload)
         debug_message "got repo #{repo} and pr #{pr}"
-
-        sleep 1 # facepalm eventual consistent
-        # todo: queue and retry logic
-
+        sleep 1 # github sometimes needs time
         pr_worker = Thumbs::PullRequestWorker.new(:repo => repo, :pr => pr)
         return "OK" unless pr_worker.open?
         return "OK" if pr_worker.build_in_progress?
+        return "OK" unless pr_worker.thumb_config
         debug_message("new pull request #{pr_worker.repo}/pulls/#{pr_worker.pr.number} ")
         intro_text=<<-EOS
 Thanks @#{pr_worker.pr.user.login}!

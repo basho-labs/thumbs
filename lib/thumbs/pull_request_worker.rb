@@ -80,20 +80,7 @@ module Thumbs
         git.checkout(pr.base.ref)
         git.branch(pr_branch).checkout
         debug_message "Trying merge #{@repo}:PR##{@pr.number} \" #{@pr.title}\" #{most_recent_head_sha} onto #{@pr.base.ref} #{most_recent_base_sha}"
-
-        if pr.base.repo != pr.head.repo
-          contributor_repo="git://github.com/#{pr.head.repo.full_name}"
-          debug_message("forked branch pr Contributor REPO: #{contributor_repo}")
-          remotes=git.remotes.collect{|r| r.name }
-	  unless remotes.include?(pr.user.login)
-            git.add_remote(pr.user.login, contributor_repo)
-          end
-          git.fetch(pr.user.login)
-          merge_result = git.remote(pr.user.login).merge(pr.head.ref)
-        else
-          merge_result = git.merge( pr.head.ref )
-        end
-
+        merge_result = git.merge( most_recent_head_sha )
         load_thumbs_config
         status[:ended_at]=DateTime.now
         status[:result]=:ok

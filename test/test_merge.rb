@@ -1,6 +1,6 @@
 unit_tests do
 
-  test "can NOT merge forked branch repo" do
+  test "Can merge forked branch repo" do
      default_vcr_state do
         prw=Thumbs::PullRequestWorker.new(:repo => 'davidx/prtester', :pr => 323)
 
@@ -9,7 +9,7 @@ unit_tests do
         assert status.key?(:result)
         assert status.key?(:message)
 
-        assert_equal :error, status[:result]
+        assert_equal :ok, status[:result]
         assert_equal status, prw.build_status[:steps][:merge]
      end
   end

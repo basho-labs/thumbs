@@ -107,6 +107,15 @@ unit_tests do
      assert_true ORGPRW.org_member?('thumbot')
    end
  end
+
+  test "can detect forked repo branch pr" do
+    default_vcr_state do
+      prw = Thumbs::PullRequestWorker.new(repo: 'davidx/prtester', pr: 323)
+      assert prw.respond_to?(:forked_repo_branch_pr?)
+      assert_true prw.forked_repo_branch_pr?
+      assert_false PRW.forked_repo_branch_pr?
+    end
+  end
 end
 
 

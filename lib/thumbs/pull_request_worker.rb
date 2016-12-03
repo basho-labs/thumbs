@@ -81,7 +81,20 @@ module Thumbs
         git.checkout(pr.base.ref)
         git.branch(pr_branch).checkout
         debug_message "Trying merge #{@repo}:PR##{@pr.number} \" #{@pr.title}\" #{most_recent_head_sha} onto #{@pr.base.ref} #{most_recent_base_sha}"
-        merge_result = git.merge(most_recent_head_sha)
+
+        if forked_repo_branch_pr?
+          contributor_repo="git://github.com/#{pr.head.repo.full_name}"
+          debug_message("Forked branch pr contributor REPO: #{contributor_repo}")
+          remotes=git.remotes.collect{|r| r.name }
+          unless remotes.include?("contributor")
+            git.add_remote("contributor", contributor_repo)
+          end
+          git.fetch("contributor")
+          merge_result = git.remote("contributor").merge(pr.head.ref)
+        else
+          merge_result = git.merge(most_recent_head_sha)
+        end
+
         load_thumbs_config
         status[:ended_at]=DateTime.now
         status[:result]=:ok
@@ -491,7 +504,11 @@ module Thumbs
       repo=@repo.gsub(/\//, '_')
       file=File.join('/tmp/thumbs', "#{repo}_#{build_guid}.yml")
       if File.exist?(file)
-        YAML.load(IO.read(file))
+        begin
+          YAML.load(IO.read(file))
+        rescue Psych::SyntaxError => e
+
+        end
       else
         {:steps => {}}
       end
@@ -921,6 +938,12 @@ module Thumbs
       add_comment "Merging and closing this pr"
       merge
       true
+    end
+
+    def forked_repo_branch_pr?
+      debug_message "pr.base.repo.full_name #{pr.base.repo.full_name}"
+      debug_message "pr.head.repo.full_name #{pr.head.repo.full_name}"
+      pr.base.repo.full_name != pr.head.repo.full_name ? true : false
     end
 
     private

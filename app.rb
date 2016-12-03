@@ -87,9 +87,9 @@ Thanks @#{pr_worker.pr.user.login}!
         return "OK" unless pr_worker.open?
         debug_message("new comment #{pr_worker.repo}/pulls/#{pr_worker.pr.number} #{payload['comment']['body']}")
         debug_message payload['comment']['body']
-
-
+        
         if pr_worker.contains_thumbot_command?(payload['comment']['body'])
+          return "OK" unless pr_worker.thumb_config
           if pr_worker.thumb_config['org_mode']  && pr_worker.repo_is_org?
             commenting_user=payload['comment']['user']['login']
             unless pr_worker.org_member?(commenting_user)

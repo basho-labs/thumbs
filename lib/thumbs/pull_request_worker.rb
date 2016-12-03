@@ -237,8 +237,7 @@ module Thumbs
     end
 
     def org_member?(user_login)
-      org_name = @repo.split(/\//).shift
-      client.organization_member?(org_name, user_login)
+      client.organization_member?(org, user_login)
     end
 
     def org_member_comments

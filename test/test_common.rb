@@ -99,6 +99,14 @@ unit_tests do
       assert prw.all_comments.length > 30
     end
   end
+
+ test "can determine org_member" do
+   default_vcr_state do
+     ORGPRW.respond_to?(:org_member?)
+     assert_false ORGPRW.org_member?('bob')
+     assert_true ORGPRW.org_member?('thumbot')
+   end
+ end
 end
 
 

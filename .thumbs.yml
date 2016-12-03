@@ -1,5 +1,5 @@
 # required
-minimum_reviewers: 2
+minimum_reviewers: 1
 build_steps:
  - bundle install
  - bundle exec ruby test/test.rb

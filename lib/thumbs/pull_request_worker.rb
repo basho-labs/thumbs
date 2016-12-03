@@ -19,7 +19,8 @@ module Thumbs
       @pr = @client.pull_request(options[:repo], options[:pr])
       @pull_request_id=get_pull_request_id
       @build_dir=options[:build_dir] || "/tmp/thumbs/#{build_guid}"
-      @build_status={:steps => {}}
+      persisted_build_status = read_build_status
+      @build_status = persisted_build_status || {:steps => {}}
       @build_steps = []
       prepare_build_dir
       load_thumbs_config
@@ -73,14 +74,14 @@ module Thumbs
       status[:started_at]=DateTime.now
 
 
-     debug_message "Trying merge #{pr.base.repo.full_name}:PR##{pr.number} \" #{pr.title}\" #{pr.head.repo.full_name}##{most_recent_head_sha} onto #{@pr.base.ref} #{most_recent_base_sha}"
+      debug_message "Trying merge #{pr.base.repo.full_name}:PR##{pr.number} \" #{pr.title}\" #{pr.head.repo.full_name}##{most_recent_head_sha} onto #{@pr.base.ref} #{most_recent_base_sha}"
       begin
         git = refresh_repo
         git.reset
         git.checkout(pr.base.ref)
         git.branch(pr_branch).checkout
         debug_message "Trying merge #{@repo}:PR##{@pr.number} \" #{@pr.title}\" #{most_recent_head_sha} onto #{@pr.base.ref} #{most_recent_base_sha}"
-        merge_result = git.merge( most_recent_head_sha )
+        merge_result = git.merge(most_recent_head_sha)
         load_thumbs_config
         status[:ended_at]=DateTime.now
         status[:result]=:ok
@@ -104,7 +105,7 @@ module Thumbs
       shell=thumb_config['shell']||'/bin/bash'
       command = "source /etc/bash.bashrc; #{command}"
       docker_command="sudo docker run -t"
-      (thumb_config['env']||{}).each do |variable_key,variable_value|
+      (thumb_config['env']||{}).each do |variable_key, variable_value|
         docker_command << " -e #{variable_key}=#{variable_value}"
       end
       docker_command << " -v ~/.bashrc:/etc/bash.bashrc -v /tmp/thumbs:/tmp/thumbs"
@@ -120,13 +121,13 @@ module Thumbs
 
       output, exit_code = nil
 
-      Open3.popen2e(ENV, shell) do|stdin, stdout_and_stderr, wait_thr|
-          stdin.puts "source ~/.bashrc"
-          stdin.puts "#{command} 2>&1"
-          stdin.close
-          pid = wait_thr.pid
-          output=stdout_and_stderr.read
-          exit_code = wait_thr.value.exitstatus
+      Open3.popen2e(ENV, shell) do |stdin, stdout_and_stderr, wait_thr|
+        stdin.puts "source ~/.bashrc"
+        stdin.puts "#{command} 2>&1"
+        stdin.close
+        pid = wait_thr.pid
+        output=stdout_and_stderr.read
+        exit_code = wait_thr.value.exitstatus
       end
       [output, exit_code]
     end
@@ -226,9 +227,22 @@ module Thumbs
       comments.collect { |comment| comment if @pr[:user][:login] != comment[:user][:login] && !["thumbot"].include?(comment[:user][:login]) }.compact
     end
 
+    def repo_is_org?
+      begin
+        org_result=client.organization(org)
+      rescue  Octokit::NotFound => e
+
+      end
+     org_result && org_result.key?(:id) ? true : false
+    end
+
+    def org_member?(user_login)
+      org_name = @repo.split(/\//).shift
+      client.organization_member?(org_name, user_login)
+    end
+
     def org_member_comments
-      org = @repo.split(/\//).shift
-      non_author_comments.collect { |comment| comment if @client.organization_member?(org, comment[:user][:login]) }.compact
+      non_author_comments.collect { |comment| comment if org_member?(comment[:user][:login]) }.compact
     end
 
     def org_member_code_reviews
@@ -282,10 +296,12 @@ module Thumbs
       end
       unless @build_status[:steps].key?(:merge)
         debug_message "contains no merge step"
-
         return false
       end
-
+      unless @build_status[:steps].keys.length > 1
+        debug_message "contains no build steps #{@build_status[:steps]}"
+        return false
+      end
       debug_message "passed initial"
       debug_message("")
       @build_status[:steps].each_key do |name|
@@ -420,10 +436,12 @@ module Thumbs
     def sanitize_text(text)
       text.to_s.encode('UTF-8', 'UTF-8', :invalid => :replace, :undef => :replace)
     end
+
     def create_gist_from_status(name, content)
-      file_title="#{name.to_s.gsub(/\//,'_')}.txt"
-      client.create_gist( { :files => { file_title => { :content => content || "no output" } } } )
+      file_title="#{name.to_s.gsub(/\//, '_')}.txt"
+      client.create_gist({:files => {file_title => {:content => content || "no output"}}})
     end
+
     def clear_build_progress_comment
       build_progress_comment = get_build_progress_comment
       build_progress_comment ? client.delete_comment(repo, build_progress_comment[:id]) : true
@@ -483,16 +501,14 @@ module Thumbs
     def validate
       build_status = read_build_status
 
-      unless build_status.key?(:steps) && build_status[:steps].keys.length > 0
+      if build_status.key?(:steps) && build_status[:steps].keys.length > 1
+        debug_message "using persisted build status cause #{build_status.key?(:steps)} && #{build_status[:steps].keys.length} #{build_status[:steps].to_yaml}"
+      else
         refresh_repo
         debug_message "no build status found, running build steps"
         try_merge
         run_build_steps
-      else
-        debug_message "using persisted build status"
       end
-      true
-
     end
 
     def merge
@@ -630,7 +646,11 @@ module Thumbs
 
     def aggregate_build_status_result
       build_status[:steps].each do |step_name, status|
-        return :error unless status.kind_of?(Hash) && status.key?(:result) && status[:result] == :ok
+        unless status.kind_of?(Hash) && status.key?(:result) && status[:result] == :ok
+          debug_message "error: "
+          debug_message status.to_yaml
+          return :error
+        end
       end
       :ok
     end
@@ -815,6 +835,7 @@ module Thumbs
     def any_member_approvals
       get_approvals(pull_request_id)
     end
+
     def org_member_approvals
       any_member_approvals.collect { |approval| approval if @client.organization_member?(org, approval["author"]["login"]) }.compact
     end
@@ -854,6 +875,53 @@ module Thumbs
       end
 
       code_reviews
+    end
+
+    def parse_thumbot_command(text_body)
+      result_lines = text_body.split(/\n/).grep(/^thumbot/)
+      return nil unless result_lines.length > 0
+      command_string=result_lines.shift
+      command_elements = command_string.split(/\s+/)
+      return nil unless command_elements.length > 1
+      command = command_elements[1].to_sym
+      return nil unless command && [:retry, :merge].include?(command)
+      command
+    end
+
+    def contains_thumbot_command?(text_body)
+      command=parse_thumbot_command(text_body)
+      command ? true : false
+    end
+
+    def run_thumbot_command(command)
+      send("thumbot_#{command}") if [:retry, :merge].include?(command)
+    end
+
+    def thumbot_retry
+      debug_message "received retry command"
+      unpersist_build_status
+      set_build_progress(:in_progress)
+      validate
+      set_build_progress(:completed)
+      create_build_status_comment
+      debug_message "finished retry command"
+      true
+    end
+
+    def thumbot_merge
+      debug_message "received merge command"
+      validate
+
+      unless thumb_config
+        add_comment "Sorry, can't merge without a .thumbs.yml in the branch"
+        return false
+      end
+      @thumb_config['merge'] = true
+      return false unless valid_for_merge?
+      create_reviewers_comment
+      add_comment "Merging and closing this pr"
+      merge
+      true
     end
 
     private

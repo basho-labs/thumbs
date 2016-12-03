@@ -167,4 +167,42 @@ class WebhookTest < Test::Unit::TestCase
       end
     end
   end
+
+
+  def test_merge_command_hook
+
+    default_vcr_state do
+
+      merge_command_webhook_payload = {
+          'action' => 'created',
+          'comment' => {'body' => 'thumbot merge',
+                        'user' => {'login' => 'bob' },
+                        },
+          'issue' => {'number' => PRW.pr.number},
+          'repository' => {'full_name' => PRW.repo},
+          'number' => PRW.pr.number,
+          'pull_request' => {'number' => PRW.pr.number}
+      }
+
+      post '/webhook', merge_command_webhook_payload.to_json do
+        assert last_response.body.include?("ERROR"), last_response.body
+      end
+
+      merge_command_webhook_payload = {
+          'action' => 'created',
+          'comment' => {'body' => 'thumbot merge',
+                        'user' => {'login' => 'davidx' },
+          },
+          'issue' => {'number' => PRW.pr.number},
+          'repository' => {'full_name' => PRW.repo},
+          'number' => PRW.pr.number,
+          'pull_request' => {'number' => PRW.pr.number}
+      }
+
+      post '/webhook', merge_command_webhook_payload.to_json do
+        assert last_response.body.include?("COMMAND:merge:ERROR"), last_response.body
+      end
+
+    end
+  end
 end

@@ -157,7 +157,8 @@ unit_tests do
 
   test "can get aggregate build status" do
     default_vcr_state do
-      assert_equal :ok, PRW.aggregate_build_status_result
+      PRW.unpersist_build_status
+      PRW.reset_build_status
       PRW.build_steps=["make", "make test"]
       PRW.run_build_steps
       assert_equal :ok, PRW.aggregate_build_status_result
@@ -243,6 +244,7 @@ unit_tests do
             cassette(:get_updated_state, :record => :all) do
               assert_equal false, PRW.valid_for_merge?
               cassette(:get_valid_for_merge, :record => :all) do
+                PRW.validate
                 PRW.thumb_config['merge'] = true
                 PRW.thumb_config['minimum_reviewers'] = 0
                 assert_equal true, PRW.valid_for_merge?

@@ -87,17 +87,21 @@ Thanks @#{pr_worker.pr.user.login}!
         return "OK" unless pr_worker.open?
         debug_message("new comment #{pr_worker.repo}/pulls/#{pr_worker.pr.number} #{payload['comment']['body']}")
         debug_message payload['comment']['body']
-        if payload['comment']['body'] =~ /thumbot retry/
-          debug_message "received retry command"
 
-          pr_worker.unpersist_build_status
-          pr_worker.set_build_progress(:in_progress)
-          pr_worker.validate
-          pr_worker.set_build_progress(:completed)
-          pr_worker.create_build_status_comment
-          debug_message "finished retry command"
 
-          return "OK"
+        if pr_worker.contains_thumbot_command?(payload['comment']['body'])
+          if pr_worker.thumb_config['org_mode']  && pr_worker.repo_is_org?
+            commenting_user=payload['comment']['user']['login']
+            unless pr_worker.org_member?(commenting_user)
+              debug_message "thumb_config['org_mode']=true #{commenting_user} != org_member"
+              return "ERROR"
+            end
+          end
+
+          thumbot_command = pr_worker.parse_thumbot_command(payload['comment']['body'])
+          result=pr_worker.run_thumbot_command( thumbot_command )
+          status= result ? "OK" : "ERROR"
+          return "COMMAND:#{thumbot_command}:#{status}"
         end
 
         debug_message ""
@@ -196,6 +200,7 @@ Thanks @#{pr_worker.pr.user.login}!
           pull_requests_for_base_branch.each do |pr|
             debug_message "Rebuild of PR: #{pr.number} with new Base ref #{base_ref}"
             pr_worker=Thumbs::PullRequestWorker.new(:repo => repo, :pr => pr.number)
+            next unless pr_worker.thumb_config
             ignore_after_n_days=90
             pr_created_at=DateTime.parse(pr_worker.pr.created_at.to_s).strftime("%s").to_i
             current_datetime=DateTime.now.strftime("%s").to_i

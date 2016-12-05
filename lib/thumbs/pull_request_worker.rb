@@ -702,7 +702,7 @@ module Thumbs
 
 <%= status[:command] %>
 
-<%= status[:output] %>
+<%= status[:output].slice!(0,10000) %>
 
 ```
 
@@ -719,6 +719,7 @@ module Thumbs
       comment_message = compose_build_status_comment_title(:completed)
       comment_message << "\n#{@status_title}"
       comment_message << build_comment
+      comment_message.slice!(0,65000)
       update_pull_request_comment(comment_id, comment_message)
     end
 

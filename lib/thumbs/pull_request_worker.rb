@@ -704,7 +704,14 @@ module Thumbs
 
 <% output=status[:output] %>
 <% allowed_length=10000 %>
-<%= output.slice!(output.length-allowed_length, output.length) %>
+<% if output.length > allowed_length %>
+  <% snipped_characters = output.length - allowed_length %>
+  <% snipped_lines = output.slice(0, output.length-allowed_length).split(/\n/) %>
+... Snipped <%= snipped_lines.length %> lines ...
+<%= output.slice(output.length-allowed_length, output.length) %>
+<% else %>
+  <%= output %>
+<% end %>
 
 
 ```

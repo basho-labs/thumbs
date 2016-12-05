@@ -702,7 +702,17 @@ module Thumbs
 
 <%= status[:command] %>
 
-<%= status[:output] %>
+<% output=status[:output] %>
+<% allowed_length=10000 %>
+<% if output.length > allowed_length %>
+  <% snipped_characters = output.length - allowed_length %>
+  <% snipped_lines = output.slice(0, output.length-allowed_length).split(/\n/) %>
+... Snipped <%= snipped_lines.length %> lines ...
+<%= output.slice(output.length-allowed_length, output.length) %>
+<% else %>
+  <%= output %>
+<% end %>
+
 
 ```
 
@@ -719,7 +729,11 @@ module Thumbs
       comment_message = compose_build_status_comment_title(:completed)
       comment_message << "\n#{@status_title}"
       comment_message << build_comment
-      update_pull_request_comment(comment_id, comment_message)
+      if comment_message.length > 65000
+        debug_message "comment_message too large : #{comment_message.length} unable to post"
+      else
+        update_pull_request_comment(comment_id, comment_message)
+      end
     end
 
     def render_reviewers_comment_template

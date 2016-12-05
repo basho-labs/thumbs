@@ -100,13 +100,13 @@ unit_tests do
     end
   end
 
- test "can determine org_member" do
-   default_vcr_state do
-     ORGPRW.respond_to?(:org_member?)
-     assert_false ORGPRW.org_member?('bob')
-     assert_true ORGPRW.org_member?('thumbot')
-   end
- end
+  test "can determine org_member" do
+    default_vcr_state do
+      ORGPRW.respond_to?(:org_member?)
+      assert_false ORGPRW.org_member?('bob')
+      assert_true ORGPRW.org_member?('thumbot')
+    end
+  end
 
   test "can detect forked repo branch pr" do
     default_vcr_state do
@@ -116,6 +116,34 @@ unit_tests do
       assert_false PRW.forked_repo_branch_pr?
     end
   end
+
+  test "should be able to detect wait lock" do
+    cassette(:prmain, :record => :new_episodes) do
+      prw = Thumbs::PullRequestWorker.new(repo: 'davidx/prtester', pr: 323)
+      assert prw.respond_to?(:wait_lock?)
+
+      client2 = Octokit::Client.new(:netrc => true,
+                                    :netrc_file => ".netrc.davidpuddy1")
+      cassette(:pr, :record => :new_episodes, :record => :all) do
+
+        comment=client2.add_comment(prw.repo, prw.pr.number, "thumbot wait", options = {})
+        sleep 2
+        cassette(:refresh, :record => :all) do
+
+          cassette(:get_new_comments, :record => :all) do
+            comments=client2.issue_comments(prw.repo, prw.pr.number, per_page: 100)
+            assert_true comments.any? { |comment| comment[:body] =~ /^thumbot wait/ }
+            assert_true prw.wait_lock?
+            assert_equal prw.all_comments.any? { |comment| comment[:body] =~ /^thumbot wait/ }, prw.wait_lock?
+            assert_false PRW.wait_lock?
+            client2.delete_comment(prw.repo, comment[:id])
+          end
+        end
+      end
+    end
+
+  end
 end
+
 
 

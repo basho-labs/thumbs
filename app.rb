@@ -58,7 +58,7 @@ Thanks @#{pr_worker.pr.user.login}!
 </details>
         
         EOS
-        pr_worker.add_comment(intro_text)
+        pr_worker.add_comment(intro_text) unless pr_worker.thumb_config['show_config'] == false
         pr_worker.set_build_progress(:in_progress)
         pr_worker.try_merge
         unless pr_worker.thumb_config && pr_worker.thumb_config.key?('build_steps')

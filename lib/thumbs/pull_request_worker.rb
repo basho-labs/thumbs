@@ -344,6 +344,11 @@ module Thumbs
         return false
       end
 
+      if wait_lock?
+        debug_message "wait_lock? thumbot wait set. delete comment to release lock"
+        return false
+      end
+
       unless thumb_config['merge'] == true
         debug_message "thumb_config['merge'] != 'true' || thumbs config says: merge: #{thumb_config['merge'].inspect}"
         return false
@@ -580,6 +585,14 @@ module Thumbs
         debug_message ".thumbs.yml config says no merge"
         status[:result]=:error
         status[:message]=".thumbs.yml config merge=false"
+        status[:ended_at]=DateTime.now
+        return status
+      end
+
+      if wait_lock?
+        debug_message "wait_lock? thumbot wait enabled."
+        status[:result]=:error
+        status[:message]="wait_lock? thumbot wait enabled."
         status[:ended_at]=DateTime.now
         return status
       end
@@ -958,6 +971,10 @@ module Thumbs
       debug_message "pr.base.repo.full_name #{pr.base.repo.full_name}"
       debug_message "pr.head.repo.full_name #{pr.head.repo.full_name}"
       pr.base.repo.full_name != pr.head.repo.full_name ? true : false
+    end
+
+    def wait_lock?
+      all_comments.any? {|comment| comment[:body] =~  /^thumbot wait/ }
     end
 
     private

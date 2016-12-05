@@ -131,22 +131,24 @@ unit_tests do
       cassette(:get_events_unmergable) do
 
         UNMERGABLEPRW.build_steps = ["make", "make test", "make UNKNOWN_OPTION"]
+        cassette(:get_state, :record => :new_episodes) do
 
-        cassette(:get_open) do
-          assert_equal true, UNMERGABLEPRW.open?
-          UNMERGABLEPRW.reset_build_status
-          UNMERGABLEPRW.unpersist_build_status
-          UNMERGABLEPRW.try_merge
-          UNMERGABLEPRW.run_build_steps
-          assert_equal :error, UNMERGABLEPRW.aggregate_build_status_result, UNMERGABLEPRW.build_status
-          step, status = UNMERGABLEPRW.build_status[:steps].collect { |step_name, status| [step_name, status] if status[:result] != :ok }.compact.shift
-          assert_equal :merge, step
+          cassette(:get_open) do
+            assert_equal true, UNMERGABLEPRW.open?
+            UNMERGABLEPRW.reset_build_status
+            UNMERGABLEPRW.unpersist_build_status
+            UNMERGABLEPRW.try_merge
+            UNMERGABLEPRW.run_build_steps
+            assert_equal :error, UNMERGABLEPRW.aggregate_build_status_result, UNMERGABLEPRW.build_status
+            step, status = UNMERGABLEPRW.build_status[:steps].collect { |step_name, status| [step_name, status] if status[:result] != :ok }.compact.shift
+            assert_equal :merge, step
 
-          assert status[:result]==:error
-          assert status[:exit_code]!=0
+            assert status[:result]==:error
+            assert status[:exit_code]!=0
 
-          cassette(:get_new_comments, :record => :new_episodes) do
-            assert_equal false, UNMERGABLEPRW.valid_for_merge?
+            cassette(:get_new_comments, :record => :new_episodes) do
+              assert_equal false, UNMERGABLEPRW.valid_for_merge?
+            end
           end
         end
 
@@ -249,6 +251,36 @@ unit_tests do
                 PRW.thumb_config['minimum_reviewers'] = 0
                 assert_equal true, PRW.valid_for_merge?
               end
+            end
+          end
+        end
+      end
+    end
+  end
+
+
+  test "should not merge if wait_lock?" do
+    cassette(:get_wait_lock_pr, :record => :new_episodes) do
+      prw = Thumbs::PullRequestWorker.new(repo: 'davidx/prtester', pr: 323)
+      prw.validate
+      prw.thumb_config['merge'] = true
+      prw.thumb_config['minimum_reviewers'] = 0
+      client2 = Octokit::Client.new(:netrc => true,
+                                    :netrc_file => ".netrc.davidpuddy1")
+      # client2.add_comment(prw.repo, prw.pr.number, "+1", options = {})
+      wait_lock_comments=prw.all_comments.collect { |comment| comment if comment[:body] =~ /^thumbot wait/ }.compact
+      wait_lock_comments.each do |comment|
+        client2.delete_comment(prw.repo, comment[:id])
+      end
+      cassette(:get_updated_comments, :record => :new_episodes) do
+        assert_equal true, prw.valid_for_merge?
+        cassette(:get_valid_for_merge_update, :record => :all) do
+          comment=client2.add_comment(prw.repo, prw.pr.number, "thumbot wait", options = {})
+          sleep 1
+          cassette(:get_valid_for_merge_update_refresh, :record => :all) do
+            assert_equal false, prw.valid_for_merge?
+            cassette(:get_valid_for_merge_update_clean, :record => :all) do
+              client2.delete_comment(prw.repo, comment[:id])
             end
           end
         end

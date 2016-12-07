@@ -17,7 +17,7 @@ unit_tests do
 
   test "can get most_recent_sha" do
     default_vcr_state do
-      assert_equal PRW.pr.head.sha, PRW.most_recent_sha
+      assert_equal PRW.pull_request.head.sha, PRW.most_recent_sha
     end
   end
 end

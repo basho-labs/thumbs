@@ -20,9 +20,9 @@ class WebhookTest < Test::Unit::TestCase
   def test_can_get_pr
     cassette(:graphql) do
       cassette(:get_basic_pr) do
-        assert_equal "thumbot/prtester", PRW.pr.base.repo.full_name
+        assert_equal "thumbot/prtester", PRW.pull_request.base.repo.full_name
         assert_equal "thumbot/prtester", PRW.repo
-        assert_equal TESTPR, PRW.pr.number
+        assert_equal TESTPR, PRW.pr
       end
     end
   end
@@ -59,7 +59,7 @@ class WebhookTest < Test::Unit::TestCase
               }
           },
           'repository' => {'full_name' => PRW.repo},
-          'pull_request' => {'number' => PRW.pr.number, 'body' => PRW.pr.body}
+          'pull_request' => {'number' => PRW.pr, 'body' => PRW.pull_request.body}
       }
       cassette(:get_comments, :record => :all) do
         cassette(:get_issue_comments, :record => :new_episodes) do
@@ -118,17 +118,17 @@ class WebhookTest < Test::Unit::TestCase
 
       new_pr_webhook_payload = {
           'repository' => {'full_name' => PRW.repo},
-          'number' => PRW.pr.number,
-          'pull_request' => {'number' => PRW.pr.number, 'body' => PRW.pr.body}
+          'number' => PRW.pr,
+          'pull_request' => {'number' => PRW.pr, 'body' => PRW.pull_request.body}
       }
       PRW.unpersist_build_status
       PRW.reset_build_status
       PRW.unpersist_build_status
-      PRW.build_steps=["make", "make test"]
+      PRW.thumbs_config['build_steps'] = ["make", "make test"]
       PRW.try_merge
       assert PRW.build_status[:steps].keys.length == 1, PRW.build_status[:steps].inspect
       assert PRW.build_status[:steps].key?(:merge)
-      remove_comments(PRW.repo, PRW.pr.number)
+      remove_comments(PRW.repo, PRW.pr)
       cassette(:get_comments, :record => :all) do
         cassette(:get_issue_comments, :record => :all) do
 
@@ -148,12 +148,12 @@ class WebhookTest < Test::Unit::TestCase
 
       new_approval_webhook_payload = {
           'repository' => {'full_name' => PRW.repo},
-          'number' => PRW.pr.number,
-          'pull_request' => {'number' => PRW.pr.number, 'body' => PRW.pr.body}
+          'number' => PRW.pr,
+          'pull_request' => {'number' => PRW.pr, 'body' => PRW.pull_request.body}
       }
       PRW.unpersist_build_status
 
-      remove_comments(PRW.repo, PRW.pr.number)
+      remove_comments(PRW.repo, PRW.pr)
       cassette(:get_comments, :record => :all) do
         cassette(:get_issue_comments, :record => :all) do
 
@@ -178,10 +178,10 @@ class WebhookTest < Test::Unit::TestCase
           'comment' => {'body' => 'thumbot merge',
                         'user' => {'login' => 'bob' },
                         },
-          'issue' => {'number' => PRW.pr.number},
+          'issue' => {'number' => PRW.pr},
           'repository' => {'full_name' => PRW.repo},
-          'number' => PRW.pr.number,
-          'pull_request' => {'number' => PRW.pr.number}
+          'number' => PRW.pr,
+          'pull_request' => {'number' => PRW.pr}
       }
 
       post '/webhook', merge_command_webhook_payload.to_json do
@@ -193,10 +193,10 @@ class WebhookTest < Test::Unit::TestCase
           'comment' => {'body' => 'thumbot merge',
                         'user' => {'login' => 'davidx' },
           },
-          'issue' => {'number' => PRW.pr.number},
+          'issue' => {'number' => PRW.pr},
           'repository' => {'full_name' => PRW.repo},
-          'number' => PRW.pr.number,
-          'pull_request' => {'number' => PRW.pr.number}
+          'number' => PRW.pr,
+          'pull_request' => {'number' => PRW.pr}
       }
 
       post '/webhook', merge_command_webhook_payload.to_json do

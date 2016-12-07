@@ -3,7 +3,7 @@ unit_tests do
   test "should be able to generate base and sha specific build guid" do
     default_vcr_state do
       assert PRW.respond_to?(:build_guid)
-      assert_equal "#{PRW.pr.base.ref.gsub(/\//, '_')}.#{PRW.pr.base.sha.slice(0, 7)}.#{PRW.pr.head.ref.gsub(/\//, '_')}.#{PRW.most_recent_head_sha.slice(0, 7)}", PRW.build_guid
+      assert_equal "#{PRW.pull_request.base.ref.gsub(/\//, '_')}.#{PRW.pull_request.base.sha.slice(0, 7)}.#{PRW.pull_request.head.ref.gsub(/\//, '_')}.#{PRW.most_recent_head_sha.slice(0, 7)}", PRW.build_guid
     end
   end
 
@@ -11,7 +11,7 @@ unit_tests do
   test "can get open pull requests for repo" do
     default_vcr_state do
       PRW.respond_to?(:open_pull_requests)
-      open_pull_requests = PRW.client.pull_requests(PRW.repo, :state => 'open')
+      open_pull_requests = PRW.octokit_client.pull_requests(PRW.repo, :state => 'open')
       assert_equal open_pull_requests.collect { |pr| pr[:base][:ref] }, PRW.open_pull_requests.collect { |pr| pr[:base][:ref] }
     end
   end
@@ -19,14 +19,14 @@ unit_tests do
   test "can get open pull requests for repo and branch" do
     default_vcr_state do
       PRW.respond_to?(:pull_requests_for_base_branch)
-      matched_base_pull_requests = PRW.open_pull_requests.collect { |pr| pr if pr.base.ref == "master" }
+      matched_base_pull_requests = PRW.open_pull_requests.select { |pr| pr.base.ref == "master" }
       assert_equal matched_base_pull_requests.collect { |pr| pr[:base][:ref] }, PRW.pull_requests_for_base_branch("master").collect { |pr| pr[:base][:ref] }
     end
   end
 
   test "can get commits for branch " do
     default_vcr_state do
-      commits = PRW.client.commits(TESTREPO, PRW.pr.head.ref)
+      commits = PRW.octokit_client.commits(TESTREPO, PRW.pull_request.head.ref)
       assert_equal PRW.commits.first[:sha], commits.first[:sha]
     end
   end
@@ -34,23 +34,23 @@ unit_tests do
   test "can provide most recent head sha" do
     # do the most recent head sha from the branch
     default_vcr_state do
-      most_recent_head_sha = PRW.client.commits(PRW.repo, PRW.pr.head.ref).first[:sha]
-      assert_equal PRW.pr.head.sha, most_recent_head_sha
+      most_recent_head_sha = PRW.octokit_client.commits(PRW.repo, PRW.pull_request.head.ref).first[:sha]
+      assert_equal PRW.pull_request.head.sha, most_recent_head_sha
     end
   end
 
   test "can provide most recent base sha" do
     # do the most recent base sha from the branch
     default_vcr_state do
-      most_recent_base_sha = PRW.client.commits(PRW.repo, PRW.pr.base.ref).first[:sha]
-      assert_equal PRW.pr.base.sha, most_recent_base_sha
+      most_recent_base_sha = PRW.octokit_client.commits(PRW.repo, PRW.pull_request.base.ref).first[:sha]
+      assert_equal PRW.pull_request.base.sha, most_recent_base_sha
     end
   end
   test "can provide most recent timestamp " do
     # do the most recent timestamp
     default_vcr_state do
-      head_commits=PRW.client.commits(PRW.repo, PRW.pr.head.ref)
-      base_commits=PRW.client.commits(PRW.repo, PRW.pr.base.ref)
+      head_commits=PRW.octokit_client.commits(PRW.repo, PRW.pull_request.head.ref)
+      base_commits=PRW.octokit_client.commits(PRW.repo, PRW.pull_request.base.ref)
       most_recent_head_commit_timestamp = DateTime.parse(head_commits.first[:commit][:committer][:date].to_s)
       most_recent_base_commit_timestamp = DateTime.parse(base_commits.first[:commit][:committer][:date].to_s)
 
@@ -65,14 +65,14 @@ unit_tests do
 
   test "can add environment variable to config and session" do
     default_vcr_state do
-      PRW.thumb_config.delete('env')
-      PRW.build_steps=['echo $TEST_ENV']
+      PRW.thumbs_config.delete('env')
+      PRW.thumbs_config['build_steps'] = ['echo $TEST_ENV']
       PRW.run_build_steps
       status=PRW.build_status[:steps]
       assert status.kind_of?(Hash), status.inspect
       assert status[:"echo_$TEST_ENV"][:output] !=~/testvalue/
 
-      PRW.thumb_config['env'] = {"TEST_ENV" => "testvalue"}
+      PRW.thumbs_config['env'] = {"TEST_ENV" => "testvalue"}
       PRW.run_build_steps
       assert status[:"echo_$TEST_ENV"][:output] =~ /testvalue/
     end
@@ -80,13 +80,13 @@ unit_tests do
 
   test "can add shell to config and session" do
     default_vcr_state do
-      PRW.thumb_config.delete('env')
-      PRW.build_steps=['echo $SHELL']
+      PRW.thumbs_config.delete('env')
+      PRW.thumbs_config['build_steps'] = ['echo $SHELL']
       PRW.run_build_steps
       status=PRW.build_status[:steps][:"echo_$SHELL"]
       assert status[:output] =~ /\/bin\/bash/, status[:output].inspect
       assert status[:output] !=~/zsh/
-      PRW.thumb_config['shell'] = "/bin/bash"
+      PRW.thumbs_config['shell'] = "/bin/bash"
       PRW.run_build_steps
       status=PRW.build_status[:steps][:"echo_$SHELL"]
       assert_equal '/bin/bash', status[:output].strip, status[:output]
@@ -124,17 +124,18 @@ unit_tests do
 
       client2 = Octokit::Client.new(:netrc => true,
                                     :netrc_file => ".netrc.davidpuddy1")
-      cassette(:pr, :record => :new_episodes, :record => :all) do
+      # cassette(:pr, :record => :new_episodes, :record => :all) do
+      cassette(:pr, :record => :all) do
 
-        comment=client2.add_comment(prw.repo, prw.pr.number, "thumbot wait", options = {})
+        comment = client2.add_comment(prw.repo, prw.pr, "thumbot wait", {})
         sleep 2
         cassette(:refresh, :record => :all) do
 
           cassette(:get_new_comments, :record => :all) do
-            comments=client2.issue_comments(prw.repo, prw.pr.number, per_page: 100)
-            assert_true comments.any? { |comment| comment[:body] =~ /^thumbot wait/ }
+            comments = client2.issue_comments(prw.repo, prw.pr, per_page: 100)
+            assert_true comments.any? { |c| c[:body] =~ /^thumbot wait/ }
             assert_true prw.wait_lock?
-            assert_equal prw.all_comments.any? { |comment| comment[:body] =~ /^thumbot wait/ }, prw.wait_lock?
+            assert_equal prw.all_comments.any? { |c| c[:body] =~ /^thumbot wait/ }, prw.wait_lock?
             assert_false PRW.wait_lock?
             client2.delete_comment(prw.repo, comment[:id])
           end

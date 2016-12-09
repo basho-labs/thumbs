@@ -16,6 +16,7 @@ unit_tests do
     default_vcr_state do
       assert_true PRW.contains_thumbot_command?("thumbot retry this is a long comment with a command ")
       assert_true PRW.contains_thumbot_command?("thumbot merge this is a long comment with a command ")
+      assert_true PRW.contains_thumbot_command?("@thumbot merge this is a long comment with a command ")
       assert_false PRW.contains_thumbot_command?("comment with a command thumbot merge hidden in the text, which is unsupported")
       assert_false PRW.contains_thumbot_command?("this is a long comment with a command thumbot unrecognized_command")
     end
@@ -23,6 +24,13 @@ unit_tests do
   test "should be able to get thumbot_command from text" do
     default_vcr_state do
       assert_equal :retry, PRW.parse_thumbot_command("thumbot retry this is a long comment with a command")
+
+    end
+  end
+  test "should be able to support thumbot_command with @" do
+    default_vcr_state do
+      assert_equal :retry, PRW.parse_thumbot_command("@thumbot retry yadayadayada")
+      assert_equal :merge, PRW.parse_thumbot_command("@thumbot merge yadayadayada")
     end
   end
   test "should be able to run thumbot_command" do

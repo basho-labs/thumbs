@@ -948,6 +948,7 @@ module Thumbs
       debug_message "received retry command"
       unpersist_build_status
       remove_build_dir
+      clear_build_progress_comment
       set_build_progress(:in_progress)
       validate
       set_build_progress(:completed)

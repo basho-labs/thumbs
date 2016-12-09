@@ -920,6 +920,10 @@ module Thumbs
       code_reviews
     end
 
+    def remove_build_dir
+      FileUtils.mv(@build_dir, "#{@build_dir}.#{DateTime.now.strftime("%s")}")
+    end
+
     def parse_thumbot_command(text_body)
       result_lines = text_body.split(/\n/).grep(/^thumbot/)
       return nil unless result_lines.length > 0
@@ -943,6 +947,8 @@ module Thumbs
     def thumbot_retry
       debug_message "received retry command"
       unpersist_build_status
+      remove_build_dir
+      clear_build_progress_comment
       set_build_progress(:in_progress)
       validate
       set_build_progress(:completed)

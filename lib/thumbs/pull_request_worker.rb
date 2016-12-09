@@ -926,7 +926,7 @@ module Thumbs
     end
 
     def parse_thumbot_command(text_body)
-      result_lines = text_body.split(/\n/).grep(/^thumbot/)
+      result_lines = text_body.split(/\n/).grep(/^(?:@)?thumbot/)
       return nil unless result_lines.length > 0
       command_string=result_lines.shift
       command_elements = command_string.split(/\s+/)

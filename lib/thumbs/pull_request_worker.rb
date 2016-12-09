@@ -921,7 +921,7 @@ module Thumbs
     end
 
     def remove_build_dir
-      FileUtils.mv(@build_dir, "#{@build_dir}.0")
+      FileUtils.mv(@build_dir, "#{@build_dir}.#{DateTime.now.strftime("%s")}")
     end
 
     def parse_thumbot_command(text_body)

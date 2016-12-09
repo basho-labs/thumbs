@@ -46,14 +46,14 @@ class ThumbsWeb < Sinatra::Base
         pr_worker = Thumbs::PullRequestWorker.new(:repo => repo, :pr => pr)
         return "OK" unless pr_worker.open?
         return "OK" if pr_worker.build_in_progress?
-        return "OK" unless pr_worker.thumb_config
-        debug_message("new pull request #{pr_worker.repo}/pulls/#{pr_worker.pr.number} ")
+        return "OK" unless pr_worker.thumbs_config
+        debug_message("new pull request #{pr_worker.repo}/pulls/#{pr_worker.pr} ")
         intro_text=<<-EOS
-Thanks @#{pr_worker.pr.user.login}!
+Thanks @#{pr_worker.pull_request.user.login}!
 <details><Summary>Settings</Summary>
 
 ```yaml 
-#{pr_worker.thumb_config.to_yaml} ```
+#{pr_worker.thumbs_config.to_yaml} ```
 
 </details>
         
@@ -61,8 +61,8 @@ Thanks @#{pr_worker.pr.user.login}!
         pr_worker.add_comment(intro_text) unless pr_worker.thumb_config['show_config'] == false
         pr_worker.set_build_progress(:in_progress)
         pr_worker.try_merge
-        unless pr_worker.thumb_config && pr_worker.thumb_config.key?('build_steps')
-          debug_message("no .thumbs config found for this repo/PR #{pr_worker.repo}##{pr_worker.pr.number}")
+        unless pr_worker.thumbs_config && pr_worker.thumbs_config.key?('build_steps')
+          debug_message("no .thumbs config found for this repo/PR #{pr_worker.repo}##{pr_worker.pr}")
           return "OK"
         end
 
@@ -77,7 +77,7 @@ Thanks @#{pr_worker.pr.user.login}!
           pr_worker.add_comment "Merging and closing this pr"
           pr_worker.merge
         else
-          debug_message("new pr #{pr_worker.repo}/pulls/#{pr_worker.pr.number} valid_for_merge? returned False")
+          debug_message("new pr #{pr_worker.repo}/pulls/#{pr_worker.pr} valid_for_merge? returned False")
         end
 
       when :new_comment
@@ -85,15 +85,15 @@ Thanks @#{pr_worker.pr.user.login}!
         debug_message "got repo #{repo} and pr #{pr}"
         pr_worker = Thumbs::PullRequestWorker.new(:repo => repo, :pr => pr)
         return "OK" unless pr_worker.open?
-        debug_message("new comment #{pr_worker.repo}/pulls/#{pr_worker.pr.number} #{payload['comment']['body']}")
+        debug_message("new comment #{pr_worker.repo}/pulls/#{pr_worker.pr} #{payload['comment']['body']}")
         debug_message payload['comment']['body']
         
         if pr_worker.contains_thumbot_command?(payload['comment']['body'])
-          return "OK" unless pr_worker.thumb_config
-          if pr_worker.thumb_config['org_mode']  && pr_worker.repo_is_org?
+          return "OK" unless pr_worker.thumbs_config
+          if pr_worker.thumbs_config['org_mode']  && pr_worker.repo_is_org?
             commenting_user=payload['comment']['user']['login']
             unless pr_worker.org_member?(commenting_user)
-              debug_message "thumb_config['org_mode']=true #{commenting_user} != org_member"
+              debug_message "thumbs_config['org_mode']=true #{commenting_user} != org_member"
               return "ERROR"
             end
           end
@@ -115,18 +115,18 @@ Thanks @#{pr_worker.pr.user.login}!
 
         if pr_worker.valid_for_merge?
           review_count=pr_worker.review_count
-          unless review_count >= pr_worker.thumb_config['minimum_reviewers']
-            debug_message " #{review_count} !>= #{pr_worker.thumb_config['minimum_reviewers']}"
+          unless review_count >= pr_worker.thumbs_config['minimum_reviewers']
+            debug_message " #{review_count} !>= #{pr_worker.thumbs_config['minimum_reviewers']}"
             debug_message " reviewer rule not met "
             return false
           end
 
-          debug_message("new comment #{pr_worker.repo}/pulls/#{pr_worker.pr.number} valid_for_merge? OK ")
+          debug_message("new comment #{pr_worker.repo}/pulls/#{pr_worker.pr} valid_for_merge? OK ")
           pr_worker.create_reviewers_comment
           pr_worker.add_comment "Merging and closing this pr"
           pr_worker.merge
         else
-          debug_message("new comment #{pr_worker.repo}/pulls/#{pr_worker.pr.number} valid_for_merge? returned False")
+          debug_message("new comment #{pr_worker.repo}/pulls/#{pr_worker.pr} valid_for_merge? returned False")
         end
       when :code_approval
         repo, pr = process_payload(payload)
@@ -138,18 +138,18 @@ Thanks @#{pr_worker.pr.user.login}!
 
         if pr_worker.valid_for_merge?
           review_count=pr_worker.review_count
-          unless review_count >= pr_worker.thumb_config['minimum_reviewers']
-            debug_message " #{review_count} !>= #{pr_worker.thumb_config['minimum_reviewers']}"
+          unless review_count >= pr_worker.thumbs_config['minimum_reviewers']
+            debug_message " #{review_count} !>= #{pr_worker.thumbs_config['minimum_reviewers']}"
             debug_message " reviewer rule not met "
             return false
           end
 
-          debug_message("code approval #{pr_worker.repo}/pulls/#{pr_worker.pr.number} valid_for_merge? OK ")
+          debug_message("code approval #{pr_worker.repo}/pulls/#{pr_worker.pr} valid_for_merge? OK ")
           pr_worker.create_reviewers_comment
           pr_worker.add_comment "Merging and closing this pr"
           pr_worker.merge
         else
-          debug_message("code approval #{pr_worker.repo}/pulls/#{pr_worker.pr.number} valid_for_merge? returned False")
+          debug_message("code approval #{pr_worker.repo}/pulls/#{pr_worker.pr} valid_for_merge? returned False")
         end
       when :new_push
         debug_message "This is a #{payload_type(payload).to_s}"
@@ -157,7 +157,7 @@ Thanks @#{pr_worker.pr.user.login}!
         debug_message "got repo #{repo} and pr #{pr}"
         pr_worker = Thumbs::PullRequestWorker.new(:repo => repo, :pr => pr)
         return "OK" unless pr_worker.open?
-        debug_message("new push on pull request #{pr_worker.repo}/pulls/#{pr_worker.pr.number} ")
+        debug_message("new push on pull request #{pr_worker.repo}/pulls/#{pr_worker.pr} ")
         return "OK" if pr_worker.build_in_progress?
         pr_worker.set_build_progress(:in_progress)
         pr_worker.validate
@@ -166,10 +166,10 @@ Thanks @#{pr_worker.pr.user.login}!
 
 
         if pr_worker.valid_for_merge?
-          debug_message("new push #{pr_worker.repo}/pulls/#{pr_worker.pr.number} valid_for_merge? OK ")
+          debug_message("new push #{pr_worker.repo}/pulls/#{pr_worker.pr} valid_for_merge? OK ")
           pr_worker.merge
         else
-          debug_message("new push #{pr_worker.repo}/pulls/#{pr_worker.pr.number} valid_for_merge? returned False")
+          debug_message("new push #{pr_worker.repo}/pulls/#{pr_worker.pr} valid_for_merge? returned False")
         end
       when :new_base
         debug_message "This is a #{payload_type(payload).to_s}"
@@ -186,33 +186,33 @@ Thanks @#{pr_worker.pr.user.login}!
 
 
         if pr_worker.valid_for_merge?
-          debug_message("new push #{pr_worker.repo}/pulls/#{pr_worker.pr.number} valid_for_merge? OK ")
+          debug_message("new push #{pr_worker.repo}/pulls/#{pr_worker.pr} valid_for_merge? OK ")
           pr_worker.merge
         else
-          debug_message("new push #{pr_worker.repo}/pulls/#{pr_worker.pr.number} valid_for_merge? returned False")
+          debug_message("new push #{pr_worker.repo}/pulls/#{pr_worker.pr} valid_for_merge? returned False")
         end
       when :merged_base
         debug_message "This is a #{payload_type(payload).to_s}"
         repo, base_ref = process_payload(payload)
         debug_message "got repo #{repo} and base_ref #{base_ref}"
-        pull_requests_for_base_branch = @octo_client.pull_requests(repo, :state => 'open').collect { |pr| pr if pr.base.ref == base_ref }.compact
+        pull_requests_for_base_branch = @octo_client.pull_requests(repo, :state => 'open').select { |pull_request| pull_request.base.ref == base_ref }.compact
         Process.detach(fork do
-          pull_requests_for_base_branch.each do |pr|
-            debug_message "Rebuild of PR: #{pr.number} with new Base ref #{base_ref}"
-            pr_worker=Thumbs::PullRequestWorker.new(:repo => repo, :pr => pr.number)
-            next unless pr_worker.thumb_config
+          pull_requests_for_base_branch.each do |pull_request|
+            debug_message "Rebuild of PR: #{pull_request} with new Base ref #{base_ref}"
+            pr_worker=Thumbs::PullRequestWorker.new(:repo => repo, :pr => pull_request)
+            next unless pr_worker.thumbs_config
             ignore_after_n_days=90
-            pr_created_at=DateTime.parse(pr_worker.pr.created_at.to_s).strftime("%s").to_i
+            pr_created_at=DateTime.parse(pr_worker.pull_request.created_at.to_s).strftime("%s").to_i
             current_datetime=DateTime.now.strftime("%s").to_i
             horizon_datetime=current_datetime - ( ignore_after_n_days*86400 )
 
             if pr_created_at < horizon_datetime
-                debug_message "PR: #{pr.number} is too old #{pr_worker.pr.created_at} to be considered. Ignored after #{ignore_after_n_days}+ days."
+                debug_message "PR: #{pr} is too old #{pr_worker.pull_request.created_at} to be considered. Ignored after #{ignore_after_n_days}+ days."
                 next
             end
 
             if pr_worker.build_in_progress?
-                debug_message "PR: #{pr.number} build_in_progress : next"
+                debug_message "PR: #{pr} build_in_progress : next"
                 next
             end
 
@@ -222,10 +222,10 @@ Thanks @#{pr_worker.pr.user.login}!
             pr_worker.create_build_status_comment
 
             if pr_worker.valid_for_merge?
-              debug_message("merged base #{pr_worker.repo}/pulls/#{pr_worker.pr.number} valid_for_merge? OK ")
+              debug_message("merged base #{pr_worker.repo}/pulls/#{pr_worker.pr} valid_for_merge? OK ")
               pr_worker.merge
             else
-              debug_message("merged base #{pr_worker.repo}/pulls/#{pr_worker.pr.number} valid_for_merge? returned False")
+              debug_message("merged base #{pr_worker.repo}/pulls/#{pr_worker.pr} valid_for_merge? returned False")
             end
 
           end

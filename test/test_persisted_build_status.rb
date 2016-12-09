@@ -7,7 +7,7 @@ unit_tests do
           cassette(:get_commits_for_branch, :record => :new_episodes) do
             PRW.reset_build_status
             PRW.unpersist_build_status
-            PRW.build_steps=["make", "make test"]
+            PRW.thumbs_config['build_steps'] = ["make", "make test"]
             PRW.run_build_steps
             PRW.try_merge
             PRW.persist_build_status
@@ -54,7 +54,7 @@ unit_tests do
       cassette(:load_pr) do
         cassette(:get_events_reload, :record => :new_episodes) do
           cassette(:get_events_reload2, :record => :new_episodes) do
-            PRW.build_steps=["make"]
+            PRW.thumbs_config['build_steps'] = ["make"]
             PRW.run_build_steps
             PRW.persist_build_status
             status = PRW.read_build_status
@@ -72,15 +72,15 @@ unit_tests do
   test "should fix bad utf8 byte sequence" do
     bad_test_string="hi \255"
     assert_raise(ArgumentError) do
-      test_split = bad_test_string.split(' ')
+      bad_test_string.split(' ')
     end
 
     fixed_bad_test_string=sanitize_text(bad_test_string)
-    test_split = fixed_bad_test_string.split(' ')
+    fixed_bad_test_string.split(' ')
     default_vcr_state do
       cassette(:load_pr) do
         cassette(:get_events_reload, :record => :new_episodes) do
-          PRW.build_steps=["make"]
+          PRW.thumbs_config['build_steps'] = ["make"]
           PRW.run_build_steps
           PRW.build_status[:steps][:make][:output]=bad_test_string
 

@@ -72,7 +72,7 @@ def create_test_pr(repo_name)
   client1 = Octokit::Client.new(:netrc => true)
   cassette(:create_pull_request, :record => :all) do
     pr = client1.create_pull_request(repo_name, "master", pr_branch, "Testing PR", "Thumbs Git Robot: This pr has been created for testing purposes")
-    prw=Thumbs::PullRequestWorker.new(:repo => repo_name, :pr => pr.number)
+    prw=Thumbs::PullRequestWorker.new(:repo => repo_name, :pr => pr)
     return prw
   end
 end

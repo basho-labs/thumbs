@@ -413,7 +413,6 @@ module Thumbs
       bot_comments.collect do |c|
         next unless c[:body].lines.length > 1
         status_line = c[:body].lines[2]
-        p status_line
         next unless status_line =~ /^\|\s#{pr.head.ref} #{most_recent_head_sha.slice(0, 7)} \| :arrow_right: \| #{pr.base.ref} #{most_recent_base_sha.slice(0, 7)}/
         c
       end.compact[0] || {:body => ""}

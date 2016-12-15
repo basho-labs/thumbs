@@ -395,7 +395,7 @@ module Thumbs
       status_emoji=(progress_status==:completed ? result_image(aggregate_build_status_result) : result_image(progress_status))
       comment_title="|  |  | |  |\n"
       comment_title<<"| ------------ | -------------|------------ | ------------- |\n"
-      comment_title<<"| #{pr.head.ref} #{most_recent_head_sha.slice(0, 7)} | :arrow_right: | #{pr.base.ref} #{most_recent_base_sha.slice(0, 7)} | #{status_emoji} #{progress_status} |"
+      comment_title<<"#{pr.head.ref} #{most_recent_head_sha.slice(0, 7)} | :arrow_right: | #{pr.base.ref} #{most_recent_base_sha.slice(0, 7)} | #{status_emoji} #{progress_status} |"
       comment_title
     end
 
@@ -413,7 +413,7 @@ module Thumbs
       bot_comments.collect do |c|
         next unless c[:body].lines.length > 1
         status_line = c[:body].lines[2]
-        next unless status_line =~ /^\|\s#{pr.head.ref} #{most_recent_head_sha.slice(0, 7)} \| :arrow_right: \| #{pr.base.ref} #{most_recent_base_sha.slice(0, 7)}/
+        next unless status_line =~ /^#{pr.head.ref} #{most_recent_head_sha.slice(0, 7)} \| :arrow_right: \| #{pr.base.ref} #{most_recent_base_sha.slice(0, 7)}/
         c
       end.compact[0] || {:body => ""}
     end

@@ -138,16 +138,18 @@ unit_tests do
             UNMERGABLEPRW.reset_build_status
             UNMERGABLEPRW.unpersist_build_status
             UNMERGABLEPRW.try_merge
-            UNMERGABLEPRW.run_build_steps
-            assert_equal :error, UNMERGABLEPRW.aggregate_build_status_result, UNMERGABLEPRW.build_status
-            step, status = UNMERGABLEPRW.build_status[:steps].collect { |step_name, status| [step_name, status] if status[:result] != :ok }.compact.shift
-            assert_equal :merge, step
+            cassette(:commits) do
+              UNMERGABLEPRW.run_build_steps
+              assert_equal :error, UNMERGABLEPRW.aggregate_build_status_result, UNMERGABLEPRW.build_status
+              step, status = UNMERGABLEPRW.build_status[:steps].collect { |step_name, status| [step_name, status] if status[:result] != :ok }.compact.shift
+              assert_equal :merge, step
 
-            assert status[:result]==:error
-            assert status[:exit_code]!=0
+              assert status[:result]==:error
+              assert status[:exit_code]!=0
 
-            cassette(:get_new_comments, :record => :new_episodes) do
-              assert_equal false, UNMERGABLEPRW.valid_for_merge?
+              cassette(:get_new_comments, :record => :new_episodes) do
+                assert_equal false, UNMERGABLEPRW.valid_for_merge?
+              end
             end
           end
         end

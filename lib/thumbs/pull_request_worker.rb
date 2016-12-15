@@ -21,6 +21,7 @@ module Thumbs
       @build_dir=options[:build_dir] || "/tmp/thumbs/#{build_guid}"
       persisted_build_status = read_build_status
       @build_status = persisted_build_status || {:steps => {}}
+
       @build_steps = []
       prepare_build_dir
       load_thumbs_config
@@ -155,7 +156,7 @@ module Thumbs
 
     def try_run_build_step(name, command)
       status={}
-
+      return nil unless thumb_config
       command = "cd #{@build_dir}; #{command}"
 
       debug_message "running command #{command}"
@@ -392,8 +393,8 @@ module Thumbs
     def compose_build_status_comment_title(progress_status)
       pr = client.pull_request(repo, @pr.number)
       status_emoji=(progress_status==:completed ? result_image(aggregate_build_status_result) : result_image(progress_status))
-      comment_title="|||||\n"
-      comment_title<<"------------ | -------------|------------ | ------------- \n"
+      comment_title="|  |  | |  |\n"
+      comment_title<<"| ------------ | -------------|------------ | ------------- |\n"
       comment_title<<"#{pr.head.ref} #{most_recent_head_sha.slice(0, 7)} | :arrow_right: | #{pr.base.ref} #{most_recent_base_sha.slice(0, 7)} | #{status_emoji} #{progress_status}"
       comment_title
     end
@@ -407,10 +408,11 @@ module Thumbs
     end
 
     def get_build_progress_comment
+      pr = client.pull_request(repo, @pr.number)
+
       bot_comments.collect do |c|
         next unless c[:body].lines.length > 1
         status_line = c[:body].lines[2]
-        pr = client.pull_request(repo, @pr.number)
         next unless status_line =~ /^#{pr.head.ref} #{most_recent_head_sha.slice(0, 7)} \| :arrow_right: \| #{pr.base.ref} #{most_recent_base_sha.slice(0, 7)}/
         c
       end.compact[0] || {:body => ""}
@@ -885,6 +887,7 @@ module Thumbs
     end
 
     def approvals
+
       if thumb_config.key?('org_mode') && thumb_config['org_mode']
         debug_message "returning org_member_code_approvals"
         return org_member_approvals
@@ -922,7 +925,7 @@ module Thumbs
     end
 
     def remove_build_dir
-      FileUtils.mv(@build_dir, "#{@build_dir}.#{DateTime.now.strftime("%s")}")
+      FileUtils.mv(@build_dir, "#{@build_dir}.#{DateTime.now.strftime("%s")}") if File.exist?(@build_dir)
     end
 
     def parse_thumbot_command(text_body)

@@ -466,12 +466,6 @@ module Thumbs
       build_progress_comment ? client.delete_comment(repo, build_progress_comment[:id]) : true
     end
 
-    def archive_build_progress_comment
-      set_build_progress(:archived)
-      build_progress_comment = get_build_progress_comment
-      build_progress_comment ? build_progress_comment[:body].gsub(/^\|/," |") && client.update_comment(repo, build_progress_comment[:id], build_progress_comment[:body]) : true
-    end
-
     def pushes
       events.collect { |e| e if e[:type] == 'PushEvent' }.compact
     end

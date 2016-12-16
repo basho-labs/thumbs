@@ -601,7 +601,12 @@ module Thumbs
 
       begin
         debug_message("Starting github API merge request")
-        commit_message = 'Thumbs Git Robot Merge. '
+        commits = client.pull_request_commits(repo, pr.number)
+        commit_lines= commits.collect do |c|
+          "* #{c[:commit][:message]}"
+        end
+
+        commit_message = commit_lines.join("\n")
         merge_method = thumb_config['merge_method'] && ["merge", "squash", "rebase"].include?(thumb_config['merge_method']) ? thumb_config['merge_method'] :  "squash"
         merge_options = { merge_method:  merge_method, accept: "application/vnd.github.polaris-preview+json" }
         merge_response = client.merge_pull_request(@repo, @pr.number, commit_message, merge_options)

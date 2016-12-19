@@ -117,6 +117,13 @@ unit_tests do
     end
   end
 
+  test "should be able to detect @ in wait_lock" do
+    cassette(:prmain, :record => :new_episodes) do
+      prw = Thumbs::PullRequestWorker.new(repo: 'davidx/prtester', pr: 316)
+      assert prw.wait_lock?
+    end
+  end
+
   test "should be able to detect wait lock" do
     cassette(:prmain, :record => :new_episodes) do
       prw = Thumbs::PullRequestWorker.new(repo: 'davidx/prtester', pr: 323)
@@ -126,15 +133,16 @@ unit_tests do
                                     :netrc_file => ".netrc.davidpuddy1")
       cassette(:pr, :record => :new_episodes, :record => :all) do
 
-        comment=client2.add_comment(prw.repo, prw.pr.number, "thumbot wait", options = {})
+        comment=client2.add_comment(prw.repo, prw.pr.number, "@thumbot wait", options = {})
         sleep 2
         cassette(:refresh, :record => :all) do
 
           cassette(:get_new_comments, :record => :all) do
             comments=client2.issue_comments(prw.repo, prw.pr.number, per_page: 100)
-            assert_true comments.any? { |comment| comment[:body] =~ /^thumbot wait/ }
+            assert_true comments.any? { |comment| comment[:body] =~ /^(?:@)?thumbot wait/ }
+
             assert_true prw.wait_lock?
-            assert_equal prw.all_comments.any? { |comment| comment[:body] =~ /^thumbot wait/ }, prw.wait_lock?
+            assert_equal prw.all_comments.any? { |comment| comment[:body] =~ /^(?:@)?thumbot wait/ }, prw.wait_lock?
             assert_false PRW.wait_lock?
             client2.delete_comment(prw.repo, comment[:id])
           end

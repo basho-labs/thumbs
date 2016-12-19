@@ -260,7 +260,6 @@ unit_tests do
     end
   end
 
-
   test "should not merge if wait_lock?" do
     cassette(:get_wait_lock_pr, :record => :new_episodes) do
       prw = Thumbs::PullRequestWorker.new(repo: 'davidx/prtester', pr: 323)
@@ -269,27 +268,16 @@ unit_tests do
       prw.thumb_config['minimum_reviewers'] = 0
       client2 = Octokit::Client.new(:netrc => true,
                                     :netrc_file => ".netrc.davidpuddy1")
-      # client2.add_comment(prw.repo, prw.pr.number, "+1", options = {})
-      wait_lock_comments=prw.all_comments.collect { |comment| comment if comment[:body] =~ /^thumbot wait/ }.compact
-      wait_lock_comments.each do |comment|
-        client2.delete_comment(prw.repo, comment[:id])
-      end
       cassette(:get_updated_comments, :record => :new_episodes) do
-        assert_equal true, prw.valid_for_merge?
         cassette(:get_valid_for_merge_update, :record => :all) do
-          comment=client2.add_comment(prw.repo, prw.pr.number, "thumbot wait", options = {})
-          sleep 1
           cassette(:get_valid_for_merge_update_refresh, :record => :all) do
+            assert_equal true, prw.wait_lock?
             assert_equal false, prw.valid_for_merge?
-            cassette(:get_valid_for_merge_update_clean, :record => :all) do
-              client2.delete_comment(prw.repo, comment[:id])
-            end
           end
         end
       end
     end
   end
-
 
   test "should identify org comments" do
     default_vcr_state do
@@ -299,6 +287,7 @@ unit_tests do
       assert_equal ORGPRW.org_member_comments, org_member_comments
     end
   end
+
   test "should identify org code reviews" do
     default_vcr_state do
       assert ORGPRW.respond_to?(:org_member_code_reviews)
@@ -308,7 +297,6 @@ unit_tests do
       assert_equal ORGPRW.org_member_code_reviews, org_member_code_reviews
     end
   end
-
 
   test "can get events for pr" do
     default_vcr_state do

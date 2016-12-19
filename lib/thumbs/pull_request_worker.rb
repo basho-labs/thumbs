@@ -933,13 +933,21 @@ module Thumbs
       FileUtils.mv(@build_dir, "#{@build_dir}.#{DateTime.now.strftime("%s")}") if File.exist?(@build_dir)
     end
 
-    def parse_thumbot_command(text_body)
-      result_lines = text_body.split(/\n/).grep(/^(?:@)?thumbot/)
+    def grep_thumbot(text_body)
+      text_body.split(/\n/).grep(/^(?:@)?thumbot/)
+    end
+
+    def parse_thumbot_action(text_body)
+      result_lines = grep_thumbot(text_body)
       return nil unless result_lines.length > 0
       command_string=result_lines.shift
       command_elements = command_string.split(/\s+/)
       return nil unless command_elements.length > 1
       command = command_elements[1].to_sym
+    end
+
+    def parse_thumbot_command(text_body)
+      command = parse_thumbot_action(text_body)
       return nil unless command && [:retry, :merge].include?(command)
       command
     end
@@ -989,7 +997,10 @@ module Thumbs
     end
 
     def wait_lock?
-      all_comments.any? {|comment| comment[:body] =~  /^thumbot wait/ }
+      all_comments.any? do |comment|
+        command=parse_thumbot_action(comment[:body])
+        command && [:wait].include?(command) ?  true : false
+      end
     end
 
     private

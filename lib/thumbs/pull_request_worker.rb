@@ -630,7 +630,7 @@ module Thumbs
         merge_response = client.merge_pull_request(@repo, @pr.number, commit_message, merge_options)
         merge_comment="Successfully merged *#{@repo}/pulls/#{@pr.number}* (*#{most_recent_head_sha}* on to *#{@pr.base.ref}*)\n\n"
         merge_comment << " ```yaml    \n#{merge_response.to_hash.to_yaml}\n ``` \n"
-
+        client.delete_branch(@repo, @pr.head.ref) if thumb_config['delete_branch']
         add_comment merge_comment
         debug_message "Merge OK"
       rescue StandardError => e

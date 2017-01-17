@@ -149,7 +149,7 @@ module Thumbs
           return [output, 2]
         end
         path=otp_installations[build_name]
-        command = command.prepend(". #{path}/activate ")
+        command = command.prepend(". #{path}/activate; ")
       end
       output, exit_code = nil
 

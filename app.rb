@@ -8,7 +8,22 @@ class ThumbsWeb < Sinatra::Base
   helpers Sinatra::GeneralHelpers
   helpers Sinatra::WebhookHelpers
   enable :logging
+  LogFile = File.join(File.dirname(__FILE__), 'log', 'unicorn.stdout.log')
 
+  get '/log' do
+    "<pre>#{IO.read(LogFile)}</pre>"
+  end
+  get '/tail' do
+    content_type :txt
+    stream do |out|
+      File.open(LogFile) do |log|
+        log.extend(File::Tail)
+        log.interval = 1
+        log.backward(1000)
+        log.tail { |line| out << line }
+      end
+    end
+  end
   get '/' do
     "OK"
   end

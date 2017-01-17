@@ -130,9 +130,27 @@ module Thumbs
       [output, exit_code]
     end
 
+    def otp_installations
+      output, exit_code = run_command("kerl list installations")
+      installations={}
+      output.lines.each do |line|
+        build_name, path = line.split(/\s+/)
+        installations[build] = path
+      end
+      installations
+    end
+
     def run_command_in_shell(command)
       shell=thumb_config['shell']||'/bin/bash'
-
+      if thumb_config.key?('otp')
+        build_name=thumb_config.key?('otp')
+        unless otp_installations.key?(build_name)
+          output =  "OTP #{thumb_config.key?('otp')} not present."
+          return [output, 2]
+        end
+        path=otp_installations[build_name]
+        command = command.prepend(". #{path}/activate")
+      end
       output, exit_code = nil
 
       Open3.popen2e(ENV, shell) do |stdin, stdout_and_stderr, wait_thr|

@@ -130,9 +130,29 @@ module Thumbs
       [output, exit_code]
     end
 
+    def otp_installations
+      output, exit_code = `kerl list installations`
+      installations={}
+      output.lines.each do |line|
+        build_name, path = line.split(/\s+/)
+        installations[build_name] = path
+      end
+      installations
+    end
+
     def run_command_in_shell(command)
       shell=thumb_config['shell']||'/bin/bash'
-
+      if thumb_config.key?('otp')
+        build_name=thumb_config['otp']
+        unless otp_installations.key?(build_name)
+          output =  "#{thumb_config['otp']} not installed.\n"
+          output << "OTP Versions installed: #{`kerl list installations`}"
+          output << "OTP Versions available: #{`kerl list releases`}"
+          return [output, 2]
+        end
+        path=otp_installations[build_name]
+        command = command.prepend(". #{path}/activate; ")
+      end
       output, exit_code = nil
 
       Open3.popen2e(ENV, shell) do |stdin, stdout_and_stderr, wait_thr|
@@ -613,8 +633,8 @@ module Thumbs
         merge_comment="Successfully merged *#{@repo}/pulls/#{@pr.number}* (*#{most_recent_head_sha}* on to *#{@pr.base.ref}*)\n\n"
         merge_comment << " ```yaml    \n#{merge_response.to_hash.to_yaml}\n ``` \n"
         client.delete_branch(@repo, @pr.head.ref) if thumb_config['delete_branch']
-
-        add_comment merge_comment
+        
+	add_comment merge_comment
         debug_message "Merge OK"
       rescue StandardError => e
         log_message = "Merge FAILED #{e.inspect}"

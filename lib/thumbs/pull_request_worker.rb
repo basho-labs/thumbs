@@ -145,8 +145,9 @@ module Thumbs
       if thumb_config.key?('otp')
         build_name=thumb_config['otp']
         unless otp_installations.key?(build_name)
-          output =  "Version #{thumb_config.key?('otp')} not present.\n"
-          output << "OTP versions supported: `kerl list releases`"
+          output =  "#{thumb_config['otp']} not installed.\n"
+          output << "OTP Versions installed: #{`kerl list installations`}"
+          output << "OTP Versions available: #{`kerl list releases`}"
           return [output, 2]
         end
         path=otp_installations[build_name]

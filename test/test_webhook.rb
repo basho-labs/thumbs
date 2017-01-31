@@ -126,8 +126,8 @@ class WebhookTest < Test::Unit::TestCase
       PRW.unpersist_build_status
       PRW.build_steps=["make", "make test"]
       PRW.try_merge
-      assert PRW.build_status[:steps].keys.length == 1, PRW.build_status[:steps].inspect
-      assert PRW.build_status[:steps].key?(:merge)
+      assert PRW.build_status[:main][:steps].keys.length == 1, PRW.build_status[:main][:steps].inspect
+      assert PRW.build_status[:main][:steps].key?(:merge)
       remove_comments(PRW.repo, PRW.pr.number)
       cassette(:get_comments, :record => :all) do
         cassette(:get_issue_comments, :record => :all) do

@@ -19,12 +19,13 @@ unit_tests do
             parsed_file = File.exist?(file) ? YAML.load(IO.read(file)) : nil
             assert parsed_file.keys.sort == status.keys.sort
             assert status.kind_of?(Hash)
-            assert status.key?(:steps)
-            assert status[:steps].key?(:merge)
-            assert status[:steps].key?(:make), status[:steps].inspect
-            assert status[:steps].key?(:make_test), status[:steps].inspect
+            assert status.key?(:main)
+            assert status[:main].key?(:steps), status[:main].inspect
+            assert status[:main][:steps].key?(:merge)
+            assert status[:main][:steps].key?(:make), status[:steps].inspect
+            assert status[:main][:steps].key?(:make_test), status[:steps].inspect
 
-            assert PRW.build_status[:steps].keys.length == [:merge, :make, :make_test].length, PRW.build_status[:steps].keys.inspect
+            assert PRW.build_status[:main][:steps].keys.length == [:merge, :make, :make_test].length, PRW.build_status[:main][:steps].keys.inspect
           end
         end
       end
@@ -39,10 +40,10 @@ unit_tests do
 
             PRW.run_build_steps
             test_content=IO.read(File.join(File.dirname(__FILE__), "/data/test_utf8_build_status.txt"))
-            PRW.build_status[:steps][:make][:output] = test_content
+            PRW.build_status[:main][:steps][:make][:output] = test_content
             PRW.persist_build_status
             status = PRW.read_build_status
-            assert_equal PRW.build_status[:steps][:make], status[:steps][:make]
+            assert_equal PRW.build_status[:main][:steps][:make], status[:main][:steps][:make]
           end
         end
       end
@@ -58,7 +59,7 @@ unit_tests do
             PRW.run_build_steps
             PRW.persist_build_status
             status = PRW.read_build_status
-            assert_equal PRW.build_status[:steps][:make], status[:steps][:make]
+            assert_equal PRW.build_status[:main][:steps][:make], status[:main][:steps][:make]
           end
         end
       end
@@ -82,11 +83,11 @@ unit_tests do
         cassette(:get_events_reload, :record => :new_episodes) do
           PRW.build_steps=["make"]
           PRW.run_build_steps
-          PRW.build_status[:steps][:make][:output]=bad_test_string
+          PRW.build_status[:main][:steps][:make][:output]=bad_test_string
 
           PRW.persist_build_status
 
-          fixed_persisted_bad_test_string = PRW.read_build_status[:steps][:make][:output]
+          fixed_persisted_bad_test_string = PRW.read_build_status[:main][:steps][:make][:output]
           assert_equal "hi �", fixed_persisted_bad_test_string
         end
       end

@@ -3,6 +3,7 @@ module Thumbs
     attr_reader :build_dir
     attr_reader :build_status
     attr_accessor :build_steps
+    attr_accessor :interpreter_build_steps
     attr_reader :minimum_reviewers
     attr_reader :repo
     attr_reader :pr
@@ -20,17 +21,18 @@ module Thumbs
       @pull_request_id=get_pull_request_id
       @build_dir=options[:build_dir] || "/tmp/thumbs/#{build_guid}"
       persisted_build_status = read_build_status
-      @build_status = persisted_build_status || {:steps => {}}
+      @build_status = persisted_build_status || {:main => {:steps => []}}
 
-      @build_steps = []
       prepare_build_dir
       load_thumbs_config
       @minimum_reviewers = thumb_config && thumb_config.key?('minimum_reviewers') ? thumb_config['minimum_reviewers'] : 2
       @timeout=thumb_config && thumb_config.key?('timeout') ? thumb_config['timeout'] : 1800
+      @build_steps = thumb_config['build_steps']
+      @interpreter_build_steps = @thumb_config.select { |k, v| k['build_steps_'] }
     end
 
     def reset_build_status
-      @build_status={:steps => {}}
+      @build_status = {:main => {:steps => {}}}
     end
 
     def prepare_build_dir
@@ -86,7 +88,7 @@ module Thumbs
         if forked_repo_branch_pr?
           contributor_repo="git://github.com/#{pr.head.repo.full_name}"
           debug_message("Forked branch pr contributor REPO: #{contributor_repo}")
-          remotes=git.remotes.collect{|r| r.name }
+          remotes=git.remotes.collect { |r| r.name }
           unless remotes.include?("contributor")
             git.add_remote("contributor", contributor_repo)
           end
@@ -110,7 +112,7 @@ module Thumbs
         status[:output]=e.inspect
       end
 
-      @build_status[:steps][:merge]=status
+      @build_status[:main][:steps]= {:merge => status}
       status
     end
 
@@ -130,9 +132,18 @@ module Thumbs
       [output, exit_code]
     end
 
+    def otp_installations
+      output, exit_code = `kerl list installations`
+      installations={}
+      output.lines.each do |line|
+        build_name, path = line.split(/\s+/)
+        installations[build_name] = path
+      end
+      installations
+    end
+
     def run_command_in_shell(command)
       shell=thumb_config['shell']||'/bin/bash'
-
       output, exit_code = nil
 
       Open3.popen2e(ENV, shell) do |stdin, stdout_and_stderr, wait_thr|
@@ -154,10 +165,31 @@ module Thumbs
       end
     end
 
-    def try_run_build_step(name, command)
+    def try_run_build_step(name, command, options={})
       status={}
+      interpreter=options[:interpreter] || :main
       return nil unless thumb_config
       command = "cd #{@build_dir}; #{command}"
+      @build_status[interpreter]={:steps => {}} unless @build_status.key?(interpreter)
+
+      if interpreter && interpreter != :main
+        unless otp_installations.key?(interpreter)
+          output = "#{interpreter} not installed.\n"
+          output << "OTP Versions installed: #{`kerl list installations`}"
+          output << "OTP Versions available: #{`kerl list releases`}"
+          status[:started_at]=DateTime.now
+          status[:ended_at]=DateTime.now
+          status[:result] = :error
+          status[:message] = "Please install missing version"
+          status[:output] = output
+
+          @build_status[interpreter][:steps][name.to_sym]=status
+          return [output, 2]
+        end
+
+        path=otp_installations[interpreter]
+        command = command.prepend(". #{path}/activate; ")
+      end
 
       debug_message "running command #{command}"
 
@@ -168,6 +200,8 @@ module Thumbs
       status[:env].each do |key, value|
         ENV[key]="#{value}"
       end
+
+
       begin
         Timeout::timeout(thumb_config['timeout']) do
           output, exit_code = run_command(command)
@@ -188,7 +222,8 @@ module Thumbs
           status[:output] = sanitize_text(output)
           status[:exit_code] = exit_code.to_i
 
-          @build_status[:steps][name.to_sym]=status
+          @build_status[interpreter][:steps][name.to_sym]=status
+
           debug_message "[ #{name.upcase} ] [#{result.upcase}] \"#{command}\""
           return status
         end
@@ -199,7 +234,7 @@ module Thumbs
         status[:message] = "Timeout reached (#{@timeout} seconds)"
         status[:output] = e
 
-        @build_status[:steps][name.to_sym]=status
+        @build_status[interpreter][:steps][name.to_sym]=status
         debug_message "[ #{name.upcase} ] [ERROR] \"#{command}\" #{e}"
         return status
       end
@@ -244,10 +279,10 @@ module Thumbs
     def repo_is_org?
       begin
         org_result=client.organization(org)
-      rescue  Octokit::NotFound => e
+      rescue Octokit::NotFound => e
 
       end
-     org_result && org_result.key?(:id) ? true : false
+      org_result && org_result.key?(:id) ? true : false
     end
 
     def org_member?(user_login)
@@ -303,29 +338,39 @@ module Thumbs
         return false
       end
 
-      unless @build_status.key?(:steps)
-        debug_message "contains no steps"
+      unless @build_status.keys.length > 0
+        debug_message "contains no build status steps"
         return false
       end
-      unless @build_status[:steps].key?(:merge)
-        debug_message "contains no merge step"
-        return false
-      end
-      unless @build_status[:steps].keys.length > 1
-        debug_message "contains no build steps #{@build_status[:steps]}"
-        return false
-      end
-      debug_message "passed initial"
-      debug_message("")
-      @build_status[:steps].each_key do |name|
-        unless @build_status[:steps][name].key?(:result)
+
+      @build_status.each_key do |build|
+        unless @build_status[build][:steps].keys.length > 1
+          debug_message "contains no build steps #{@build_status[build]}"
           return false
         end
-        unless @build_status[:steps][name][:result]==:ok
-          debug_message "result not :ok, not valid for merge"
+        unless @build_status[:main][:steps].key?(:merge)
+          debug_message "contains no merge step"
           return false
         end
+
+        debug_message "passed initial"
+        debug_message("")
+        debug_message  @build_status[build][:steps]
+
+        @build_status[build][:steps].keys.each do |step_name|
+          step=@build_status[build][:steps][step_name]
+
+          debug_message "HAVE STEP: #{step}"
+          unless step.key?(:result)
+            return false
+          end
+          unless step[:result]==:ok
+            debug_message "result not :ok, not valid for merge"
+            return false
+          end
+        end
       end
+
       debug_message "all keys and result ok present"
 
       unless thumb_config
@@ -474,12 +519,27 @@ module Thumbs
       most_recent_head_sha
     end
 
+    def run_interpreter_build_steps
+      debug_message "running interpreter specific build_steps"
+      interpreter_build_steps.each do |interpreter_version, steps|
+        configured_interpreter_version = interpreter_version.gsub(/build_steps_/, '')
+        run_steps(steps, {:interpreter => configured_interpreter_version})
+      end
+    end
+
     def run_build_steps
       debug_message "begin run_build_steps"
-      build_steps.each do |build_step|
+      debug_message "have these build_steps: #{build_steps}"
+
+      run_steps(build_steps)
+      run_interpreter_build_steps
+    end
+
+    def run_steps(steps, options={})
+      steps.each do |build_step|
         build_step_name=build_step.gsub(/\s+/, '_').gsub(/-/, '')
         debug_message "run build step #{build_step_name} begin"
-        try_run_build_step(build_step_name, build_step)
+        try_run_build_step(build_step_name, build_step, options)
         debug_message "run build step #{build_step_name} end"
         persist_build_status
         debug_message "run build step #{build_step_name} persist"
@@ -490,11 +550,15 @@ module Thumbs
       repo=@repo.gsub(/\//, '_')
       file=File.join('/tmp/thumbs', "#{repo}_#{build_guid}.yml")
       FileUtils.mkdir_p('/tmp/thumbs')
-      build_status[:steps].keys.each do |build_step|
-        next unless build_status[:steps][build_step].key?(:output)
-        output = build_status[:steps][build_step][:output]
-        build_status[:steps][build_step][:output] = sanitize_text(output)
+      build_status.keys.each do |build|
+        build_status[build][:steps].keys.each do |build_step|
+          next unless build_status[build][:steps][build_step].key?(:output)
+          output = build_status[build][:steps][build_step][:output]
+          build_status[build][:steps][build_step][:output] = sanitize_text(output)
+        end
+
       end
+
       File.open(file, "w") do |f|
         f.syswrite(build_status.to_yaml)
       end
@@ -514,18 +578,18 @@ module Thumbs
         begin
           YAML.load(IO.read(file))
         rescue Psych::SyntaxError => e
-
+          debug_message e
         end
       else
-        {:steps => {}}
+        {:main => {:steps => {}}}
       end
     end
 
     def validate
       build_status = read_build_status
 
-      if build_status.key?(:steps) && build_status[:steps].keys.length > 1
-        debug_message "using persisted build status cause #{build_status.key?(:steps)} && #{build_status[:steps].keys.length} #{build_status[:steps].to_yaml}"
+      if build_status[:main].key?(:steps) && build_status[:main][:steps].keys.length > 1
+        debug_message "using persisted build status because #{build_status[:main].key?(:steps)} && #{build_status[:main][:steps].keys.length} #{build_status[:main][:steps].to_yaml}"
       else
         refresh_repo
         debug_message "no build status found, running build steps"
@@ -607,8 +671,8 @@ module Thumbs
         end
 
         commit_message = commit_lines.join("\n")
-        merge_method = thumb_config['merge_method'] && ["merge", "squash", "rebase"].include?(thumb_config['merge_method']) ? thumb_config['merge_method'] :  "squash"
-        merge_options = { merge_method:  merge_method, accept: "application/vnd.github.polaris-preview+json" }
+        merge_method = thumb_config['merge_method'] && ["merge", "squash", "rebase"].include?(thumb_config['merge_method']) ? thumb_config['merge_method'] : "squash"
+        merge_options = {merge_method: merge_method, accept: "application/vnd.github.polaris-preview+json"}
         merge_response = client.merge_pull_request(@repo, @pr.number, commit_message, merge_options)
         merge_comment="Successfully merged *#{@repo}/pulls/#{@pr.number}* (*#{most_recent_head_sha}* on to *#{@pr.base.ref}*)\n\n"
         merge_comment << " ```yaml    \n#{merge_response.to_hash.to_yaml}\n ``` \n"
@@ -679,32 +743,43 @@ module Thumbs
     end
 
     def build_status_problem_steps
-      @build_status[:steps].collect { |step_name, status| step_name if status[:result] != :ok }.compact
+      problem_steps=[]
+      @build_status.each_key do |build|
+        problem_steps << @build_status[build][:steps].collect { |step_name, status| step_name if status[:result] != :ok }.compact
+      end
+      problem_steps.flatten
     end
 
     def aggregate_build_status_result
-      build_status[:steps].each do |step_name, status|
-        unless status.kind_of?(Hash) && status.key?(:result) && status[:result] == :ok
-          debug_message "error: "
-          debug_message status.to_yaml
-          return :error
+      @build_status.each_key do |build|
+        build_status[build][:steps].each do |step_name, status|
+          unless status.kind_of?(Hash) && status.key?(:result) && status[:result] == :ok
+            debug_message "error: "
+            debug_message status.to_yaml
+            return :error
+          end
         end
       end
       :ok
     end
 
-    def create_build_status_comment
-      if aggregate_build_status_result == :ok
-        @status_title="\n<details><Summary>Looks good!  :+1: </Summary>"
-      else
-        @status_title="\n<details><Summary>There seems to be an issue with build step **#{build_status_problem_steps.join(",")}** !  :cloud: </Summary>"
-      end
-
-      build_comment = render_template <<-EOS
-<% @build_status[:steps].each do |step_name, status| %>
-<% if status[:output] %>
-<% gist=create_gist_from_status(step_name, status[:output]) %>
-<% end %>
+    def generate_build_status_markdown
+      # get main interpreter dont show if main.
+      debug_message "have markdown build status"
+      debug_message @build_status.to_yaml
+      render_template <<-EOS
+      <pre>
+<%= @build_status.to_yaml %>
+</pre>
+<% @build_status.keys.each do |interpreter| %>
+  <% unless (interpreter == :main) %>
+    <%= interpreter %>
+  <% end %>
+  <% @build_status[interpreter][:steps].keys do |step_name| %>
+    <% @build_status[interpreter][:steps][step_name].each do |status| %>
+      <% if status[:output] %>
+        <% gist=create_gist_from_status(step_name, status[:output]) %>
+      <% end %>
 <details>
  <summary><%= result_image(status[:result]) %> <%= step_name.upcase %> </summary>
 
@@ -734,8 +809,8 @@ module Thumbs
 <% else %>
   <%= output %>
 <% end %>
-
-
+<% end %>
+<% end %>
 ```
 
 --------------------------------------------------
@@ -747,6 +822,16 @@ module Thumbs
 
 </details>
       EOS
+    end
+
+    def create_build_status_comment
+      if aggregate_build_status_result == :ok
+        @status_title="\n<details><Summary>Looks good!  :+1: </Summary>"
+      else
+        @status_title="\n<details><Summary>There seems to be an issue with build step **#{build_status_problem_steps.join(",")}** !  :cloud: </Summary>"
+      end
+
+      build_comment = generate_build_status_markdown
       comment_id = get_build_progress_comment[:id]
       comment_message = compose_build_status_comment_title(:completed)
       comment_message << "\n#{@status_title}"
@@ -789,7 +874,8 @@ module Thumbs
       end
       begin
         @thumb_config=YAML.load(IO.read(thumb_file))
-        @build_steps=@thumb_config['build_steps']
+        @build_steps = thumb_config['build_steps']
+        @interpreter_build_steps = @thumb_config.select { |k, v| k['build_steps_'] }
         @minimum_reviewers=@thumb_config['minimum_reviewers']
         @auto_merge=@thumb_config['merge']
         @timeout=@thumb_config['timeout']
@@ -1000,7 +1086,7 @@ module Thumbs
     def wait_lock?
       all_comments.any? do |comment|
         command=parse_thumbot_action(comment[:body])
-        command && [:wait].include?(command) ?  true : false
+        command && [:wait].include?(command) ? true : false
       end
     end
 

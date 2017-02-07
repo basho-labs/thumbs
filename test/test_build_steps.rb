@@ -323,47 +323,9 @@ unit_tests do
     end
   end
 
-  test "can get interpreter build_steps" do
-    default_vcr_state do
-      PRW.respond_to?(:interpreter_build_steps)
-      build_steps = PRW.interpreter_build_steps
-      interpreter=build_steps.keys.first
-      path = build_steps[interpreter]
-    end
-  end
-  test "can get alternate build_steps" do
-    default_vcr_state do
-    end
-  end
 
-  def interpreter_build_steps
-    thumb_config.select { |k, v| k['build_steps_'] }
-  end
 
-  def run_interpreter_build_steps
-    debug_message "running interpreter specific build_steps"
-    # => {"build_steps_18"=>["env", "uptime"], "build_steps_R16B03"=>["env", "uptime"]}
-    interpreter_build_steps.each do |build_step|
-      configured_otp_version = build_step.gsub(/build_steps_/, '')
-      debug_message "got otp version #{configured_otp_version}"
-      if otp_installations.include?(configured_otp_version)
 
-      else
-
-      end
-
-      #      => {"R16B03"=>"/usr/local/erlang"}
-      otp_installations.each do |installed_otp_version, path|
-        if configured_otp_version == installed_otp_version
-
-        end
-# make generic, so can be used for any version of any lang.
-# #initially only support kerl, then add rvm. it'll check to see if that version script exists and load it."
-# build_steps_2.3: :build_steps_ruby-3.4":
-      end
-    end
-
-  end
 end
 
 

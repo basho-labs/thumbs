@@ -767,36 +767,34 @@ module Thumbs
       # get main interpreter dont show if main.
       debug_message "have markdown build status"
       debug_message @build_status.to_yaml
-      render_template <<-EOS
-      <pre>
-<%= @build_status.to_yaml %>
-</pre>
-<% @build_status.keys.each do |interpreter| %>
-  <% unless (interpreter == :main) %>
-    <%= interpreter %>
-  <% end %>
-  <% @build_status[interpreter][:steps].keys do |step_name| %>
-    <% @build_status[interpreter][:steps][step_name].each do |status| %>
-      <% if status[:output] %>
+
+      build_comment = render_template <<-EOS
+    
+<% build_status.keys.each do |interpreter| %>
+<br/>
+
+><%= interpreter unless interpreter == :main %>
+  <% build_status[interpreter][:steps].each do |step_name, status| %>
+
+<details><summary><%= result_image(status[:result]) %> <%= step_name.upcase %></summary>
+  
+| | | 
+| ------------ | -------------|
+|Started at| <%= status[:started_at].strftime("%Y-%m-%d %H:%M") rescue nil%> |
+|Duration| <%= status[:ended_at].strftime("%s").to_i-status[:started_at].strftime("%s").to_i rescue nil %> seconds.|
+|Result| <%= status[:result].upcase %>|
+|Message| <%= status[:message] %>|
+|Exit Code| <%= status[:exit_code] || status[:result].upcase %>|
+
+
+ <% if status[:output] %>
         <% gist=create_gist_from_status(step_name, status[:output]) %>
-      <% end %>
-<details>
- <summary><%= result_image(status[:result]) %> <%= step_name.upcase %> </summary>
-
- <p>
-
-> Started at: <%= status[:started_at].strftime("%Y-%m-%d %H:%M") rescue nil%>
-> Duration: <%= status[:ended_at].strftime("%s").to_i-status[:started_at].strftime("%s").to_i rescue nil %> seconds.
-> Result:  <%= status[:result].upcase %>
-> Message: <%= status[:message] %>
-> Exit Code:  <%= status[:exit_code] || status[:result].upcase %>
+ <% end %>
 <% if gist.respond_to?(:html_url) %>
-> <a href="<%= gist.html_url %>">:page_facing_up:</a>
+<a href="<%= gist.html_url %>">:page_facing_up:</a>
 <% end %>
-</p>
 
 ```
-
 <%= status[:command] %>
 
 <% output=status[:output] %>
@@ -809,26 +807,21 @@ module Thumbs
 <% else %>
   <%= output %>
 <% end %>
-<% end %>
-<% end %>
+
+
 ```
-
---------------------------------------------------
-
 </details>
-
+  <% end %>
 <% end %>
-<%= render_reviewers_comment_template if thumb_config %>
-
-</details>
       EOS
+      build_comment
     end
 
     def create_build_status_comment
       if aggregate_build_status_result == :ok
         @status_title="\n<details><Summary>Looks good!  :+1: </Summary>"
       else
-        @status_title="\n<details><Summary>There seems to be an issue with build step **#{build_status_problem_steps.join(",")}** !  :cloud: </Summary>"
+        @status_title="\n<details><Summary>There seems to be an issue with #{build_status_problem_steps.join(",")} !  :cloud: </Summary>"
       end
 
       build_comment = generate_build_status_markdown
@@ -836,9 +829,17 @@ module Thumbs
       comment_message = compose_build_status_comment_title(:completed)
       comment_message << "\n#{@status_title}"
       comment_message << build_comment
-      if comment_message.length > 65000
+      comment_message << "<br/>"
+      comment_message << render_reviewers_comment_template
+      comment_message << "</details>"
+
+
+
+      if comment_message.length > 165000
+        p "comment_message too large : #{comment_message.length} unable to post"
         debug_message "comment_message too large : #{comment_message.length} unable to post"
       else
+        p "trying to update have comment_message: #{comment_message}"
         update_pull_request_comment(comment_id, comment_message)
       end
     end

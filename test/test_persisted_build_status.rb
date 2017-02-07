@@ -8,8 +8,8 @@ unit_tests do
             PRW.reset_build_status
             PRW.unpersist_build_status
             PRW.build_steps=["make", "make test"]
-            PRW.run_build_steps
             PRW.try_merge
+            PRW.run_build_steps
             PRW.persist_build_status
             status = PRW.read_build_status
 
@@ -22,8 +22,9 @@ unit_tests do
             assert status.key?(:main)
             assert status[:main].key?(:steps), status[:main].inspect
             assert status[:main][:steps].key?(:merge)
-            assert status[:main][:steps].key?(:make), status[:steps].inspect
-            assert status[:main][:steps].key?(:make_test), status[:steps].inspect
+            assert status[:main][:steps].key?(:make), status[:main][:steps].inspect
+
+            assert status[:main][:steps].key?(:make_test), status[:main][:steps].inspect
 
             assert PRW.build_status[:main][:steps].keys.length == [:merge, :make, :make_test].length, PRW.build_status[:main][:steps].keys.inspect
           end

@@ -9,7 +9,7 @@ unit_tests do
         assert status.key?(:message)
 
         assert_equal :ok, status[:result]
-        assert_equal status, prw.build_status[:steps][:merge]
+        assert_equal status, prw.build_status[:main][:steps][:merge]
      end
   end
 end

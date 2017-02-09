@@ -35,9 +35,21 @@ ask to enable thumbs for your repo.
   build_steps: # your custom build steps
    - "make"
    - "make test"
-  merge: false  # set to true to enable automerging
-  org_mode: true   # only count code reviews from org members.
-  timeout: 1800 
+ 
+   # optional
+ 
+  merge: false        # Set to true to enable automerging
+  org_mode: true      # Only count code reviews from org members.
+  timeout: 1800       # Let builds run for 30 minutes
+  delete_branch: true # Delete pr branch after a merge
+  # Specify a kerl otp release to run each set of build steps in. build_steps_<KERLRELEASE>
+  # R15B03 R15B R16A_RELEASE_CANDIDATE R16B01 R16B02 R16B03-1 R16B03 R16B 17.0-rc1 17.0-rc2 17.0 17.1 17.3 17.4 17.5 18.0 18.1 18.2 18.2.1 18.3 19.0 19.1
+  build_steps_R16B03:
+   - make test
+  build_steps_18:
+   - make test
+  build_steps_19:
+   - make pre_19test9-edgecase
   ```
   
 - Add config and create pr branch:

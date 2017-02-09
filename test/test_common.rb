@@ -68,7 +68,7 @@ unit_tests do
       PRW.thumb_config.delete('env')
       PRW.build_steps=['echo $TEST_ENV']
       PRW.run_build_steps
-      status=PRW.build_status[:steps]
+      status=PRW.build_status[:main][:steps]
       assert status.kind_of?(Hash), status.inspect
       assert status[:"echo_$TEST_ENV"][:output] !=~/testvalue/
 
@@ -83,12 +83,12 @@ unit_tests do
       PRW.thumb_config.delete('env')
       PRW.build_steps=['echo $SHELL']
       PRW.run_build_steps
-      status=PRW.build_status[:steps][:"echo_$SHELL"]
+      status=PRW.build_status[:main][:steps][:"echo_$SHELL"]
       assert status[:output] =~ /\/bin\/bash/, status[:output].inspect
       assert status[:output] !=~/zsh/
       PRW.thumb_config['shell'] = "/bin/bash"
       PRW.run_build_steps
-      status=PRW.build_status[:steps][:"echo_$SHELL"]
+      status=PRW.build_status[:main][:steps][:"echo_$SHELL"]
       assert_equal '/bin/bash', status[:output].strip, status[:output]
     end
   end

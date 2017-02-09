@@ -8,7 +8,7 @@ unit_tests do
       assert status.key?(:message)
 
       assert_equal :ok, status[:result]
-      assert_equal status, PRW.build_status[:steps][:merge]
+      assert_equal status, PRW.build_status[:main][:steps][:merge]
     end
   end
   test "can try run build step" do
@@ -138,18 +138,22 @@ unit_tests do
             UNMERGABLEPRW.reset_build_status
             UNMERGABLEPRW.unpersist_build_status
             UNMERGABLEPRW.try_merge
-            cassette(:commits) do
-              UNMERGABLEPRW.run_build_steps
-              assert_equal :error, UNMERGABLEPRW.aggregate_build_status_result, UNMERGABLEPRW.build_status
-              step, status = UNMERGABLEPRW.build_status[:steps].collect { |step_name, status| [step_name, status] if status[:result] != :ok }.compact.shift
-              assert_equal :merge, step
+            cassette(:commits, :record => :new_episodes) do
+              cassette(:commits_update, :record => :new_episodes) do
 
-              assert status[:result]==:error
-              assert status[:exit_code]!=0
+                UNMERGABLEPRW.run_build_steps
+                assert_equal :error, UNMERGABLEPRW.aggregate_build_status_result, UNMERGABLEPRW.build_status
+                step, status = UNMERGABLEPRW.build_status[:main][:steps].collect { |step_name, status| [step_name, status] if status[:result] != :ok }.compact.shift
+                assert_equal :merge, step
 
-              cassette(:get_new_comments, :record => :new_episodes) do
-                assert_equal false, UNMERGABLEPRW.valid_for_merge?
+                assert status[:result]==:error
+                assert status[:exit_code]!=0
+
+                cassette(:get_new_comments, :record => :new_episodes) do
+                  assert_equal false, UNMERGABLEPRW.valid_for_merge?
+                end
               end
+
             end
           end
         end
@@ -194,25 +198,27 @@ unit_tests do
       PRW.respond_to?(:build_steps)
       PRW.reset_build_status
       PRW.unpersist_build_status
-      assert PRW.build_status[:steps] == {}, PRW.build_status[:steps].inspect
+      assert PRW.build_status[:main][:steps] == {}, PRW.build_status[:main][:steps].inspect
       PRW.build_steps = ["make", "make test"]
       PRW.run_build_steps
       assert PRW.build_steps.sort == ["make", "make test"].sort, PRW.build_steps.inspect
 
-      assert PRW.build_status[:steps].keys.sort == [:make, :make_test].sort, PRW.build_status[:steps].inspect
+      assert PRW.build_status[:main][:steps].keys.sort == [:make, :make_test].sort, PRW.build_status[:main][:steps].inspect
       PRW.reset_build_status
+      PRW.unpersist_build_status
 
       PRW.build_steps = ["make build", "make custom"]
+
       assert PRW.build_steps.include?("make build")
       PRW.run_build_steps
 
-      assert PRW.build_status[:steps].keys.sort == [:make_build, :make_custom].sort, PRW.build_status[:steps].keys.sort.inspect
+      assert PRW.build_status[:main][:steps].keys.include?(:make_build), PRW.build_status[:main][:steps].keys.inspect
 
       PRW.reset_build_status
 
       PRW.build_steps = ["make -j2 -p -H all", "make custom"]
       PRW.run_build_steps
-      assert PRW.build_status[:steps].keys.sort == [:make_custom, :make_j2_p_H_all].sort, PRW.build_status[:steps].keys.sort.inspect
+      assert PRW.build_status[:main][:steps].keys.sort == [:make_custom, :make_j2_p_H_all].sort, PRW.build_status[:main][:steps].keys.sort.inspect
 
     end
   end
@@ -316,6 +322,10 @@ unit_tests do
       assert_equal comments_after_sha, comments
     end
   end
+
+
+
+
 end
 
 

@@ -1036,7 +1036,7 @@ module Thumbs
 
     def parse_thumbot_command(text_body)
       command = parse_thumbot_action(text_body)
-      return nil unless command && [:retry, :merge].include?(command)
+      return nil unless command && [:retry, :merge, :kerl, :rvm, :settings].include?(command)
       command
     end
 
@@ -1046,7 +1046,7 @@ module Thumbs
     end
 
     def run_thumbot_command(command)
-      send("thumbot_#{command}") if [:retry, :merge].include?(command)
+      send("thumbot_#{command}") if [:retry, :merge, :kerl, :rvm, :settings].include?(command)
     end
 
     def thumbot_retry
@@ -1075,6 +1075,30 @@ module Thumbs
       create_reviewers_comment
       add_comment "Merging and closing this pr"
       merge
+      true
+    end
+
+    def thumbot_settings
+      debug_message "received settings command"
+      comment_text =  "```yaml #{@thumb_config.to_yaml}```"
+      add_comment(comment_text)
+      debug_message "finished settings command"
+      true
+    end
+
+    def thumbot_kerl
+      debug_message "received kerl command"
+      comment_text =  "```#{otp_installations}```"
+      add_comment(comment_text)
+      debug_message "finished kerl command"
+      true
+    end
+
+    def thumbot_rvm
+      debug_message "received rvm command"
+      comment_text =  "```#{`rvm list | grep ruby-`}```"
+      add_comment(comment_text)
+      debug_message "finished rvm command"
       true
     end
 

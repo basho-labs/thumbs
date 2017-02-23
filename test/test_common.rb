@@ -131,7 +131,7 @@ unit_tests do
 
       client2 = Octokit::Client.new(:netrc => true,
                                     :netrc_file => ".netrc.davidpuddy1")
-      cassette(:pr, :record => :new_episodes, :record => :all) do
+      cassette(:pr, :record => :all) do
 
         comment=client2.add_comment(prw.repo, prw.pr.number, "@thumbot wait", options = {})
         sleep 2

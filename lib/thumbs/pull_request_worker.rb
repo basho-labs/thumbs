@@ -27,7 +27,7 @@ module Thumbs
       load_thumbs_config
       @minimum_reviewers = thumb_config && thumb_config.key?('minimum_reviewers') ? thumb_config['minimum_reviewers'] : 2
       @timeout=thumb_config && thumb_config.key?('timeout') ? thumb_config['timeout'] : 1800
-      @build_steps = thumb_config['build_steps']
+      @build_steps = thumb_config && thumb_config.key?('build_steps') ? thumb_config['build_steps'] : nil
       @interpreter_build_steps = @thumb_config.select { |k, v| k['build_steps_'] }
     end
 

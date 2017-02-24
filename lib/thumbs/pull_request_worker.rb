@@ -1041,7 +1041,7 @@ module Thumbs
 
     def parse_thumbot_command(text_body)
       command = parse_thumbot_action(text_body)
-      return nil unless command && [:retry, :merge, :kerl, :rvm, :settings].include?(command)
+      return nil unless command && [:retry, :merge, :kerl, :rvm, :settings, :compact].include?(command)
       command
     end
 
@@ -1051,7 +1051,7 @@ module Thumbs
     end
 
     def run_thumbot_command(command)
-      send("thumbot_#{command}") if [:retry, :merge, :kerl, :rvm, :settings].include?(command)
+      send("thumbot_#{command}") if [:retry, :merge, :kerl, :rvm, :settings, :compact].include?(command)
     end
 
     def thumbot_retry

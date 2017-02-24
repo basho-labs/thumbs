@@ -268,6 +268,14 @@ module Thumbs
       comments.collect { |c| c if ["thumbot"].include?(c[:user][:login]) }.compact
     end
 
+    def all_bot_comments
+      all_comments.collect { |c| c if ["thumbot"].include?(c[:user][:login]) }.compact
+    end
+
+    def build_status_comments
+      all_bot_comments.collect{ |c| c if /\|\s+---/.match(c[:body]) }.compact
+    end
+
     def contains_plus_one?(comment_body)
       (/:\+1:/.match(comment_body) || /\+1/.match(comment_body) || /\\U0001F44D/.match(comment_body.to_yaml)) ? true : false
     end
@@ -833,13 +841,10 @@ module Thumbs
       comment_message << render_reviewers_comment_template
       comment_message << "</details>"
 
-
-
       if comment_message.length > 165000
         p "comment_message too large : #{comment_message.length} unable to post"
         debug_message "comment_message too large : #{comment_message.length} unable to post"
       else
-        p "trying to update have comment_message: #{comment_message}"
         update_pull_request_comment(comment_id, comment_message)
       end
     end
@@ -1099,6 +1104,17 @@ module Thumbs
       comment_text =  "```#{`rvm list | grep ruby-`}```"
       add_comment(comment_text)
       debug_message "finished rvm command"
+      true
+    end
+
+    def thumbot_compact
+      debug_message "received compact command"
+      thumbot_comments = build_status_comments.reverse
+      most_recent_build_status_comment = thumbot_comments.shift
+      thumbot_comments.each do |comment|
+        client.delete_comment(repo, comment[:id])
+      end
+      debug_message "finished compact command deleting #{thumbot_comments.length} comments"
       true
     end
 

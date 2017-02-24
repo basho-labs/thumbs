@@ -27,7 +27,7 @@ module Thumbs
       load_thumbs_config
       @minimum_reviewers = thumb_config && thumb_config.key?('minimum_reviewers') ? thumb_config['minimum_reviewers'] : 2
       @timeout=thumb_config && thumb_config.key?('timeout') ? thumb_config['timeout'] : 1800
-      @build_steps = thumb_config['build_steps']
+      @build_steps = thumb_config && thumb_config.key?('build_steps') ? thumb_config['build_steps'] : nil
       @interpreter_build_steps = @thumb_config.select { |k, v| k['build_steps_'] }
     end
 
@@ -266,6 +266,14 @@ module Thumbs
 
     def bot_comments
       comments.collect { |c| c if ["thumbot"].include?(c[:user][:login]) }.compact
+    end
+
+    def all_bot_comments
+      all_comments.collect { |c| c if ["thumbot"].include?(c[:user][:login]) }.compact
+    end
+
+    def build_status_comments
+      all_bot_comments.collect{ |c| c if /\|\s+---/.match(c[:body]) }.compact
     end
 
     def contains_plus_one?(comment_body)
@@ -833,13 +841,10 @@ module Thumbs
       comment_message << render_reviewers_comment_template
       comment_message << "</details>"
 
-
-
       if comment_message.length > 165000
         p "comment_message too large : #{comment_message.length} unable to post"
         debug_message "comment_message too large : #{comment_message.length} unable to post"
       else
-        p "trying to update have comment_message: #{comment_message}"
         update_pull_request_comment(comment_id, comment_message)
       end
     end
@@ -1036,7 +1041,7 @@ module Thumbs
 
     def parse_thumbot_command(text_body)
       command = parse_thumbot_action(text_body)
-      return nil unless command && [:retry, :merge].include?(command)
+      return nil unless command && [:retry, :merge, :kerl, :rvm, :settings, :compact].include?(command)
       command
     end
 
@@ -1046,7 +1051,7 @@ module Thumbs
     end
 
     def run_thumbot_command(command)
-      send("thumbot_#{command}") if [:retry, :merge].include?(command)
+      send("thumbot_#{command}") if [:retry, :merge, :kerl, :rvm, :settings, :compact].include?(command)
     end
 
     def thumbot_retry
@@ -1075,6 +1080,41 @@ module Thumbs
       create_reviewers_comment
       add_comment "Merging and closing this pr"
       merge
+      true
+    end
+
+    def thumbot_settings
+      debug_message "received settings command"
+      comment_text =  "```yaml #{@thumb_config.to_yaml}```"
+      add_comment(comment_text)
+      debug_message "finished settings command"
+      true
+    end
+
+    def thumbot_kerl
+      debug_message "received kerl command"
+      comment_text =  "```#{otp_installations}```"
+      add_comment(comment_text)
+      debug_message "finished kerl command"
+      true
+    end
+
+    def thumbot_rvm
+      debug_message "received rvm command"
+      comment_text =  "```#{`rvm list | grep ruby-`}```"
+      add_comment(comment_text)
+      debug_message "finished rvm command"
+      true
+    end
+
+    def thumbot_compact
+      debug_message "received compact command"
+      thumbot_comments = build_status_comments.reverse
+      most_recent_build_status_comment = thumbot_comments.shift
+      thumbot_comments.each do |comment|
+        client.delete_comment(repo, comment[:id])
+      end
+      debug_message "finished compact command deleting #{thumbot_comments.length} comments"
       true
     end
 

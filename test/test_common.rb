@@ -99,7 +99,18 @@ unit_tests do
       assert prw.all_comments.length > 30
     end
   end
-
+  test "can get only build status comments" do
+    default_vcr_state do
+      PRW.respond_to?(:build_status_comments)
+      prw=Thumbs::PullRequestWorker.new(repo: 'davidx/prtester', pr: 333)
+      build_status_comments=prw.build_status_comments
+      bot_comments=prw.all_bot_comments
+      assert build_status_comments.length != bot_comments.length
+      build_status_comment_ids =  build_status_comments.collect{|c| c[:id] }.compact
+      status_bot_comments =  bot_comments.collect{ |c| c if /\|\s+---/.match(c[:body]) }.compact
+      assert build_status_comment_ids.length == status_bot_comments.length, "#{build_status_comment_ids} #{status_bot_comments}"
+    end
+  end
   test "can determine org_member" do
     default_vcr_state do
       ORGPRW.respond_to?(:org_member?)
@@ -131,7 +142,7 @@ unit_tests do
 
       client2 = Octokit::Client.new(:netrc => true,
                                     :netrc_file => ".netrc.davidpuddy1")
-      cassette(:pr, :record => :new_episodes, :record => :all) do
+      cassette(:pr, :record => :all) do
 
         comment=client2.add_comment(prw.repo, prw.pr.number, "@thumbot wait", options = {})
         sleep 2
@@ -149,7 +160,6 @@ unit_tests do
         end
       end
     end
-
   end
 end
 

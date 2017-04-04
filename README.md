@@ -2,15 +2,29 @@
 
 A simplified integration robot.
 
-![Logo][logo]
-[logo]: https://ryanbrownhill.github.io/github-collab-pres/img/thumbsup.png
+[<img src="https://ryanbrownhill.github.io/github-collab-pres/img/thumbsup.png" alt="Thumbs" data-canonical-src="https://ryanbrownhill.github.io/github-collab-pres/img/thumbsup.png" width="320" height="300" />](https://github.com/basho-labs/thumbs)
+
+## What's this ?
+Thumbs was created to help validate and merge pull requests. It was initially developed as a replacement for Bors.
+
+Check out [this pull request](https://github.com/basho/riak_kv/pull/1639) for an example.
+
+### Sponsors
+The following wonderful companies have sponsored Thumbs:
+
+[<img src="https://blog.profitbricks.com/wp-content/uploads/2015/12/Basho-Logo.jpg" alt="Basho" data-canonical-src="https://blog.profitbricks.com/wp-content/uploads/2015/12/Basho-Logo.jpg" width="100" height="100" />](https://basho.com)
+
+
+### Credits
+Without the guidance, support and contributions of the following people, Thumbs would have not been possible.
+
+- Paul Hagan @ooshlablu 
+- James Gorlick @paegun
+
 
 # Setup and workflow
 How to setup Thumbs for your repo and how it works.
 
-## What's this ?
-Thumbs was created to help validate and merge pull requests. It was initially created as a replacement for Bors.
-## Setup
 #### 1) Enable Thumbs Webhook for your repository
 
 ##### Github: Enable Webhook
@@ -21,10 +35,6 @@ Thumbs was created to help validate and merge pull requests. It was initially cr
 - [checkbox] Send me everything
 
 ![Alt text](http://i.imgur.com/hyarJuX.png)
-
-## Or
-#### Email devops@basho.com
-ask to enable thumbs for your repo.
 
 ## 2) Deploy config
 
@@ -37,13 +47,12 @@ ask to enable thumbs for your repo.
    - "make test"
  
    # optional
- 
   merge: false        # Set to true to enable automerging
   org_mode: true      # Only count code reviews from org members.
   timeout: 1800       # Let builds run for 30 minutes
   delete_branch: true # Delete pr branch after a merge
   # Specify a kerl otp release to run each set of build steps in. build_steps_<KERLRELEASE>
-  # R15B03 R15B R16A_RELEASE_CANDIDATE R16B01 R16B02 R16B03-1 R16B03 R16B 17.0-rc1 17.0-rc2 17.0 17.1 17.3 17.4 17.5 18.0 18.1 18.2 18.2.1 18.3 19.0 19.1
+  # R16B01 R16B02 R16B03-1 R16B03 R16B 17.0-rc1 17.0-rc2 17.0 17.1 17.3 17.4 17.5 18.0 18.1 18.2 18.2.1 18.3 19.0 19.1
   build_steps_R16B03:
    - make test
   build_steps_18:
@@ -123,6 +132,6 @@ reflect the current status.
 
 ![Alt text](http://i.imgur.com/v3rSCTX.png)
 
-### Example: https://github.com/davidx/prtester/pull/295
+
 
 

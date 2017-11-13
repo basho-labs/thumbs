@@ -114,11 +114,11 @@ reflect the current status.
 ```
 > git clone https://github.com/basho-labs/thumbs.git
 > cd thumbs
-> bundle exec rackup
+> bundler exec rackup
 ```
 ### Running Tests
 ```
-> bundle exec ruby test/test.rb
+> bundler exec ruby test/test.rb
 ```
 
 ### Manual Testing
